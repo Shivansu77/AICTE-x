@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -37,16 +38,17 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function() {
+  if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
-  next();
 });
 
 // Instance method to generate token
 userSchema.methods.generateToken = function() {
-  const jwt = require('jsonwebtoken');
-  const secret = process.env.CS_SECRET_KEY || 'CS_SECRET_KEY';
+  const secret = process.env.CS_SECRET_KEY;
+  if (!secret) {
+    throw new Error('CS_SECRET_KEY environment variable is required');
+  }
   return jwt.sign({
     userId: this._id,
     email: this.email,
@@ -72,4 +74,4 @@ userSchema.methods.toJSON = function() {
   return user;
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);
