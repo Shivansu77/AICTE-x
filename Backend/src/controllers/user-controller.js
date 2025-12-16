@@ -18,7 +18,7 @@ const registerUser = async (req, res) => {
             lastName,
             email,
             password,
-            role: role || 'user',
+            role: role || 'student',
             isActive: true
         });
 
@@ -79,8 +79,8 @@ const getUserInfo = async (req, res) => {
 // Get all students
 const getAllStudents = async (req, res) => {
     try {
-        const students = await User.find({ role: 'user', isActive: true })
-            .select('firstName lastName email')
+        const students = await User.find({ role: 'student', isActive: true })
+            .select('firstName lastName email role')
             .sort({ firstName: 1 });
         res.json(students);
     } catch (error) {
@@ -89,9 +89,42 @@ const getAllStudents = async (req, res) => {
     }
 };
 
+// Get all teachers
+const getAllTeachers = async (req, res) => {
+    try {
+        const teachers = await User.find({ role: 'teacher', isActive: true })
+            .select('firstName lastName email role')
+            .sort({ firstName: 1 });
+        res.json(teachers);
+    } catch (error) {
+        console.error('Get teachers error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Get all users by role
+const getUsersByRole = async (req, res) => {
+    try {
+        const { role } = req.params;
+        if (!['student', 'teacher', 'admin'].includes(role)) {
+            return res.status(400).json({ message: 'Invalid role' });
+        }
+        
+        const users = await User.find({ role, isActive: true })
+            .select('firstName lastName email role')
+            .sort({ firstName: 1 });
+        res.json(users);
+    } catch (error) {
+        console.error('Get users by role error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getUserInfo,
-    getAllStudents
+    getAllStudents,
+    getAllTeachers,
+    getUsersByRole
 };
