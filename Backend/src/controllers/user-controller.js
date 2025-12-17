@@ -18,6 +18,8 @@ const registerUser = async (req, res) => {
             lastName,
             email,
             password,
+            // Allow role to be passed from frontend for demo purposes
+            // In production, this would be stricter
             role: role || 'student',
             isActive: true
         });
@@ -26,10 +28,10 @@ const registerUser = async (req, res) => {
         const token = await newUser.generateToken();
 
         // Use toJSON method to exclude password and tokens
-        res.status(201).json({ 
-            message: 'User registered successfully', 
+        res.status(201).json({
+            message: 'User registered successfully',
             user: newUser.toJSON(),
-            token 
+            token
         });
 
     } catch (error) {
@@ -50,9 +52,9 @@ const loginUser = async (req, res) => {
         const user = await User.findByEmailAndPasswordForAuth(email, password);
         const token = await user.generateToken();
 
-        res.json({ 
-            message: 'Login successful', 
-            token, 
+        res.json({
+            message: 'Login successful',
+            token,
             user: user.toJSON()
         });
 
@@ -109,7 +111,7 @@ const getUsersByRole = async (req, res) => {
         if (!['student', 'teacher', 'admin'].includes(role)) {
             return res.status(400).json({ message: 'Invalid role' });
         }
-        
+
         const users = await User.find({ role, isActive: true })
             .select('firstName lastName email role')
             .sort({ firstName: 1 });

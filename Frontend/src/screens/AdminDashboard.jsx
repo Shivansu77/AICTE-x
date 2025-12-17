@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { CheckCircle, XCircle, FileText, AlertCircle, Users, BookOpen, Megaphone, Send } from 'lucide-react';
-import api from '../utils/api';
+import React from 'react';
+import { CheckCircle, XCircle, FileText, AlertCircle, Users, BookOpen } from 'lucide-react';
 
 const StatCard = ({ title, value, color, icon: Icon }) => (
     <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-black/5 flex items-center gap-4">
@@ -32,11 +31,14 @@ const RequestItem = ({ title, requestedBy, type, date }) => (
             <button className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors" title="Reject">
                 <XCircle size={18} />
             </button>
+            <button className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors" title="View Details">
+                <FileText size={18} />
+            </button>
         </div>
     </div>
 );
 
-const AdminScreen = () => {
+const AdminDashboard = () => {
     return (
         <div className="space-y-8">
             {/* Stats Row */}
@@ -57,6 +59,7 @@ const AdminScreen = () => {
                         <RequestItem title="Into to AI - Unit 4 Update" requestedBy="Dr. Anjali R." type="Update" date="Today, 10:30 AM" />
                         <RequestItem title="New Elective: Blockchain" requestedBy="Prof. S. Mehta" type="New" date="Yesterday" />
                         <RequestItem title="Data Science Lab Manual" requestedBy="Dr. K. Singh" type="Update" date="DEC 15" />
+                        <RequestItem title="Cyber Security Syllabus" requestedBy="Prof. John D." type="New" date="DEC 14" />
                     </div>
                 </div>
 
@@ -67,7 +70,7 @@ const AdminScreen = () => {
                     </div>
                     <h3 className="text-xl font-bold text-primary mb-2">System Reports</h3>
                     <p className="text-secondary max-w-xs mb-6">Generate detailed compliance reports for AICTE monitoring.</p>
-                    <button className="bg-white text-primary font-bold py-3 px-8 rounded-full shadow-sm hover:shadow-md transition-all cursor-pointer active:scale-95">
+                    <button className="bg-white text-primary font-bold py-3 px-8 rounded-full shadow-sm hover:shadow-md transition-all">
                         Download Report
                     </button>
                 </div>
@@ -76,4 +79,4 @@ const AdminScreen = () => {
     );
 };
 
-export default AdminScreen;
+export default AdminDashboard;

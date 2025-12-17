@@ -9,7 +9,8 @@ const RegisterScreen = () => {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'student'
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ const RegisterScreen = () => {
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        role: 'teacher' // Defaulting to teacher for this portal demo
+        role: formData.role
       });
 
       navigate('/login');
@@ -91,6 +92,20 @@ const RegisterScreen = () => {
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   required
                 />
+              </div>
+            </div>
+
+            <div className="relative group">
+              <select
+                className="w-full bg-accent-blue/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-full py-4 pl-6 pr-6 font-bold text-primary outline-none transition-all appearance-none cursor-pointer"
+                value={formData.role}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+              >
+                <option value="student">Student</option>
+                <option value="teacher">Faculty / Professor</option>
+              </select>
+              <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">
+                <ArrowRight className="rotate-90" size={16} />
               </div>
             </div>
 

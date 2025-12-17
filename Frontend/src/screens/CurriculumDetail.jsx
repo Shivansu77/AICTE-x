@@ -6,6 +6,7 @@ import api from '../utils/api';
 const UnitCard = ({ unitNumber, title, topics, hours }) => {
     const [isOpen, setIsOpen] = useState(true);
 
+
     return (
         <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5 mb-6">
             <button
@@ -95,10 +96,16 @@ const CurriculumDetail = () => {
                     </p>
 
                     <div className="mt-8 flex gap-4">
-                        <button className="bg-accent-peach text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+                        <button
+                            onClick={() => alert("Change Request feature coming soon! This will open a form to suggest modifications.")}
+                            className="bg-accent-peach text-white font-bold py-3 px-6 rounded-full shadow-md hover:shadow-lg transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                        >
                             <Plus size={20} /> Request Change
                         </button>
-                        <button className="bg-white text-secondary border-2 border-secondary/10 font-bold py-3 px-6 rounded-full hover:bg-gray-50 transition-all flex items-center gap-2">
+                        <button
+                            onClick={() => alert("Syllabus PDF download starting...")}
+                            className="bg-white text-secondary border-2 border-secondary/10 font-bold py-3 px-6 rounded-full hover:bg-gray-50 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                        >
                             <FileText size={20} /> Download Syllabus
                         </button>
                     </div>

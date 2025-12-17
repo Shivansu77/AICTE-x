@@ -3,12 +3,16 @@ const PORT = process.env.PORT || 8000;
 const express = require('express');
 const userRoutes = require('./src/routes/user-routes');
 const cors = require('cors');
-const connectDB = require('./appMongoose');
+const appMongoose = require('./appMongoose');
+const seedAdmin = require('./src/utils/seedAdmin');
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// DB Call
+appMongoose().then(async () => {
+  console.log("Database Connected");
+  await seedAdmin();
+});
 
 // Manual CORS middleware
 app.use((req, res, next) => {
@@ -40,6 +44,8 @@ app.get('/home', (req, res) => {
 });
 app.use('/user', userRoutes);
 app.use('/api/curriculum', require('./src/routes/curriculum-routes'));
+app.use('/api/announcement', require('./src/routes/announcement-routes'));
+app.use('/api/messages', require('./src/routes/message-routes'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
