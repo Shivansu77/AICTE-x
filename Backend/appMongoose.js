@@ -14,8 +14,8 @@ const connectDB = async () => {
         console.log('MongoDB Atlas Connected Successfully');
     } catch (error) {
         console.error('MongoDB Atlas Connection Error:', error.message);
-        process.exit(1);
+        process.exit(1;
     }
 };
 
-module.export =  connectDB;
+module.exports =  connectDB;
