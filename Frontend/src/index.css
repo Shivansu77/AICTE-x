@@ -1,1 +1,28 @@
 @import "tailwindcss";
+
+@theme {
+  --color-cream: #FDFBF7; 
+  --color-card: #FFFFFF;
+  --color-primary: #2D2D2D;
+  --color-secondary: #5E5E5E;
+  
+  /* Polpetto Accents */
+  --color-accent-blue: #6B93D6;
+  --color-accent-peach: #FF9F76;
+  --color-accent-green: #90C8AC;
+  --color-accent-yellow: #F4D35E;
+  
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  
+  --radius-card: 1.5rem;
+  --radius-pill: 9999px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+}

@@ -1,135 +1,154 @@
-import { useState } from "react";
-import { registerUserFunction } from '../utils/AuthUtils';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { ArrowRight, Lock, Mail, User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
-const Register = () => {
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    role: "student"    // default to "student"
+const RegisterScreen = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-    setError("");
-  };
-
-  // cycle through roles: student -> teacher -> admin -> student
-  const handleToggleRole = () => {
-    const roles = ["student", "teacher", "admin"];
-    const currentIndex = roles.indexOf(form.role);
-    const nextIndex = (currentIndex + 1) % roles.length;
-    setForm({ ...form, role: roles[nextIndex] });
-  };
-
-  const validateForm = () =>
-    form.firstName.trim() &&
-    form.lastName.trim() &&
-    form.email.trim() &&
-    form.password.trim() &&
-    form.password.length >= 6;
-
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setError("");
-    if (!validateForm()) {
-      setError("All fields are required and password must be at least 6 characters.");
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match");
       return;
     }
+
+    setLoading(true);
+
     try {
-      const userData = await registerUserFunction(form);
-      // Only redirect students to student page, others get access denied
-      if (userData.user.role === "student") {
-        navigate("/student");
-      } else {
-        setError(`Access restricted. Only students can access this system. Your role: ${userData.user.role}`);
-      }
+      // Assuming Backend expects firstName, lastName. Splitting name if needed or updating UI.
+      // The backend user-controller.js requires firstName, lastName.
+      // Let's update the UI to take both or split here. I'll split here for simplicity to keep UI clean or update UI.
+      // Let's update UI to matching backend controller: firstName, lastName.
+
+      await api.post('/user/register', {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: 'teacher' // Defaulting to teacher for this portal demo
+      });
+
+      navigate('/login');
     } catch (err) {
-      setError(err?.response?.data?.error || "Signup failed. Please try again.");
+      setError(err.response?.data?.message || 'Registration failed.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Create your account</h1>
-        </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-          
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First name"
-            value={form.firstName}
-            onChange={handleChange}
-            className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-            required
-          />
-          
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last name"
-            value={form.lastName}
-            onChange={handleChange}
-            className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-            required
-          />
-          
-          <input
-            type="email"
-            name="email"
-            placeholder="Email address"
-            value={form.email}
-            onChange={handleChange}
-            className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-            required
-          />
-          
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:border-gray-500"
-            required
-          />
-          
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={handleToggleRole}
-              className="text-sm text-gray-600 hover:text-gray-800"
-            >
-              Role: {form.role} (click to change)
-            </button>
+    <div className="min-h-screen bg-cream flex items-center justify-center p-6 font-sans text-primary">
+      <div className="max-w-md w-full">
+        <div className="bg-white rounded-[2.5rem] p-10 shadow-lg border-2 border-white relative overflow-hidden">
+          {/* Decor */}
+          <div className="absolute top-0 left-0 w-32 h-32 bg-accent-green/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-accent-peach/10 rounded-full blur-2xl translate-x-1/2 translate-y-1/2"></div>
+
+          <div className="text-center mb-8 relative">
+            <h1 className="text-4xl font-extrabold mb-2">
+              Join <span className="text-accent-peach">AICTE</span>
+            </h1>
+            <p className="text-secondary font-medium">Create your faculty account</p>
           </div>
-          
-          <button
-            type="submit"
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md font-medium transition-colors"
-          >
-            Continue
-          </button>
-        </form>
-        
-        <div className="text-center mt-6">
-          <Link to="/login" className="text-sm text-gray-600 hover:text-gray-800">
-            Already have an account? Log in
-          </Link>
+
+          {error && (
+            <div className="bg-red-50 text-red-500 font-bold p-3 rounded-lg mb-4 text-sm text-center">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleRegister} className="space-y-4 relative">
+            <div className="flex gap-2">
+              <div className="relative group w-1/2">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-accent-blue transition-colors" size={18} />
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  className="w-full bg-accent-blue/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-full py-3.5 pl-10 pr-4 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="relative group w-1/2">
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  className="w-full bg-accent-blue/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-full py-3.5 pl-6 pr-4 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="relative group">
+              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-accent-green transition-colors" size={20} />
+              <input
+                type="email"
+                placeholder="Email Address"
+                className="w-full bg-accent-green/5 border-2 border-transparent focus:border-accent-green focus:bg-white rounded-full py-3.5 pl-14 pr-6 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+            <div className="relative group">
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-accent-yellow transition-colors" size={20} />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-yellow focus:bg-white rounded-full py-3.5 pl-14 pr-6 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+              />
+            </div>
+            <div className="relative group">
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary group-focus-within:text-accent-peach transition-colors" size={20} />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                className="w-full bg-accent-peach/5 border-2 border-transparent focus:border-accent-peach focus:bg-white rounded-full py-3.5 pl-14 pr-6 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent-peach text-white font-bold text-lg py-4 rounded-full shadow-lg hover:shadow-xl hover:translate-y-[-2px] transition-all flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Creating Account...' : 'Sign Up'}
+                {!loading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
+              </button>
+            </div>
+          </form>
+
+          <div className="text-center mt-6">
+            <p className="text-secondary font-bold text-sm">
+              Already have an account? <Link to="/login" className="text-accent-blue hover:underline">Login</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default RegisterScreen;
