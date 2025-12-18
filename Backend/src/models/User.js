@@ -58,12 +58,21 @@ userSchema.methods.generateToken = function() {
 
 // Static method for login
 userSchema.statics.findByEmailAndPasswordForAuth = async function(email, password) {
+  console.log('Login attempt for email:', email);
   const user = await this.findOne({ email });
-  if (!user) throw new Error('Invalid credentials');
+  if (!user) {
+    console.log('User not found for email:', email);
+    throw new Error('Invalid credentials');
+  }
   
+  console.log('User found, checking password...');
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error('Invalid credentials');
+  if (!isMatch) {
+    console.log('Password mismatch for user:', email);
+    throw new Error('Invalid credentials');
+  }
   
+  console.log('Login successful for user:', email);
   return user;
 };
 
