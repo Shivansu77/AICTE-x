@@ -4,6 +4,7 @@ const announcementController = require('../controllers/announcement-controller')
 
 // TODO: Add auth middleware to protect create route (Admin only ideally)
 router.post('/', announcementController.createAnnouncement);
+router.delete('/:id', announcementController.deleteAnnouncement);
 router.get('/', announcementController.getAnnouncements);
 
 module.exports = router;

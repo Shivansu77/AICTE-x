@@ -32,7 +32,25 @@ const getAnnouncements = async (req, res) => {
     }
 };
 
+// Delete an announcement
+const deleteAnnouncement = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedAnnouncement = await Announcement.findByIdAndDelete(id);
+        
+        if (!deletedAnnouncement) {
+            return res.status(404).json({ message: "Announcement not found" });
+        }
+        
+        res.json({ message: "Announcement deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting announcement:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 module.exports = {
     createAnnouncement,
-    getAnnouncements
+    getAnnouncements,
+    deleteAnnouncement
 };

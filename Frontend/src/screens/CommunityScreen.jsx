@@ -130,16 +130,35 @@ const CommunityScreen = () => {
                             const isMe = msg.sender?._id === currentUserId || msg.sender === currentUserId;
                             return (
                                 <div key={msg._id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                                    <div className={`flex items-end gap-2 max-w-[80%] ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                                    <div className={`flex items-end gap-2 max-w-[80%] ${isMe ? 'flex-row-reverse' : 'flex-row'} group`}>
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${getRoleBadgeColor(msg.role)}`}>
                                             {(msg.sender?.firstName?.[0] || 'U')}
                                         </div>
                                         <div>
-                                            <div className={`px-5 py-3 rounded-2xl text-sm font-medium shadow-sm ${isMe
-                                                    ? 'bg-accent-blue text-white rounded-tr-none'
-                                                    : 'bg-gray-100 text-primary rounded-tl-none'
+                                            <div className={`px-5 py-3 rounded-2xl text-sm font-medium shadow-sm relative ${isMe
+                                                ? 'bg-accent-blue text-white rounded-tr-none'
+                                                : 'bg-gray-100 text-primary rounded-tl-none'
                                                 }`}>
                                                 {msg.content}
+                                                {role === 'admin' && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (window.confirm('Delete this message?')) {
+                                                                try {
+                                                                    await api.delete(`/api/messages/${msg._id}`);
+                                                                    setMessages(prev => prev.filter(m => m._id !== msg._id));
+                                                                } catch (err) {
+                                                                    console.error(err);
+                                                                    alert('Failed to delete message');
+                                                                }
+                                                            }
+                                                        }}
+                                                        className={`absolute -top-2 ${isMe ? '-left-2' : '-right-2'} opacity-0 group-hover:opacity-100 p-1 bg-red-500 text-white rounded-full shadow-md transition-all scale-75 hover:scale-100`}
+                                                        title="Delete Message"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /></svg>
+                                                    </button>
+                                                )}
                                             </div>
                                             <div className={`text-[10px] text-secondary mt-1 font-bold flex gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
                                                 <span>{msg.sender?.firstName} {msg.sender?.lastName}</span>
