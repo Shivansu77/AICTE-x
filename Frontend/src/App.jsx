@@ -11,6 +11,8 @@ import ManageCourses from './screens/ManageCourses';
 import CourseDetail from './screens/CourseDetail';
 import FacultyCourseView from './screens/FacultyCourseView';
 
+import FacultyScreen from './screens/FacultyScreen';
+
 // Layout Wrapper
 const AppLayout = () => (
   <Layout>
@@ -21,7 +23,7 @@ const AppLayout = () => (
 // Route Handler for /curriculum
 const CurriculumRouter = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  return user.role === 'admin' ? <ManageCourses /> : <Dashboard />;
+  return user.role === 'admin' ? <ManageCourses /> : <FacultyScreen />;
 };
 
 function App() {

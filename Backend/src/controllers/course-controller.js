@@ -63,3 +63,61 @@ exports.updateCourse = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+// Delete Course
+exports.deleteCourse = async (req, res) => {
+    try {
+        const course = await Course.findByIdAndDelete(req.params.id);
+        if (!course) {
+            return res.status(404).json({ message: 'Course not found' });
+        }
+        res.status(200).json({ message: 'Course deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Seed initial courses
+exports.seedCourses = async (req, res) => {
+    try {
+        const courses = [
+            {
+                title: 'B.Tech Computer Science',
+                code: 'BTECH-CSE',
+                department: 'Computer Science',
+                type: 'Degree',
+                durationYears: 4,
+                totalSemesters: 8,
+                totalCredits: 160
+            },
+            {
+                title: 'B.Tech AI & ML',
+                code: 'BTECH-AIML',
+                department: 'Computer Science',
+                type: 'Degree',
+                durationYears: 4,
+                totalSemesters: 8,
+                totalCredits: 160
+            },
+            {
+                title: 'B.Tech Electronics',
+                code: 'BTECH-ECE',
+                department: 'Electronics',
+                type: 'Degree',
+                durationYears: 4,
+                totalSemesters: 8,
+                totalCredits: 160
+            }
+        ];
+
+        for (const c of courses) {
+            const exists = await Course.findOne({ code: c.code });
+            if (!exists) {
+                await new Course({ ...c, createdBy: req.user.userId }).save();
+            }
+        }
+
+        res.status(200).json({ message: 'Courses seeded successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

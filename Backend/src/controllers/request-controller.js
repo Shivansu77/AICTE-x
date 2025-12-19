@@ -53,3 +53,13 @@ exports.updateRequestStatus = async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
+exports.getMyRequests = async (req, res) => {
+    try {
+        const requests = await UpdateReq.find({ facultyId: req.user.userId })
+            .populate('courseId', 'title code')
+            .sort({ createdAt: -1 });
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};

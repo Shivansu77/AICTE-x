@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Plus, Book, Clock, Layers, Lock, Unlock } from 'lucide-react';
+import { ArrowLeft, Plus, Book, Clock, Layers, Lock, Unlock, Edit3, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const ManageCourses = () => {
@@ -7,9 +7,10 @@ const ManageCourses = () => {
     const [courses, setCourses] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [editingId, setEditingId] = useState(null);
 
     // Form State
-    const [formData, setFormData] = useState({
+    const initialFormState = {
         title: '',
         code: '',
         department: '',
@@ -17,7 +18,8 @@ const ManageCourses = () => {
         durationYears: 4,
         totalSemesters: 8,
         totalCredits: 160
-    });
+    };
+    const [formData, setFormData] = useState(initialFormState);
 
     useEffect(() => {
         fetchCourses();
@@ -40,12 +42,18 @@ const ManageCourses = () => {
         }
     };
 
-    const handleCreateCourse = async (e) => {
+    const handleCreateOrUpdateCourse = async (e) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/courses', {
-                method: 'POST',
+            const url = editingId
+                ? `http://localhost:8000/api/courses/${editingId}`
+                : 'http://localhost:8000/api/courses';
+
+            const method = editingId ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -55,16 +63,60 @@ const ManageCourses = () => {
 
             if (response.ok) {
                 setShowForm(false);
-                setFormData({ title: '', code: '', department: '', type: 'Degree', durationYears: 4, totalSemesters: 8, totalCredits: 160 });
+                setFormData(initialFormState);
+                setEditingId(null);
                 fetchCourses();
-                alert('Course created successfully!');
+                alert(editingId ? 'Course updated successfully!' : 'Course created successfully!');
             } else {
                 const err = await response.json();
-                alert(err.message || 'Failed to create course');
+                alert(err.message || 'Operation failed');
             }
         } catch (error) {
-            console.error('Error creating course:', error);
+            console.error('Error saving course:', error);
         }
+    };
+
+    const handleDelete = async (e, id) => {
+        e.stopPropagation();
+        if (!window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:8000/api/courses/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                fetchCourses();
+                alert('Course deleted successfully');
+            } else {
+                alert('Failed to delete course');
+            }
+        } catch (error) {
+            console.error("Delete failed", error);
+        }
+    };
+
+    const openEditModal = (e, course) => {
+        e.stopPropagation();
+        setFormData({
+            title: course.title,
+            code: course.code,
+            department: course.department,
+            type: course.type,
+            durationYears: course.durationYears,
+            totalSemesters: course.totalSemesters,
+            totalCredits: course.totalCredits
+        });
+        setEditingId(course._id);
+        setShowForm(true);
+    };
+
+    const openNewModal = () => {
+        setFormData(initialFormState);
+        setEditingId(null);
+        setShowForm(true);
     };
 
     return (
@@ -82,13 +134,28 @@ const ManageCourses = () => {
                         <p className="text-gray-400 font-medium mt-2">Manage AICTE-approved degree programs</p>
                     </div>
 
-                    <button
-                        onClick={() => setShowForm(!showForm)}
-                        className="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-sm shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
-                    >
-                        <Plus size={18} />
-                        <span>Add New Course</span>
-                    </button>
+                    <div className="flex gap-4">
+                        <button
+                            onClick={async () => {
+                                const token = localStorage.getItem('token');
+                                await fetch('http://localhost:8000/api/courses/seed', {
+                                    method: 'POST',
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+                                fetchCourses();
+                            }}
+                            className="bg-white text-gray-900 px-6 py-4 rounded-full font-bold text-sm shadow-md hover:shadow-lg transition-all"
+                        >
+                            Seed Defaults
+                        </button>
+                        <button
+                            onClick={openNewModal}
+                            className="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-sm shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                        >
+                            <Plus size={18} />
+                            <span>Add New Course</span>
+                        </button>
+                    </div>
                 </header>
 
                 <main className="flex-1 overflow-y-auto px-10 pb-10 custom-scrollbar relative">
@@ -100,10 +167,10 @@ const ManageCourses = () => {
                         <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                             <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
                                 <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100 flex justify-between items-center">
-                                    <h2 className="text-xl font-extrabold text-gray-800">New Master Course</h2>
+                                    <h2 className="text-xl font-extrabold text-gray-800">{editingId ? 'Edit Master Course' : 'New Master Course'}</h2>
                                     <button onClick={() => setShowForm(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors font-bold text-gray-500">✕</button>
                                 </div>
-                                <form onSubmit={handleCreateCourse} className="p-8 space-y-6">
+                                <form onSubmit={handleCreateOrUpdateCourse} className="p-8 space-y-6">
                                     <div className="grid grid-cols-2 gap-6">
                                         <div className="col-span-2">
                                             <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Course Title</label>
@@ -186,7 +253,7 @@ const ManageCourses = () => {
                                             type="submit"
                                             className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all"
                                         >
-                                            Create Master Course
+                                            {editingId ? 'Update Master Course' : 'Create Master Course'}
                                         </button>
                                     </div>
                                 </form>
@@ -218,7 +285,24 @@ const ManageCourses = () => {
                                             <span className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider ${['bg-blue-50 text-blue-600', 'bg-orange-50 text-orange-600', 'bg-green-50 text-green-600'][idx % 3]}`}>
                                                 {course.code}
                                             </span>
-                                            {course.isLocked && <Lock className="w-5 h-5 text-gray-300" />}
+
+                                            {/* Action Buttons */}
+                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={(e) => openEditModal(e, course)}
+                                                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition-colors"
+                                                    title="Edit Course"
+                                                >
+                                                    <Edit3 size={14} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleDelete(e, course._id)}
+                                                    className="w-8 h-8 rounded-full bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-colors"
+                                                    title="Delete Course"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <h3 className="text-2xl font-black text-gray-800 leading-tight mb-2 group-hover:text-blue-600 transition-colors">{course.title}</h3>
@@ -234,10 +318,6 @@ const ManageCourses = () => {
                                                 <span>{course.totalSemesters} Semesters</span>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div className="absolute bottom-6 right-8 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
-                                        <ArrowLeft className="rotate-180 text-blue-500" />
                                     </div>
                                 </div>
                             ))

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Users, Clock, Bell, FileText, CheckCircle } from 'lucide-react';
+import api from '../utils/api';
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
     <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-md transition-all">
@@ -26,15 +27,60 @@ const NotificationItem = ({ title, time, type }) => (
 
 const FacultyDashboard = () => {
     const navigate = useNavigate();
+    const [stats, setStats] = useState({
+        myCourses: 0,
+        pendingReviews: 0,
+        approvedUpdates: 0,
+        totalStudents: 128 // Mock for now
+    });
+    const [notifications, setNotifications] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [reqRes, courseRes] = await Promise.all([
+                    api.get('/api/requests/my-requests'),
+                    api.get('/api/courses')
+                ]);
+
+                const requests = reqRes.data;
+                const courses = courseRes.data;
+
+                setStats({
+                    myCourses: courses.length, // Simplified: Showing all available courses
+                    pendingReviews: requests.filter(r => r.status === 'pending').length,
+                    approvedUpdates: requests.filter(r => r.status === 'approved').length,
+                    totalStudents: 128
+                });
+
+                // Generate notifications from recent requests
+                const recentOne = requests.slice(0, 5).map(r => ({
+                    id: r._id,
+                    title: `Request ${r.status}: ${r.courseId?.code || 'Course'}`,
+                    time: new Date(r.createdAt).toLocaleDateString(),
+                    type: r.status === 'pending' ? 'urgent' : 'normal'
+                }));
+                setNotifications(recentOne);
+
+            } catch (error) {
+                console.error("Failed to load faculty data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     return (
         <div className="space-y-8">
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard icon={BookOpen} label="My Courses" value="3" color="bg-blue-500" />
-                <StatCard icon={Users} label="Total Students" value="128" color="bg-purple-500" />
-                <StatCard icon={Clock} label="Pending Reviews" value="2" color="bg-orange-500" />
-                <StatCard icon={CheckCircle} label="Approved Updates" value="5" color="bg-green-500" />
+                <StatCard icon={BookOpen} label="My Courses" value={loading ? "..." : stats.myCourses} color="bg-blue-500" />
+                <StatCard icon={Users} label="Total Students" value={loading ? "..." : stats.totalStudents} color="bg-purple-500" />
+                <StatCard icon={Clock} label="Pending Reviews" value={loading ? "..." : stats.pendingReviews} color="bg-orange-500" />
+                <StatCard icon={CheckCircle} label="Approved Updates" value={loading ? "..." : stats.approvedUpdates} color="bg-green-500" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -65,9 +111,15 @@ const FacultyDashboard = () => {
                         </button>
                     </div>
                     <div className="space-y-1">
-                        <NotificationItem title="Curriculum update approved for CS-101" time="2 hours ago" type="normal" />
-                        <NotificationItem title="Submit grading for Mid-Sem" time="Yesterday" type="urgent" />
-                        <NotificationItem title="New department meeting scheduled" time="Dec 15" type="normal" />
+                        {loading ? (
+                            <p className="text-sm text-center text-gray-400 py-4">Loading updates...</p>
+                        ) : notifications.length > 0 ? (
+                            notifications.map(n => (
+                                <NotificationItem key={n.id} title={n.title} time={n.time} type={n.type} />
+                            ))
+                        ) : (
+                            <p className="text-sm text-center text-gray-400 py-4">No recent updates.</p>
+                        )}
                     </div>
                 </div>
             </div>
