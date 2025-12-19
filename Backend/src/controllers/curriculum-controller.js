@@ -112,57 +112,88 @@ exports.getAllCurricula = async (req, res) => {
 
 exports.seedCurriculum = async (req, res) => {
     try {
-        await Course.deleteMany({});
-        await Curriculum.deleteMany({});
+        // Find Courses (Assumes they exist or were seeded by course-controller)
+        const cseCourse = await Course.findOne({ code: 'BTECH-CSE' });
+        const aimlCourse = await Course.findOne({ code: 'BTECH-AIML' });
 
-        // Create Course
-        const cseCourse = await Course.create({
-            title: "B.Tech Computer Science & Engineering",
-            code: "BTECH-CSE",
-            department: "Computer Science",
-            durationYears: 4,
-            totalSemesters: 8,
-            totalCredits: 160,
-            type: "Degree"
-        });
+        const newSubjects = [];
 
-        // Create Subjects
-        const subjects = [
-            {
-                courseId: cseCourse._id,
-                title: "Data Structures & Algorithms",
-                code: "CSE-301",
-                description: "Fundamental concepts of data organization and manipulation.",
-                credits: 4,
-                semester: 3,
-                units: [
-                    { title: "Introduction", unitNumber: 1, hours: 8, topics: ["Arrays", "Linked Lists"] },
-                    { title: "Trees", unitNumber: 2, hours: 10, topics: ["Binary Trees", "BST"] }
-                ],
-                version: 1,
-                isLatest: true,
-                isActive: true,
-                status: 'approved'
-            },
-            {
-                courseId: cseCourse._id,
-                title: "Database Management Systems",
-                code: "CSE-302",
-                description: "Design and implementation of database systems.",
-                credits: 3,
-                semester: 3,
-                units: [
-                    { title: "Intro", unitNumber: 1, hours: 6, topics: ["ER Models"] }
-                ],
-                version: 1,
-                isLatest: true,
-                isActive: true,
-                status: 'approved'
+        if (cseCourse) {
+            newSubjects.push(
+                {
+                    courseId: cseCourse._id,
+                    title: "Data Structures & Algorithms",
+                    code: "CS-301",
+                    description: "Fundamental concepts of data organization and manipulation.",
+                    credits: 4,
+                    semester: 3,
+                    units: [
+                        { title: "Introduction", unitNumber: 1, hours: 8, topics: ["Arrays", "Linked Lists"] },
+                        { title: "Trees", unitNumber: 2, hours: 10, topics: ["Binary Trees", "BST"] }
+                    ],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                },
+                {
+                    courseId: cseCourse._id,
+                    title: "Database Management Systems",
+                    code: "CS-302",
+                    description: "Design and implementation of database systems.",
+                    credits: 3,
+                    semester: 3,
+                    units: [{ title: "Intro", unitNumber: 1, hours: 6, topics: ["ER Models"] }],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                },
+                {
+                    courseId: cseCourse._id,
+                    title: "Operating Systems",
+                    code: "CS-401",
+                    description: "Process management and memory management.",
+                    credits: 4,
+                    semester: 4,
+                    units: [{ title: "Processes", unitNumber: 1, hours: 10, topics: ["Threads", "Scheduling"] }],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                }
+            );
+        }
+
+        if (aimlCourse) {
+            newSubjects.push(
+                {
+                    courseId: aimlCourse._id,
+                    title: "Neural Networks",
+                    code: "AI-301",
+                    description: "Introduction to deep learning and neural networks.",
+                    credits: 4,
+                    semester: 3,
+                    units: [
+                        { title: "Perceptrons", unitNumber: 1, hours: 8, topics: ["Activation Functions", "Backprop"] },
+                        { title: "CNNs", unitNumber: 2, hours: 10, topics: ["Convolution", "Pooling"] }
+                    ],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                },
+                {
+                    courseId: aimlCourse._id,
+                    title: "Machine Learning Fundamentals",
+                    code: "AI-302",
+                    description: "Supervised and unsupervised learning.",
+                    credits: 3,
+                    semester: 3,
+                    units: [{ title: "Regression", unitNumber: 1, hours: 8, topics: ["Linear", "Logistic"] }],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                }
+            );
+        }
+
+        let count = 0;
+        for (const sub of newSubjects) {
+            const exists = await Curriculum.findOne({ code: sub.code, courseId: sub.courseId });
+            if (!exists) {
+                await new Curriculum({ ...sub, createdBy: req.user.userId }).save();
+                count++;
             }
-        ];
+        }
 
-        await Curriculum.insertMany(subjects);
-        res.json({ message: "Seeded successfully" });
+        res.json({ message: `Seeded ${count} subjects successfully` });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
