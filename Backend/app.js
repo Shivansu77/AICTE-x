@@ -47,6 +47,7 @@ app.use('/api/curriculum', require('./src/routes/curriculum-routes'));
 app.use('/api/announcement', require('./src/routes/announcement-routes'));
 app.use('/api/messages', require('./src/routes/message-routes'));
 app.use('/api/courses', require('./src/routes/course-routes'));
+app.use('/api/requests', require('./src/routes/request-routes'));
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

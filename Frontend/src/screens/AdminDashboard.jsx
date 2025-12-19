@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, FileText, AlertCircle, Users, BookOpen } from 'lucide-react';
 
@@ -39,37 +39,93 @@ const RequestItem = ({ title, requestedBy, type, date }) => (
     </div>
 );
 
+import api from '../utils/api';
+
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const [stats, setStats] = useState({ courses: 0, faculty: 0, pending: 0 }); // Placeholder for now
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch Data in Parallel
+                const [reqRes, courseRes, facultyRes] = await Promise.all([
+                    api.get('/api/requests/pending'),
+                    api.get('/api/courses'),
+                    api.get('/user/teachers')
+                ]);
+
+                setRequests(reqRes.data);
+
+                setStats({
+                    courses: courseRes.data.length,
+                    faculty: facultyRes.data.length,
+                    pending: reqRes.data.length
+                });
+
+            } catch (error) {
+                console.error("Failed to fetch dashboard data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    // ... rest of component ...
     return (
         <div className="space-y-8">
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard
                     title="Total Courses"
-                    value="124"
+                    value={loading ? "..." : stats.courses}
                     color="bg-accent-blue"
                     icon={BookOpen}
                     onClick={() => navigate('/admin/courses')}
                 />
-                <StatCard title="Active Faculty" value="850" color="bg-accent-peach" icon={Users} />
-                <StatCard title="Pending Requests" value="12" color="bg-accent-yellow" icon={AlertCircle} />
+                <StatCard title="Active Faculty" value={loading ? "..." : stats.faculty} color="bg-accent-peach" icon={Users} />
+                <StatCard title="Pending Requests" value={loading ? "..." : stats.pending} color="bg-accent-yellow" icon={AlertCircle} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Pending Approvals */}
-                <div className="bg-white/50 p-6 rounded-[2.5rem] border-2 border-white">
+                <div className="bg-white/50 p-6 rounded-[2.5rem] border-2 border-white min-h-[400px]">
                     <div className="flex justify-between items-center mb-6 px-2">
                         <h3 className="text-2xl font-extrabold text-primary">Pending Approvals</h3>
                         <button className="text-accent-blue font-bold text-sm hover:underline">View All</button>
                     </div>
-                    <div className="space-y-3">
-                        <RequestItem title="Into to AI - Unit 4 Update" requestedBy="Dr. Anjali R." type="Update" date="Today, 10:30 AM" />
-                        <RequestItem title="New Elective: Blockchain" requestedBy="Prof. S. Mehta" type="New" date="Yesterday" />
-                        <RequestItem title="Data Science Lab Manual" requestedBy="Dr. K. Singh" type="Update" date="DEC 15" />
-                        <RequestItem title="Cyber Security Syllabus" requestedBy="Prof. John D." type="New" date="DEC 14" />
-                    </div>
+
+                    {loading ? (
+                        <div className="text-center py-10 text-gray-400 font-bold animate-pulse">Loading Requests...</div>
+                    ) : requests.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-64 text-center">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-500 mb-4">
+                                <CheckCircle size={32} />
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-600">All Caught Up!</h4>
+                            <p className="text-gray-400 text-sm">No pending curriculum updates.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {requests.map(req => (
+                                <RequestItem
+                                    key={req._id}
+                                    title={`${req.requestType}: ${req.curriculumId?.title || 'Unknown Subject'}`}
+                                    requestedBy={`Prof. ${req.facultyId?.firstName || 'Faculty'}`}
+                                    type={req.requestType === 'Add Topic' ? 'New' : 'Update'}
+                                    date={new Date(req.createdAt).toLocaleDateString()}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
+
+                {/* System Activity Placeholder... */}
+                {/* ... keep existing code ... */}
+
 
                 {/* System Activity / Recent Actions (Placeholder) */}
                 <div className="bg-accent-blue/5 p-6 rounded-[2.5rem] border-2 border-white flex flex-col items-center justify-center text-center">
