@@ -1,8 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, FileText, AlertCircle, Users, BookOpen } from 'lucide-react';
 
-const StatCard = ({ title, value, color, icon: Icon }) => (
-    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-black/5 flex items-center gap-4">
+const StatCard = ({ title, value, color, icon: Icon, onClick }) => (
+    <div onClick={onClick} className={`bg-white p-6 rounded-[2rem] shadow-sm border border-black/5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all ${onClick ? 'hover:scale-[1.02]' : ''}`}>
         <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white ${color}`}>
             <Icon size={24} />
         </div>
@@ -39,11 +40,18 @@ const RequestItem = ({ title, requestedBy, type, date }) => (
 );
 
 const AdminDashboard = () => {
+    const navigate = useNavigate();
     return (
         <div className="space-y-8">
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total Courses" value="124" color="bg-accent-blue" icon={BookOpen} />
+                <StatCard
+                    title="Total Courses"
+                    value="124"
+                    color="bg-accent-blue"
+                    icon={BookOpen}
+                    onClick={() => navigate('/admin/courses')}
+                />
                 <StatCard title="Active Faculty" value="850" color="bg-accent-peach" icon={Users} />
                 <StatCard title="Pending Requests" value="12" color="bg-accent-yellow" icon={AlertCircle} />
             </div>
