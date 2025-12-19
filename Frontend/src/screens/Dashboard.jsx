@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import FacultyScreen from './FacultyScreen';
 import AdminDashboard from './AdminDashboard';
+import FacultyDashboard from './FacultyDashboard';
 
 // ...
 // --- ADMIN PORTAL VIEW ---
@@ -105,7 +106,7 @@ const Dashboard = () => {
 
     // --- FACULTY PORTAL VIEW ---
     if (role === 'teacher' || role === 'faculty') {
-        return <FacultyScreen />;
+        return <FacultyDashboard />;
     }
 
     return (

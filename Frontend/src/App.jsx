@@ -18,6 +18,12 @@ const AppLayout = () => (
   </Layout>
 );
 
+// Route Handler for /curriculum
+const CurriculumRouter = () => {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  return user.role === 'admin' ? <ManageCourses /> : <Dashboard />;
+};
+
 function App() {
   return (
     <Router>
@@ -28,7 +34,7 @@ function App() {
         {/* Protected Routes */}
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/curriculum" element={<Dashboard />} />
+          <Route path="/curriculum" element={<CurriculumRouter />} />
           <Route path="/curriculum/:id" element={<CurriculumDetail />} />
           <Route path="/announcements" element={<AnnouncementsScreen />} />
           <Route path="/community" element={<CommunityScreen />} />

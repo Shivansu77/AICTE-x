@@ -9,6 +9,16 @@ const CourseDetail = () => {
     const [subjects, setSubjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [activeSemester, setActiveSemester] = useState(1);
+
+    // --- UI HELPERS ---
+    const gradients = {
+        primary: "from-amber-50 to-orange-50",
+        sidebar: "bg-[#FDFBF7]", // Creamy background
+        card: "bg-white",
+        activePill: "bg-white shadow-sm text-orange-500 font-extrabold",
+        inactivePill: "text-gray-400 hover:bg-white/50 hover:text-gray-600 font-bold"
+    };
 
     // Form State for Subject
     const [formData, setFormData] = useState({
@@ -40,11 +50,12 @@ const CourseDetail = () => {
         fetchData();
     }, [id]);
 
-    const handleCreateSubject = async (e) => {
+    const handleCreateSubject = async (e, forcedSemester = 1) => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const payload = { ...formData, courseId: id, units: [] }; // Empty units for start
+            // forcedSemester comes from the form submit handler
+            const payload = { ...formData, courseId: id, semester: forcedSemester || formData.semester, units: [] };
 
             const response = await fetch('http://localhost:8000/api/curriculum', {
                 method: 'POST',
@@ -79,108 +90,169 @@ const CourseDetail = () => {
         return acc;
     }, {});
 
-    return (
-        <div className="min-h-screen bg-gray-50 flex font-sans text-gray-900">
-            <div className="flex-1 flex flex-col h-screen overflow-hidden">
-                {/* Header */}
-                <header className="bg-white border-b border-gray-200 px-8 py-5 flex items-center gap-4">
-                    <button onClick={() => navigate('/admin/courses')} className="p-2 hover:bg-gray-100 rounded-full text-gray-600 transition-colors">
-                        <ArrowLeft className="w-6 h-6" />
-                    </button>
-                    <div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-                            <span>{course.code}</span>
-                            <ChevronRight className="w-4 h-4" />
-                            <span>Curriculum Management</span>
-                        </div>
-                        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{course.title}</h1>
-                    </div>
-                </header>
+    // Filter subjects for active semester
+    const activeSubjects = subjects.filter(s => s.semester === activeSemester);
 
-                <main className="flex-1 overflow-y-auto p-8 relative">
-                    {/* Add Subject Button */}
-                    <div className="flex justify-between items-center mb-8">
-                        <h2 className="text-xl font-bold text-gray-800">Master Curriculum</h2>
+    return (
+        <div className={`min-h-screen ${gradients.sidebar} flex font-sans text-gray-900 overflow-hidden`}>
+
+            {/* LEFT SIDEBAR - SEMESTERS */}
+            <aside className="w-64 flex flex-col p-6 overflow-y-auto">
+                <button onClick={() => navigate('/admin/courses')} className="flex items-center gap-2 text-gray-400 hover:text-gray-800 font-bold mb-8 transition-colors">
+                    <ArrowLeft size={20} /> Back
+                </button>
+
+                <h2 className="text-2xl font-extrabold text-gray-800 mb-6 pl-2">Curriculum</h2>
+
+                <div className="space-y-3 flex-1">
+                    {Array.from({ length: course.totalSemesters }).map((_, idx) => {
+                        const sem = idx + 1;
+                        const isActive = activeSemester === sem;
+                        return (
+                            <button
+                                key={sem}
+                                onClick={() => setActiveSemester(sem)}
+                                className={`w-full py-4 px-6 rounded-[2rem] text-left transition-all duration-300 flex justify-between items-center group relative overflow-hidden ${isActive ? 'bg-white shadow-lg shadow-orange-500/10 text-orange-500 scale-105' : 'text-gray-400 hover:bg-white/60 hover:text-gray-600'}`}
+                            >
+                                <span className={`font-extrabold text-lg relative z-10`}>Semester {sem}</span>
+                                {isActive && <div className="absolute right-4 w-2 h-2 rounded-full bg-orange-400"></div>}
+                            </button>
+                        );
+                    })}
+                </div>
+            </aside>
+
+            {/* MAIN CONTENT */}
+            <main className="flex-1 p-6 h-screen flex flex-col">
+                <div className="bg-white/50 backdrop-blur-xl border border-white/60 rounded-[3rem] flex-1 flex flex-col shadow-sm relative overflow-hidden">
+                    {/* Decorative Blob */}
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-100/40 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+
+                    {/* Header */}
+                    <header className="px-10 py-8 flex justify-between items-end">
+                        <div>
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider">{course.code}</span>
+                                <span className="text-gray-400 font-bold text-sm">{course.totalCredits} Credits Total</span>
+                            </div>
+                            <h1 className="text-4xl font-black text-gray-800 tracking-tight leading-tight max-w-2xl">{course.title}</h1>
+                            <p className="text-gray-400 font-medium mt-2 max-w-lg truncate">{course.department}</p>
+                        </div>
                         <button
                             onClick={() => setShowForm(true)}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium flex items-center gap-2"
+                            className="bg-gray-900 text-white px-8 py-4 rounded-full font-bold text-sm shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 group"
                         >
-                            <Plus className="w-4 h-4" />
-                            Add Subject
+                            <Plus size={18} className="group-hover:rotate-90 transition-transform" /> Add Subject
                         </button>
-                    </div>
+                    </header>
 
-                    {/* Semester-wise Lists */}
-                    <div className="space-y-8">
-                        {Array.from({ length: course.totalSemesters }).map((_, idx) => {
-                            const sem = idx + 1;
-                            const semSubjects = subjectsBySemester[sem] || [];
-
-                            return (
-                                <div key={sem} className="bg-white rounded-2xl border border-gray-200 p-6">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <h3 className="text-lg font-bold text-gray-800">Semester {sem}</h3>
-                                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">{semSubjects.length} Subjects</span>
-                                    </div>
-
-                                    {semSubjects.length === 0 ? (
-                                        <div className="text-sm text-gray-400 italic">No subjects added yet.</div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                            {semSubjects.map(sub => (
-                                                <div key={sub._id} className="border border-gray-100 rounded-xl p-4 hover:border-indigo-100 hover:bg-indigo-50/30 transition-all cursor-pointer group"
-                                                    onClick={() => navigate(`/curriculum/${sub._id}`)}>
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">{sub.code}</span>
-                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <Edit3 className="w-4 h-4 text-gray-400 hover:text-indigo-600" />
-                                                        </div>
-                                                    </div>
-                                                    <h4 className="font-bold text-gray-900 mb-1">{sub.title}</h4>
-                                                    <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
-                                                        <span>{sub.credits} Credits</span>
-                                                        <span>V{sub.version}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {/* Modal */}
-                    {showForm && (
-                        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg">
-                                <form onSubmit={handleCreateSubject} className="p-6">
-                                    <h3 className="text-lg font-bold mb-4">Add New Subject</h3>
-                                    <div className="space-y-4">
-                                        <input required placeholder="Subject Code (e.g. CSE-101)" className="w-full p-2 border rounded" value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })} />
-                                        <input required placeholder="Subject Title" className="w-full p-2 border rounded" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                                        <textarea required placeholder="Description" className="w-full p-2 border rounded" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="text-xs block mb-1">Semester</label>
-                                                <input required type="number" className="w-full p-2 border rounded" value={formData.semester} onChange={e => setFormData({ ...formData, semester: parseInt(e.target.value) })} />
-                                            </div>
-                                            <div>
-                                                <label className="text-xs block mb-1">Credits</label>
-                                                <input required type="number" className="w-full p-2 border rounded" value={formData.credits} onChange={e => setFormData({ ...formData, credits: parseInt(e.target.value) })} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6 flex justify-end gap-3">
-                                        <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded">Cancel</button>
-                                        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Add Subject</button>
-                                    </div>
-                                </form>
-                            </div>
+                    {/* Content Scroll View */}
+                    <div className="flex-1 overflow-y-auto px-10 pb-10 custom-scrollbar">
+                        <div className="flex items-center gap-3 mb-6">
+                            <h3 className="text-2xl font-bold text-gray-800">Semester {activeSemester} Subjects</h3>
+                            <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold">{activeSubjects.length} subjects</span>
                         </div>
-                    )}
-                </main>
-            </div>
+
+                        {activeSubjects.length === 0 ? (
+                            <div className="border-2 border-dashed border-gray-200 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center opacity-60">
+                                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                    <Book className="text-gray-300" size={32} />
+                                </div>
+                                <h4 className="text-xl font-bold text-gray-400 mb-2">No subjects yet</h4>
+                                <p className="text-gray-400 max-w-xs mx-auto">This semester is empty. Use the "Add Subject" button to start building the curriculum.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-5">
+                                {activeSubjects.map((sub, idx) => (
+                                    <div
+                                        key={sub._id}
+                                        onClick={() => navigate(`/curriculum/${sub._id}`)}
+                                        className="group bg-white rounded-[2.5rem] p-6 hover:shadow-xl hover:shadow-orange-500/5 transition-all duration-300 border border-transparent hover:border-orange-100 cursor-pointer relative overflow-hidden flex items-center gap-6"
+                                    >
+                                        <div className={`w-20 h-20 rounded-[1.5rem] flex items-center justify-center text-xl font-black shadow-inner shrink-0 ${['bg-blue-50 text-blue-500', 'bg-green-50 text-green-500', 'bg-purple-50 text-purple-500', 'bg-orange-50 text-orange-500'][idx % 4]}`}>
+                                            {sub.code.split('-').pop()}
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h4 className="text-xl font-extrabold text-gray-800 truncate group-hover:text-orange-600 transition-colors">{sub.title}</h4>
+
+                                            </div>
+                                            <p className="text-gray-400 font-medium text-sm line-clamp-2 leading-relaxed max-w-2xl">{sub.description}</p>
+
+                                            <div className="flex items-center gap-4 mt-3">
+                                                {['Processing', 'Data'].map((tag, i) => ( // Mock tags for now
+                                                    <span key={i} className="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">{tag}</span>
+                                                ))}
+                                                <span className="text-gray-300 text-xs font-bold">•</span>
+                                                <span className="text-gray-400 text-xs font-bold">{sub.credits} Credits</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-12 h-12 rounded-full border-2 border-gray-100 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-500 group-hover:text-white transition-all text-gray-300">
+                                            <ChevronRight size={20} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </main>
+
+            {/* Modal */}
+            {showForm && (
+                <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-xl overflow-hidden animate-in fade-in zoom-in duration-300">
+                        <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="text-xl font-extrabold text-gray-800">Add Subject to Sem {activeSemester}</h3>
+                            <button onClick={() => setShowForm(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors font-bold text-gray-500">✕</button>
+                        </div>
+                        <form onSubmit={(e) => {
+                            // Update semester automatically before submit
+                            const newFormData = { ...formData, semester: activeSemester };
+                            setFormData(newFormData); // Async issue potentially with state, better handle in payload construction
+                            handleCreateSubject(e, activeSemester);
+                        }} className="p-8 space-y-5">
+
+                            <div className="grid grid-cols-3 gap-5">
+                                <div className="col-span-1">
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject Code</label>
+                                    <input required placeholder="e.g. CS101" className="w-full px-4 py-3 bg-gray-50 rounded-2xl font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-all" value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })} />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Subject Title</label>
+                                    <input required placeholder="e.g. Intro to AI" className="w-full px-4 py-3 bg-gray-50 rounded-2xl font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-all" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Short Description</label>
+                                <textarea required rows="3" placeholder="What is this subject about?" className="w-full px-4 py-3 bg-gray-50 rounded-2xl font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-all resize-none" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-5">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Credits</label>
+                                    <input required type="number" className="w-full px-4 py-3 bg-gray-50 rounded-2xl font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-100 transition-all" value={formData.credits} onChange={e => setFormData({ ...formData, credits: parseInt(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Semester</label>
+                                    <div className="w-full px-4 py-3 bg-gray-100 rounded-2xl font-bold text-gray-500 cursor-not-allowed">
+                                        Semester {activeSemester}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-4">
+                                <button type="submit" className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all">
+                                    Create Subject
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
