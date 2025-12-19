@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Book, Clock, Edit3, ArrowRight, Eye, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import AdminScreen from './AdminScreen';
+import FacultyScreen from './FacultyScreen';
+import AdminDashboard from './AdminDashboard';
+
+// ...
+// --- ADMIN PORTAL VIEW ---
+// ...
 
 const CourseCard = ({ _id, title, code, credits, color, icon: Icon, description, role }) => {
     const colorClasses = {
@@ -95,7 +100,12 @@ const Dashboard = () => {
 
     // --- ADMIN PORTAL VIEW ---
     if (role === 'admin') {
-        return <AdminScreen />;
+        return <AdminDashboard />;
+    }
+
+    // --- FACULTY PORTAL VIEW ---
+    if (role === 'teacher' || role === 'faculty') {
+        return <FacultyScreen />;
     }
 
     return (
