@@ -1,10 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const curriculumController = require('../controllers/curriculum-controller');
+const auth = require('../middleware/AuthMiddleware');
 
 router.get('/', curriculumController.getAllCurricula);
-router.get('/seed', curriculumController.seedCurriculum); // Dev only
+router.get('/seed', curriculumController.seedCurriculum);
+
+// New Routes
+router.get('/course/:courseId', curriculumController.getSubjectsByCourse);
+
 router.get('/:id', curriculumController.getCurriculumById);
-router.post('/', curriculumController.createCurriculum);
+router.post('/', auth, curriculumController.createSubject);
+router.put('/:id', auth, curriculumController.updateSubjectDirectly);
 
 module.exports = router;
