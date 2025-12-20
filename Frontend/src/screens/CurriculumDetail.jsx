@@ -3,70 +3,70 @@ import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Dow
 import { Link, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const UnitCard = ({ unitNumber, title, topics, hours, role, onEdit, onAddTopic, onRemoveTopic }) => {
     const [isOpen, setIsOpen] = useState(false); // Default to closed for cleaner look if many units
 
     return (
-        <div className="bg-white rounded-[1.5rem] p-1 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 mb-4 overflow-hidden">
+        <div className="bg-white rounded-[2rem] p-1 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 mb-4 overflow-hidden group">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full flex justify-between items-center p-5 text-left transition-colors ${isOpen ? 'bg-accent-blue/5' : 'bg-white hover:bg-gray-50'} rounded-[1.5rem]`}
+                className={`w-full flex justify-between items-center p-6 text-left transition-colors ${isOpen ? 'bg-accent-blue/5' : 'bg-white group-hover:bg-gray-50'} rounded-[1.8rem]`}
             >
-                <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg transition-colors ${isOpen ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/30' : 'bg-accent-peach/10 text-accent-peach'
+                <div className="flex items-center gap-5">
+                    <div className={`shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-xl transition-all ${isOpen ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/30 scale-110' : 'bg-accent-blue/10 text-accent-blue'
                         }`}>
                         {unitNumber}
                     </div>
                     <div>
-                        <h3 className={`text-lg font-bold transition-colors ${isOpen ? 'text-accent-blue' : 'text-primary'} flex items-center gap-2`}>
+                        <h3 className={`text-xl font-bold transition-colors ${isOpen ? 'text-accent-blue' : 'text-primary'} flex items-center gap-3`}>
                             {title}
                             {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
                                 <span
                                     onClick={(e) => { e.stopPropagation(); onEdit(); }}
-                                    className="p-1 rounded-full hover:bg-blue-100 text-gray-300 hover:text-accent-blue transition-colors cursor-pointer"
+                                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-100 text-gray-300 hover:text-accent-blue transition-colors cursor-pointer"
                                     title="Edit Unit"
                                 >
                                     <Edit2 size={14} />
                                 </span>
                             )}
                         </h3>
-                        <p className="text-secondary text-xs font-bold flex items-center gap-1 mt-1">
+                        <p className="text-secondary text-xs font-bold flex items-center gap-1 mt-1.5 uppercase tracking-wide">
                             <Clock size={12} /> {hours} Hours
                         </p>
                     </div>
                 </div>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isOpen ? 'bg-white text-accent-blue rotate-180' : 'bg-gray-100 text-secondary'}`}>
-                    <ChevronDown size={16} />
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all bg-white shadow-sm border border-gray-100 ${isOpen ? 'text-accent-blue rotate-180 border-accent-blue/20' : 'text-gray-400'}`}>
+                    <ChevronDown size={20} />
                 </div>
             </button>
 
             {isOpen && (
-                <div className="p-6 pt-2 pl-20 animate-in slide-in-from-top-4 duration-300">
-                    <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-bold text-secondary uppercase tracking-wider">Topics Covered</h4>
+                <div className="p-8 pt-2 pl-[5.5rem] animate-in slide-in-from-top-4 duration-300">
+                    <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
+                        <h4 className="text-xs font-black text-secondary/50 uppercase tracking-widest">Topics Covered</h4>
                         {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
                             <button
                                 onClick={onAddTopic}
-                                className="text-accent-blue hover:bg-blue-50 px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 transition-colors"
+                                className="text-accent-blue hover:bg-blue-50 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 transition-colors"
                             >
-                                <Plus size={12} /> Add Topic
+                                <Plus size={14} /> Add Topic
                             </button>
                         )}
                     </div>
-                    <ul className="space-y-3">
+                    <ul className="space-y-4">
                         {topics.map((topic, idx) => (
-                            <li key={idx} className="flex items-start gap-3 group">
-                                <div className="mt-1.5 w-2 h-2 rounded-full bg-accent-blue/40 group-hover:bg-accent-blue group-hover:scale-125 transition-all shrink-0"></div>
-                                <span className="font-medium text-primary/80 text-sm leading-relaxed group-hover:text-primary transition-colors flex-1">{topic}</span>
+                            <li key={idx} className="flex items-start gap-4 group/topic relative">
+                                <div className="mt-2 w-1.5 h-1.5 rounded-full bg-accent-blue/40 group-hover/topic:bg-accent-blue group-hover/topic:scale-150 transition-all shrink-0"></div>
+                                <span className="font-medium text-primary/80 text-base leading-relaxed group-hover/topic:text-primary transition-colors flex-1">{topic}</span>
                                 {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
                                     <button
                                         onClick={() => onRemoveTopic(topic)}
-                                        className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                                        className="absolute -right-2 top-0 p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover/topic:opacity-100 transition-all"
                                         title="Remove Topic"
                                     >
-                                        <Trash2 size={14} />
+                                        <Trash2 size={16} />
                                     </button>
                                 )}
                             </li>
@@ -186,7 +186,7 @@ const CurriculumDetail = () => {
             doc.text("Course Outcomes", 14, 80);
 
             const outcomesData = course.courseOutcomes.map(co => [co]);
-            doc.autoTable({
+            autoTable(doc, {
                 startY: 85,
                 body: outcomesData,
                 theme: 'plain',
@@ -207,7 +207,7 @@ const CurriculumDetail = () => {
             tableData.push([`Unit ${unit.unitNumber}: ${unit.title} (${unit.hours} Hrs)`, topicsFormatted]);
         });
 
-        doc.autoTable({
+        autoTable(doc, {
             startY: startY + 5,
             head: [['Unit Title', 'Topics Covered']],
             body: tableData,
@@ -246,10 +246,13 @@ const CurriculumDetail = () => {
             </Link>
 
             {/* Header */}
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 mb-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-accent-blue/10 rounded-full blur-3xl translate-x-1/3 -translate-y-1/2"></div>
+            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 mb-8 relative">
+                {/* Decorative Background - Clipped */}
+                <div className="absolute inset-0 overflow-hidden rounded-[2.5rem]">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent-blue/10 rounded-full blur-3xl translate-x-1/3 -translate-y-1/2"></div>
+                </div>
 
-                <div className="relative">
+                <div className="relative z-10">
                     <div className="flex flex-wrap gap-3 mb-4">
                         <span className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-accent-blue shadow-lg shadow-accent-blue/30">
                             {course.code}
@@ -306,7 +309,7 @@ const CurriculumDetail = () => {
                                 </button>
 
                                 {showNotifications && (
-                                    <div className="absolute left-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in slide-in-from-top-2">
+                                    <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in slide-in-from-top-2">
                                         <h4 className="font-bold text-primary mb-3">Notifications</h4>
                                         <div className="space-y-2 max-h-64 overflow-y-auto">
                                             {myRequests.filter(r => r.status !== 'pending').map(req => (
@@ -327,130 +330,157 @@ const CurriculumDetail = () => {
 
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Main Content */}
-                <div className="flex-1">
-                    {/* Units */}
-                    <div className="flex items-center justify-between mb-6 pl-2">
-                        <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-                            <BookOpen className="text-accent-peach" /> Course Units
-                        </h2>
-                        <span className="text-sm font-bold text-secondary/70">{course.units?.length || 0} Units Total</span>
-                    </div>
-
-                    <div className="space-y-4">
-                        {course.units && course.units.length > 0 ? (
-                            course.units.map((unit, idx) => (
-                                <UnitCard
-                                    key={idx}
-                                    unitNumber={unit.unitNumber || idx + 1}
-                                    {...unit}
-                                    role={role}
-                                    onEdit={() => {
-                                        setRequestData({ type: 'Update Unit', unitNumber: unit.unitNumber, unitTitle: unit.title, unitHours: unit.hours, justification: '', proposedChanges: '' });
-                                        setShowRequestModal(true);
-                                    }}
-                                    onAddTopic={() => {
-                                        setRequestData({ type: 'Add Topic', unitNumber: unit.unitNumber, newTopic: '', justification: '', proposedChanges: '' });
-                                        setShowRequestModal(true);
-                                    }}
-                                    onRemoveTopic={(topic) => {
-                                        setRequestData({ type: 'Remove Topic', unitNumber: unit.unitNumber, newTopic: topic, justification: '', proposedChanges: '' });
-                                        setShowRequestModal(true);
-                                    }}
-                                />
-                            ))
-                        ) : (
-                            <div className="p-8 text-center bg-white rounded-3xl border border-dashed border-gray-300">
-                                <p className="text-secondary font-bold">No units defined yet.</p>
-                            </div>
-                        )}
-
-                        {/* Add Unit Button */}
-                        {course.isLatest && (role === 'teacher' || role === 'faculty' || role === 'admin') && (
-                            <button
-                                onClick={() => {
-                                    setRequestData({
-                                        type: 'Add Unit',
-                                        unitNumber: (course.units?.length || 0) + 1,
-                                        unitTitle: '',
-                                        unitHours: '',
-                                        justification: '',
-                                        proposedChanges: ''
-                                    });
-                                    setShowRequestModal(true);
-                                }}
-                                className="w-full py-4 mt-6 rounded-[1.5rem] border-2 border-dashed border-gray-200 text-secondary font-bold hover:border-accent-blue hover:text-accent-blue hover:bg-accent-blue/5 transition-all flex items-center justify-center gap-2"
-                            >
-                                <Plus size={20} /> Add New Unit
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Sidebar - Version History */}
-                <div className="w-full md:w-80 shrink-0">
-                    <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5 sticky top-6">
-                        <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                            <Clock size={20} className="text-accent-blue" />
-                            Version History
-                        </h3>
-                        {history.length > 0 ? (
-                            <div className="space-y-4 relative">
-                                {/* Timeline Line */}
-                                <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-gray-100"></div>
-
-                                {history.map((ver) => (
-                                    <div key={ver._id} className="relative z-10 pl-10">
-                                        <div className={`absolute left-2 top-2 w-3.5 h-3.5 rounded-full border-2 ${ver._id === course._id ? 'bg-accent-blue border-white shadow-md' : 'bg-gray-200 border-white'}`}></div>
-
-                                        <Link to={`/curriculum/${ver._id}`} className={`block p-3 rounded-xl transition-all ${ver._id === course._id ? 'bg-accent-blue/5 border border-accent-blue/20' : 'hover:bg-gray-50'}`}>
-                                            <div className="flex justify-between items-center mb-1">
-                                                <span className={`text-sm font-bold ${ver._id === course._id ? 'text-accent-blue' : 'text-primary'}`}>
-                                                    Version {ver.version}.0
-                                                </span>
-                                                {ver.isLatest && <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase">Latest</span>}
-                                            </div>
-                                            <p className="text-xs text-secondary font-medium mb-1">
-                                                {ver.publishedAt ? new Date(ver.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Draft'}
-                                            </p>
-                                            {ver.updateLog && <p className="text-xs text-secondary/70 italic line-clamp-1">"{ver.updateLog}"</p>}
-                                        </Link>
+                {/* Main Content */}
+                <div className="flex-1 space-y-8">
+                    {/* Course Outcomes Section */}
+                    {course.courseOutcomes && course.courseOutcomes.length > 0 && (
+                        <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-black/5">
+                            <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                    <CheckCircle size={20} />
+                                </div>
+                                Course Outcomes
+                            </h2>
+                            <div className="grid grid-cols-1 gap-4">
+                                {course.courseOutcomes.map((co, idx) => (
+                                    <div key={idx} className="flex gap-4 p-5 rounded-2xl bg-emerald-50/30 border border-emerald-100/50 hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
+                                        <span className="font-black text-emerald-900/10 text-2xl group-hover:text-emerald-500/20 transition-colors">0{idx + 1}</span>
+                                        <p className="text-primary/80 font-medium leading-relaxed pt-1">{co}</p>
                                     </div>
                                 ))}
-                            </div>
-                        ) : (
-                            <p className="text-secondary text-sm">No history available.</p>
-                        )}
-                    </div>
-
-                    {/* My Requests Section */}
-                    {(role === 'teacher' || role === 'faculty') && (
-                        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5 mt-6 sticky top-[400px]">
-                            <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                                <FileText size={20} className="text-accent-peach" />
-                                My Pending Requests
-                            </h3>
-                            <div className="space-y-3">
-                                {filteredRequests.length > 0 ? (
-                                    filteredRequests.map(req => (
-                                        <div key={req._id} className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                            <div className="flex justify-between items-start mb-1">
-                                                <span className="text-xs font-bold text-primary line-clamp-1">{req.requestType}</span>
-                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${req.status === 'approved' ? 'bg-green-100 text-green-700' :
-                                                        req.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                                                    }`}>
-                                                    {req.status}
-                                                </span>
-                                            </div>
-                                            <p className="text-xs text-secondary/70 line-clamp-2">"{req.justification}"</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className="text-secondary text-sm">No active requests for this course.</p>
-                                )}
                             </div>
                         </div>
                     )}
 
+                    {/* Units */}
+                    <div>
+                        <div className="flex items-center justify-between mb-6 pl-2">
+                            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
+                                <BookOpen className="text-accent-peach" /> Course Units
+                            </h2>
+                            <span className="text-sm font-bold text-secondary/70">{course.units?.length || 0} Units Total</span>
+                        </div>
+
+                        <div className="space-y-4">
+                            {course.units && course.units.length > 0 ? (
+                                course.units.map((unit, idx) => (
+                                    <UnitCard
+                                        key={idx}
+                                        unitNumber={unit.unitNumber || idx + 1}
+                                        {...unit}
+                                        role={role}
+                                        onEdit={() => {
+                                            setRequestData({ type: 'Update Unit', unitNumber: unit.unitNumber, unitTitle: unit.title, unitHours: unit.hours, justification: '', proposedChanges: '' });
+                                            setShowRequestModal(true);
+                                        }}
+                                        onAddTopic={() => {
+                                            setRequestData({ type: 'Add Topic', unitNumber: unit.unitNumber, newTopic: '', justification: '', proposedChanges: '' });
+                                            setShowRequestModal(true);
+                                        }}
+                                        onRemoveTopic={(topic) => {
+                                            setRequestData({ type: 'Remove Topic', unitNumber: unit.unitNumber, newTopic: topic, justification: '', proposedChanges: '' });
+                                            setShowRequestModal(true);
+                                        }}
+                                    />
+                                ))
+                            ) : (
+                                <div className="p-12 text-center bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-200">
+                                    <p className="text-secondary font-bold text-lg">No units defined yet.</p>
+                                </div>
+                            )}
+
+                            {/* Add Unit Button */}
+                            {course.isLatest && (role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                                <button
+                                    onClick={() => {
+                                        setRequestData({
+                                            type: 'Add Unit',
+                                            unitNumber: (course.units?.length || 0) + 1,
+                                            unitTitle: '',
+                                            unitHours: '',
+                                            justification: '',
+                                            proposedChanges: ''
+                                        });
+                                        setShowRequestModal(true);
+                                    }}
+                                    className="w-full py-5 mt-6 rounded-[2rem] border-2 border-dashed border-gray-200 text-secondary font-bold hover:border-accent-blue hover:text-accent-blue hover:bg-accent-blue/5 transition-all flex items-center justify-center gap-2 group"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 group-hover:bg-accent-blue group-hover:text-white flex items-center justify-center transition-colors">
+                                        <Plus size={16} />
+                                    </div>
+                                    Add New Unit
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sidebar - Sticky Container */}
+                <div className="w-full md:w-80 shrink-0">
+                    <div className="sticky top-8 space-y-6">
+                        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+                            <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                                <Clock size={20} className="text-accent-blue" />
+                                Version History
+                            </h3>
+                            {history.length > 0 ? (
+                                <div className="space-y-4 relative">
+                                    {/* Timeline Line */}
+                                    <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-gray-100"></div>
+
+                                    {history.map((ver) => (
+                                        <div key={ver._id} className="relative z-10 pl-10">
+                                            <div className={`absolute left-2 top-2 w-3.5 h-3.5 rounded-full border-2 ${ver._id === course._id ? 'bg-accent-blue border-white shadow-md ring-2 ring-accent-blue/20' : 'bg-gray-200 border-white'}`}></div>
+
+                                            <Link to={`/curriculum/${ver._id}`} className={`block p-3 rounded-xl transition-all ${ver._id === course._id ? 'bg-accent-blue/5 border border-accent-blue/20' : 'hover:bg-gray-50'}`}>
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className={`text-sm font-bold ${ver._id === course._id ? 'text-accent-blue' : 'text-primary'}`}>
+                                                        Version {ver.version}.0
+                                                    </span>
+                                                    {ver.isLatest && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase tracking-wide">Latest</span>}
+                                                </div>
+                                                <p className="text-xs text-secondary font-medium mb-1">
+                                                    {ver.publishedAt ? new Date(ver.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Draft'}
+                                                </p>
+                                                {ver.updateLog && <p className="text-xs text-secondary/70 italic line-clamp-1">"{ver.updateLog}"</p>}
+                                            </Link>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-secondary text-sm">No history available.</p>
+                            )}
+                        </div>
+
+                        {/* My Requests Section */}
+                        {(role === 'teacher' || role === 'faculty') && (
+                            <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+                                <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                                    <FileText size={20} className="text-accent-peach" />
+                                    My Pending Requests
+                                </h3>
+                                <div className="space-y-3">
+                                    {filteredRequests.length > 0 ? (
+                                        filteredRequests.map(req => (
+                                            <div key={req._id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="text-xs font-black text-primary line-clamp-1 uppercase tracking-wide">{req.requestType}</span>
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${req.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                                        req.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                                                        }`}>
+                                                        {req.status}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-secondary/80 line-clamp-2 leading-relaxed">"{req.justification}"</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-secondary text-sm text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">No active requests.</p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, Clock, Bell, FileText, CheckCircle } from 'lucide-react';
+import { BookOpen, Users, Clock, Bell, FileText, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../utils/api';
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
@@ -15,15 +15,52 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
     </div>
 );
 
-const NotificationItem = ({ title, time, type }) => (
-    <div className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-colors border-b border-gray-50 last:border-0 cursor-pointer group">
-        <div className={`mt-1 w-2 h-2 rounded-full ${type === 'urgent' ? 'bg-red-500' : 'bg-blue-500'}`}></div>
-        <div>
-            <h4 className="font-bold text-gray-800 text-sm group-hover:text-blue-600 transition-colors">{title}</h4>
-            <span className="text-xs text-gray-400 font-medium">{time}</span>
+const NotificationItem = ({ request }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    // Determine status color and label
+    const isPending = request.status === 'pending';
+    const isApproved = request.status === 'approved';
+    const colorClass = isPending ? 'bg-red-500' : (isApproved ? 'bg-blue-500' : 'bg-gray-400');
+    const title = `Request ${request.status}: ${request.courseId?.code || 'Course'}`;
+    const date = new Date(request.createdAt).toLocaleDateString();
+
+    return (
+        <div className="border-b border-gray-50 last:border-0 transition-all duration-300">
+            <div
+                onClick={() => setExpanded(!expanded)}
+                className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl transition-colors cursor-pointer group select-none"
+            >
+                <div className={`shrink-0 w-2.5 h-2.5 rounded-full ${colorClass}`}></div>
+                <div className="flex-1">
+                    <h4 className="font-bold text-gray-800 text-sm group-hover:text-blue-600 transition-colors">
+                        {title}
+                    </h4>
+                    <span className="text-xs text-gray-400 font-medium">{date}</span>
+                </div>
+                <div className="text-gray-300 group-hover:text-blue-500 transition-colors">
+                    {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </div>
+            </div>
+
+            {/* Accordion Content */}
+            {expanded && (
+                <div className="px-10 pb-4 text-xs text-gray-500 space-y-2 animate-in slide-in-from-top-2 fade-in duration-200">
+                    <p><span className="font-semibold text-gray-700">Type:</span> {request.requestType}</p>
+                    {request.justification && (
+                        <p className="leading-relaxed"><span className="font-semibold text-gray-700">Reason:</span> {request.justification}</p>
+                    )}
+                    {request.reviewComments && (
+                        <div className="bg-gray-50 p-3 rounded-xl mt-2 italic text-gray-600 border border-gray-100 shadow-sm relative">
+                            <span className="absolute top-2 left-2 text-2xl text-gray-200 leading-none">"</span>
+                            <span className="relative z-10 pl-2">{request.reviewComments}</span>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
-    </div>
-);
+    );
+};
 
 const FacultyDashboard = () => {
     const navigate = useNavigate();
@@ -48,20 +85,14 @@ const FacultyDashboard = () => {
                 const courses = courseRes.data;
 
                 setStats({
-                    myCourses: courses.length, // Simplified: Showing all available courses
+                    myCourses: courses.length,
                     pendingReviews: requests.filter(r => r.status === 'pending').length,
                     approvedUpdates: requests.filter(r => r.status === 'approved').length,
                     totalStudents: 128
                 });
 
-                // Generate notifications from recent requests
-                const recentOne = requests.slice(0, 5).map(r => ({
-                    id: r._id,
-                    title: `Request ${r.status}: ${r.courseId?.code || 'Course'}`,
-                    time: new Date(r.createdAt).toLocaleDateString(),
-                    type: r.status === 'pending' ? 'urgent' : 'normal'
-                }));
-                setNotifications(recentOne);
+                // Set recent notifications (Top 5)
+                setNotifications(requests.slice(0, 5));
 
             } catch (error) {
                 console.error("Failed to load faculty data", error);
@@ -110,12 +141,12 @@ const FacultyDashboard = () => {
                             <Bell size={16} />
                         </button>
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-1 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                         {loading ? (
                             <p className="text-sm text-center text-gray-400 py-4">Loading updates...</p>
                         ) : notifications.length > 0 ? (
                             notifications.map(n => (
-                                <NotificationItem key={n.id} title={n.title} time={n.time} type={n.type} />
+                                <NotificationItem key={n._id} request={n} />
                             ))
                         ) : (
                             <p className="text-sm text-center text-gray-400 py-4">No recent updates.</p>

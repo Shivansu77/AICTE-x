@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { User, Lock, Bell, Save, Shield, Mail, Upload, Camera, MapPin, Briefcase, BookOpen } from 'lucide-react';
 import api from '../utils/api';
 

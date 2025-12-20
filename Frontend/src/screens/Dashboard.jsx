@@ -54,12 +54,12 @@ const CourseCard = ({ _id, title, code, credits, color, icon: Icon, description,
 
                 {/* Only Faculty can see Manage button */}
                 {(role === 'teacher' || role === 'faculty') && (
-                    <button
-                        onClick={() => alert(`Manage feature for ${code} coming soon!`)}
+                    <Link
+                        to={`/curriculum/${_id}`}
                         className={`flex-1 py-3 px-6 rounded-full ${bgClass} text-white font-bold text-sm shadow-md hover:shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95`}
                     >
                         <Edit3 size={16} /> Manage
-                    </button>
+                    </Link>
                 )}
             </div>
         </div>
@@ -69,6 +69,7 @@ const CourseCard = ({ _id, title, code, credits, color, icon: Icon, description,
 const Dashboard = () => {
     const [curricula, setCurricula] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeFilter, setActiveFilter] = useState("All Semesters");
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const role = user.role || 'student'; // Default to student
@@ -155,24 +156,28 @@ const Dashboard = () => {
                 </div>
 
                 {/* Filtering Pills */}
-                <div className="flex gap-4 overflow-x-auto pb-4">
-                    {["All Semesters", "Semester 3", "Semester 4", "Semester 5"].map((label, idx) => (
-                        <button
-                            key={label}
-                            className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${idx === 0
-                                ? "bg-accent-peach text-white shadow-md"
-                                : "bg-white text-secondary hover:bg-white/80"
-                                }`}
-                        >
-                            {label}
-                        </button>
-                    ))}
+                <div className="flex items-center justify-between gap-4 mb-6">
+                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                        {["All Semesters", "Semester 3", "Semester 4", "Semester 5"].map((label, idx) => (
+                            <button
+                                key={label}
+                                onClick={() => setActiveFilter(label)}
+                                className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${activeFilter === label
+                                        ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
+                                        : "bg-white text-secondary hover:bg-white/80 border border-gray-100"
+                                    }`}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+
                     <button
                         onClick={async () => {
                             await api.get('/api/curriculum/seed');
                             window.location.reload();
                         }}
-                        className="px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20"
+                        className="px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors shrink-0"
                     >
                         Reset/Seed Data
                     </button>
@@ -181,9 +186,11 @@ const Dashboard = () => {
                 {/* Course Grid */}
                 {curricula.length > 0 ? (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                        {curricula.map((course) => (
-                            <CourseCard key={course._id || course.code} {...course} icon={Book} role={role} />
-                        ))}
+                        {curricula
+                            .filter(c => activeFilter === "All Semesters" || `Semester ${c.semester}` === activeFilter)
+                            .map((course) => (
+                                <CourseCard key={course._id || course.code} {...course} icon={Book} role={role} />
+                            ))}
                     </div>
                 ) : (
                     <div className="text-center py-20">
