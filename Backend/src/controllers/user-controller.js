@@ -122,11 +122,48 @@ const getUsersByRole = async (req, res) => {
     }
 };
 
+// Update user profile
+const updateProfile = async (req, res) => {
+    try {
+        const { firstName, lastName, avatar, college, department, designation, location, bio } = req.body;
+
+        // Build update object
+        const updateFields = {};
+        if (firstName) updateFields.firstName = firstName;
+        if (lastName) updateFields.lastName = lastName;
+        if (avatar !== undefined) updateFields.avatar = avatar;
+        if (college !== undefined) updateFields.college = college;
+        if (department !== undefined) updateFields.department = department;
+        if (designation !== undefined) updateFields.designation = designation;
+        if (location !== undefined) updateFields.location = location;
+        if (bio !== undefined) updateFields.bio = bio;
+
+        const user = await User.findByIdAndUpdate(
+            req.user.userId,
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({
+            message: 'Profile updated successfully',
+            user
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
     getUserInfo,
     getAllStudents,
     getAllTeachers,
-    getUsersByRole
+    getUsersByRole,
+    updateProfile
 };

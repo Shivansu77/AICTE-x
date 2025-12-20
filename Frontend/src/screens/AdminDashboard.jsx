@@ -14,7 +14,7 @@ const StatCard = ({ title, value, color, icon: Icon, onClick }) => (
     </div>
 );
 
-const RequestItem = ({ title, requestedBy, type, date }) => (
+const RequestItem = ({ title, requestedBy, type, date, onApprove, onReject, onViewDetails }) => (
     <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5 hover:bg-gray-50 transition-colors">
         <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded-full bg-accent-yellow/20 flex items-center justify-center text-accent-yellow font-bold">
@@ -26,18 +26,105 @@ const RequestItem = ({ title, requestedBy, type, date }) => (
             </div>
         </div>
         <div className="flex gap-2">
-            <button className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 transition-colors" title="Approve">
+            <button onClick={onApprove} className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center hover:bg-green-200 transition-colors" title="Approve">
                 <CheckCircle size={18} />
             </button>
-            <button className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors" title="Reject">
+            <button onClick={onReject} className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center hover:bg-red-200 transition-colors" title="Reject">
                 <XCircle size={18} />
             </button>
-            <button className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors" title="View Details">
+            <button onClick={onViewDetails} className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center hover:bg-blue-200 transition-colors" title="View Details">
                 <FileText size={18} />
             </button>
         </div>
     </div>
 );
+
+const RequestDetailsModal = ({ request, onClose, onApprove, onReject }) => {
+    if (!request) return null;
+    const { proposedChanges } = request;
+
+    return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-8 py-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h3 className="text-xl font-extrabold text-primary">Review Request</h3>
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors font-bold">
+                        X
+                    </button>
+                </div>
+                <div className="p-8 space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-secondary text-xs font-bold uppercase tracking-wider">Type</label>
+                            <p className="font-bold text-lg text-primary">{request.requestType}</p>
+                        </div>
+                        <div>
+                            <label className="text-secondary text-xs font-bold uppercase tracking-wider">Submitted By</label>
+                            <p className="text-primary font-medium">{request.facultyId?.firstName} {request.facultyId?.lastName}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="text-secondary text-xs font-bold uppercase tracking-wider">Justification</label>
+                        <p className="text-primary p-4 bg-gray-50 rounded-2xl mt-2 text-sm leading-relaxed border border-gray-100">{request.justification}</p>
+                    </div>
+
+                    {/* Dynamic Details based on Type */}
+                    <div className="bg-accent-blue/5 p-5 rounded-2xl border border-accent-blue/10">
+                        <label className="text-accent-blue text-xs font-bold uppercase mb-3 block tracking-wider">Proposed Changes</label>
+                        {(request.requestType === 'Add Unit' || request.requestType === 'Update Unit') ? (
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between border-b border-accent-blue/10 pb-2">
+                                    <span className="text-secondary font-medium">Unit Number</span>
+                                    <b className="text-primary">{proposedChanges.unitNumber}</b>
+                                </div>
+                                <div className="flex justify-between border-b border-accent-blue/10 pb-2">
+                                    <span className="text-secondary font-medium">Hours</span>
+                                    <b className="text-primary">{proposedChanges.unitHours} Hrs</b>
+                                </div>
+                                <div>
+                                    <span className="text-secondary font-medium block mb-1">Unit Title</span>
+                                    <b className="text-primary text-base">{proposedChanges.unitTitle}</b>
+                                </div>
+                            </div>
+                        ) : request.requestType.includes('Topic') ? (
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between border-b border-accent-blue/10 pb-2">
+                                    <span className="text-secondary font-medium">Target Unit</span>
+                                    <b className="text-primary">Unit {proposedChanges.unitNumber}</b>
+                                </div>
+                                <div>
+                                    <span className="text-secondary font-medium block mb-1">Topic Name</span>
+                                    <b className="text-primary text-base">{proposedChanges.newTopic}</b>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-sm">
+                                <label className="text-secondary text-xs font-bold block mb-1">Description Update:</label>
+                                <p className="font-medium text-primary italic">"{proposedChanges.description}"</p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                        <button
+                            onClick={() => { onReject(); onClose(); }}
+                            className="flex-1 py-3 px-6 rounded-full bg-red-50 text-red-600 font-bold hover:bg-red-100 transition-colors"
+                        >
+                            Reject
+                        </button>
+                        <button
+                            onClick={() => { onApprove(); onClose(); }}
+                            className="flex-1 py-3 px-6 rounded-full bg-green-500 text-white font-bold hover:bg-green-600 shadow-lg shadow-green-500/30 transition-all hover:-translate-y-1"
+                        >
+                            Approve Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 import api from '../utils/api';
 
@@ -46,6 +133,7 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState({ courses: 0, faculty: 0, pending: 0 }); // Placeholder for now
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedRequest, setSelectedRequest] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -74,7 +162,20 @@ const AdminDashboard = () => {
         fetchData();
     }, []);
 
-    // ... rest of component ...
+    const handleAction = async (id, status) => {
+        try {
+            await api.put(`/api/requests/${id}/status`, { status });
+            // Refresh Data
+            const reqRes = await api.get('/api/requests/pending');
+            setRequests(reqRes.data);
+            setStats(prev => ({ ...prev, pending: reqRes.data.length }));
+            alert(`Request ${status} successfully!`);
+        } catch (error) {
+            console.error("Action failed", error);
+            alert("Failed to update status");
+        }
+    };
+
     return (
         <div className="space-y-8">
             {/* Stats Row */}
@@ -111,21 +212,33 @@ const AdminDashboard = () => {
                     ) : (
                         <div className="space-y-3">
                             {requests.map(req => (
-                                <RequestItem
-                                    key={req._id}
-                                    title={`${req.requestType}: ${req.curriculumId?.title || 'Unknown Subject'}`}
-                                    requestedBy={`Prof. ${req.facultyId?.firstName || 'Faculty'}`}
-                                    type={req.requestType === 'Add Topic' ? 'New' : 'Update'}
-                                    date={new Date(req.createdAt).toLocaleDateString()}
-                                />
+                                <div key={req._id}>
+                                    <RequestItem
+                                        title={`${req.requestType}: ${req.curriculumId?.title || 'Unknown Subject'}`}
+                                        requestedBy={`Prof. ${req.facultyId?.firstName || 'Faculty'}`}
+                                        type={req.requestType === 'Add Topic' ? 'New' : 'Update'}
+                                        date={new Date(req.createdAt).toLocaleDateString()}
+                                        onApprove={() => handleAction(req._id, 'approved')}
+                                        onReject={() => handleAction(req._id, 'rejected')}
+                                        onViewDetails={() => setSelectedRequest(req)}
+                                    />
+                                    {/* Override the View Details button behavior by passing a prop? or just cloning?
+                                        RequestItem is defined above. I need to modify RequestItem or pass a prop.
+                                        Let's Modify RequestItem definition in the file itself.
+                                        Actually, I am replacing the `AdminDashboard` component but `RequestItem` is defined outside.
+                                        I'll include `RequestItem` RE-DEFINITION inside this replacement block if I can replacing the whole file content?
+                                        NO, I am targeting AdminDashboard.
+                                        Wait, RequestItem definition is lines 17-40. AdminDashboard starts at 44.
+                                        But I can't easily edit RequestItem props in the Usage loop if RequestItem doesn't accept `onViewDetails`.
+                                        RequestItem defined accepts: `title, requestedBy, type, date, onApprove, onReject`.
+                                        Line 35 has a hardcoded button.
+                                        I should replace `RequestItem` definition too.
+                                     */}
+                                </div>
                             ))}
                         </div>
                     )}
                 </div>
-
-                {/* System Activity Placeholder... */}
-                {/* ... keep existing code ... */}
-
 
                 {/* System Activity / Recent Actions (Placeholder) */}
                 <div className="bg-accent-blue/5 p-6 rounded-[2.5rem] border-2 border-white flex flex-col items-center justify-center text-center">
@@ -139,6 +252,15 @@ const AdminDashboard = () => {
                     </button>
                 </div>
             </div>
+
+            {selectedRequest && (
+                <RequestDetailsModal
+                    request={selectedRequest}
+                    onClose={() => setSelectedRequest(null)}
+                    onApprove={() => handleAction(selectedRequest._id, 'approved')}
+                    onReject={() => handleAction(selectedRequest._id, 'rejected')}
+                />
+            )}
         </div>
     );
 };

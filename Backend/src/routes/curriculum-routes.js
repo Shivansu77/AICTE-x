@@ -8,6 +8,7 @@ router.get('/seed', curriculumController.seedCurriculum);
 
 // New Routes
 router.get('/course/:courseId', curriculumController.getSubjectsByCourse);
+router.get('/history/code/:code', auth, curriculumController.getCurriculumHistory);
 
 router.get('/:id', curriculumController.getCurriculumById);
 router.post('/', auth, curriculumController.createSubject);

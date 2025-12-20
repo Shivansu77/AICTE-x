@@ -49,7 +49,7 @@ const Layout = ({ children }) => {
         <div className="px-8 py-6 mb-8">
           <h1 className="text-3xl font-extrabold flex items-center gap-2">
             <span className="text-accent-peach">AICTE</span>
-            <span className="text-accent-blue">Portal</span>
+            <span className="text-accent-blue">Unified Portal</span>
           </h1>
         </div>
 

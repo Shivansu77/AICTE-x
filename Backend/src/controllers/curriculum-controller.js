@@ -65,6 +65,21 @@ exports.getSubjectById = async (req, res) => {
     }
 };
 
+// Get history of versions for a specific curriculum code
+exports.getCurriculumHistory = async (req, res) => {
+    try {
+        const { code } = req.params;
+        // Find all versions of this subject code
+        const history = await Curriculum.find({ code })
+            .select('title code version status publishedAt updatedAt updateLog isLatest')
+            .sort({ version: -1 }); // Newest first
+
+        res.status(200).json(history);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 // Create a new version (Update) - usually via Request Approval, but Admin can do directly
 exports.updateSubjectDirectly = async (req, res) => {
     try {
@@ -115,10 +130,12 @@ exports.seedCurriculum = async (req, res) => {
         // Find Courses (Assumes they exist or were seeded by course-controller)
         const cseCourse = await Course.findOne({ code: 'BTECH-CSE' });
         const aimlCourse = await Course.findOne({ code: 'BTECH-AIML' });
+        const eceCourse = await Course.findOne({ code: 'BTECH-ECE' });
 
         const newSubjects = [];
 
         if (cseCourse) {
+            // ... existing CSE logic ...
             newSubjects.push(
                 {
                     courseId: cseCourse._id,
@@ -184,11 +201,54 @@ exports.seedCurriculum = async (req, res) => {
             );
         }
 
+        if (eceCourse) {
+            newSubjects.push(
+                {
+                    courseId: eceCourse._id,
+                    title: "Digital Electronics",
+                    code: "EC-301",
+                    description: "Logic gates, combinational and sequential circuits.",
+                    credits: 4,
+                    semester: 3,
+                    units: [
+                        { title: "Logic Gates", unitNumber: 1, hours: 8, topics: ["AND, OR, NOT", "NAND/NOR"] },
+                        { title: "Combinational Circuits", unitNumber: 2, hours: 10, topics: ["Adders", "Multiplexers"] }
+                    ],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                },
+                {
+                    courseId: eceCourse._id,
+                    title: "Signals and Systems",
+                    code: "EC-302",
+                    description: "Analysis of continuous and discrete time signals.",
+                    credits: 3,
+                    semester: 3,
+                    units: [{ title: "Introduction", unitNumber: 1, hours: 6, topics: ["CT Signals", "DT Signals"] }],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                },
+                {
+                    courseId: eceCourse._id,
+                    title: "Microprocessors",
+                    code: "EC-401",
+                    description: "Architecture and programming of microprocessors.",
+                    credits: 4,
+                    semester: 4,
+                    units: [{ title: "8085 Architecture", unitNumber: 1, hours: 10, topics: ["Registers", "ALU"] }],
+                    version: 1, isLatest: true, isActive: true, status: 'approved'
+                }
+            );
+        }
+
+        // Get default admin for createdBy if no user logged in
+        const User = require('../models/User');
+        const adminUser = await User.findOne({ role: 'admin' });
+        const creatorId = req.user ? req.user.userId : (adminUser ? adminUser._id : null);
+
         let count = 0;
         for (const sub of newSubjects) {
             const exists = await Curriculum.findOne({ code: sub.code, courseId: sub.courseId });
             if (!exists) {
-                await new Curriculum({ ...sub, createdBy: req.user.userId }).save();
+                await new Curriculum({ ...sub, createdBy: creatorId }).save();
                 count++;
             }
         }

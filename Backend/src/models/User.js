@@ -33,18 +33,42 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  avatar: {
+    type: String,
+    default: ''
+  },
+  college: {
+    type: String,
+    default: ''
+  },
+  department: {
+    type: String, // Subject/Department
+    default: ''
+  },
+  designation: {
+    type: String,
+    default: ''
+  },
+  location: {
+    type: String,
+    default: ''
+  },
+  bio: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true
 });
 
-userSchema.pre('save', async function() {
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 12);
 });
 
 // Instance method to generate token
-userSchema.methods.generateToken = function() {
+userSchema.methods.generateToken = function () {
   const secret = process.env.CS_SECRET_KEY;
   if (!secret) {
     throw new Error('CS_SECRET_KEY environment variable is required');
@@ -57,27 +81,27 @@ userSchema.methods.generateToken = function() {
 };
 
 // Static method for login
-userSchema.statics.findByEmailAndPasswordForAuth = async function(email, password) {
+userSchema.statics.findByEmailAndPasswordForAuth = async function (email, password) {
   console.log('Login attempt for email:', email);
   const user = await this.findOne({ email });
   if (!user) {
     console.log('User not found for email:', email);
     throw new Error('Invalid credentials');
   }
-  
+
   console.log('User found, checking password...');
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     console.log('Password mismatch for user:', email);
     throw new Error('Invalid credentials');
   }
-  
+
   console.log('Login successful for user:', email);
   return user;
 };
 
 // Remove password from JSON output
-userSchema.methods.toJSON = function() {
+userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   return user;

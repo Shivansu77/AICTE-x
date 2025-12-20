@@ -33,7 +33,7 @@ const CurriculumSchema = new mongoose.Schema({
         title: { type: String, required: true },
         unitNumber: { type: Number, required: true },
         hours: { type: Number, required: true },
-        topics: [{ type: String }]
+        topics: [String]
     }],
 
     courseOutcomes: [{ type: String }], // COs
@@ -45,7 +45,8 @@ const CurriculumSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true }, // Active for current students
     parentVersionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Curriculum', default: null },
 
-    status: { type: String, enum: ['draft', 'pending', 'approved', 'rejected', 'archived'], default: 'draft' },
+    status: { type: String, enum: ['draft', 'pending_approval', 'approved', 'published', 'archived', 'deprecated'], default: 'draft' },
+    publishedAt: { type: Date },
 
     // Metadata
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

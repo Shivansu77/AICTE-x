@@ -12,6 +12,7 @@ import CourseDetail from './screens/CourseDetail';
 import FacultyCourseView from './screens/FacultyCourseView';
 
 import FacultyScreen from './screens/FacultyScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 // Layout Wrapper
 const AppLayout = () => (
@@ -48,7 +49,7 @@ function App() {
           {/* Faculty Routes */}
           <Route path="/faculty/course/:id" element={<FacultyCourseView />} />
 
-          <Route path="/settings" element={<div className="p-8 font-bold text-secondary">Settings Page Coming Soon</div>} />
+          <Route path="/settings" element={<SettingsScreen />} />
         </Route>
       </Routes>
     </Router>

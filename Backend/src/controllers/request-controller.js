@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const UpdateReq = require('../models/UpdateReq');
 const Curriculum = require('../models/Curriculum');
 const Course = require('../models/Course');
@@ -37,19 +39,120 @@ exports.getPendingRequests = async (req, res) => {
 };
 
 exports.updateRequestStatus = async (req, res) => {
+    const log = (msg) => {
+        try {
+            fs.appendFileSync(path.join(__dirname, '../../debug.log'), new Date().toISOString() + ' ' + msg + '\n');
+        } catch (e) { console.error(e); }
+    };
+
+    log(`Start updateRequestStatus: ${req.params.id} Status: ${req.body.status}`);
+
     try {
         const { status, adminRemarks } = req.body;
         const request = await UpdateReq.findById(req.params.id);
 
-        if (!request) return res.status(404).json({ message: 'Request not found' });
+        if (!request) {
+            log('Request not found');
+            return res.status(404).json({ message: 'Request not found' });
+        }
+
+        log(`Found Request: ${request._id}, Type: ${request.requestType}`);
 
         request.status = status;
         request.adminRemarks = adminRemarks;
         request.reviewedBy = req.user.userId;
 
+        log(`Reviewer: ${req.user.userId}`);
+
+        // If Approved, Trigger New Version Creation (Publishing)
+        if (status === 'approved') {
+            log('Status is approved. Fetching Curriculum: ' + request.curriculumId);
+            const oldSubject = await Curriculum.findById(request.curriculumId);
+
+            if (oldSubject) {
+                log('Found oldSubject: ' + oldSubject._id);
+                // Archive Old Version
+                oldSubject.isLatest = false;
+                oldSubject.status = 'archived';
+                await oldSubject.save();
+
+                // Prepare New Data
+                const newSubjectData = { ...oldSubject.toObject() };
+                delete newSubjectData._id;
+                delete newSubjectData.createdAt;
+                delete newSubjectData.updatedAt;
+
+                newSubjectData.version = oldSubject.version + 1;
+                newSubjectData.isLatest = true;
+                newSubjectData.status = 'published';
+                newSubjectData.publishedAt = new Date();
+                newSubjectData.parentVersionId = oldSubject._id;
+                newSubjectData.approvedBy = req.user.userId;
+                newSubjectData.updateLog = `[${request.requestType}] ${request.justification}`;
+
+                log('Prepared newSubjectData, applying changes...');
+
+                // APPLY PROPOSED CHANGES
+                const changes = request.proposedChanges || {};
+                log('Changes: ' + JSON.stringify(changes));
+
+                if (request.requestType === 'Update Content' && changes.description) {
+                    newSubjectData.description = changes.description;
+                }
+
+                if (request.requestType === 'Add Topic' && changes.unitNumber && changes.newTopic) {
+                    const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
+                    if (unitIndex !== -1) {
+                        newSubjectData.units[unitIndex].topics.push(changes.newTopic);
+                    }
+                }
+
+                if (request.requestType === 'Remove Topic' && changes.unitNumber && changes.newTopic) {
+                    const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
+                    if (unitIndex !== -1) {
+                        // Filter out the topic (exact match)
+                        newSubjectData.units[unitIndex].topics = newSubjectData.units[unitIndex].topics.filter(t => t !== changes.newTopic);
+                    }
+                }
+
+                if (request.requestType === 'Add Unit' && changes.unitNumber && changes.unitTitle) {
+                    const existingIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
+                    if (existingIndex === -1) {
+                        newSubjectData.units.push({
+                            title: changes.unitTitle,
+                            unitNumber: parseInt(changes.unitNumber),
+                            hours: parseInt(changes.unitHours) || 0,
+                            topics: []
+                        });
+                        // Sort units by unitNumber to keep curriculum organized
+                        newSubjectData.units.sort((a, b) => a.unitNumber - b.unitNumber);
+                    }
+                }
+
+                if (request.requestType === 'Update Unit' && changes.unitNumber) {
+                    const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
+                    if (unitIndex !== -1) {
+                        if (changes.unitTitle) newSubjectData.units[unitIndex].title = changes.unitTitle;
+                        if (changes.unitHours) newSubjectData.units[unitIndex].hours = parseInt(changes.unitHours);
+                    }
+                }
+
+                log('Saving newSubject...');
+                // Create and Save New Version
+                const newSubject = new Curriculum(newSubjectData);
+                await newSubject.save();
+                log('Saved newSubject');
+            } else {
+                log('Old Subject Not Found');
+            }
+        }
+
         await request.save();
+        log('Request saved');
         res.json(request);
     } catch (error) {
+        log('Exception: ' + error.stack);
+        console.error(error); // Log for debugging
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

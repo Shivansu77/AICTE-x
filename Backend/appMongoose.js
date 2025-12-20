@@ -12,10 +12,18 @@ const connectDB = async () => {
     try {
         const conn = await mongoose.connect(MONGO_URI);
         console.log('MongoDB Atlas Connected Successfully');
+
+        // Remove legacy unique index on code to allow versioning
+        try {
+            await mongoose.connection.collection('curriculums').dropIndex('code_1');
+            console.log('Dropped legacy unique index code_1');
+        } catch (e) {
+            // Index might not exist, which is fine
+        }
     } catch (error) {
         console.error('MongoDB Atlas Connection Error:', error.message);
         process.exit(1);
     }
 };
 
-module.exports =  connectDB;
+module.exports = connectDB;
