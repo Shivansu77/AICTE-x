@@ -1,6 +1,8 @@
+```javascript
 import React, { useState, useEffect } from 'react';
-import { Book, Plus, ArrowRight, User } from 'lucide-react';
+import { Book, Plus, ArrowRight, User, GraduationCap, Building2, Clock, Layers, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 const FacultyScreen = () => {
     const navigate = useNavigate();
@@ -8,16 +10,10 @@ const FacultyScreen = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch Master Courses to let faculty choose which one they teach
-        // In a real app, this might be filtered by what is assigned to them.
         const fetchCourses = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:8000/api/courses', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await response.json();
-                if (response.ok) setCourses(data);
+                const response = await api.get('/api/courses');
+                setCourses(response.data);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -27,62 +23,120 @@ const FacultyScreen = () => {
         fetchCourses();
     }, []);
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Loading your dashboard...</div>;
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center py-32 opacity-30 h-full">
+                <div className="w-16 h-16 border-4 border-accent-blue border-t-transparent rounded-full animate-spin mb-6"></div>
+                <p className="text-secondary font-black text-xl uppercase tracking-widest">Gathering Academic Programs</p>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Faculty Dashboard</h1>
-                    <p className="text-gray-500">Select a course program to view and request updates for subjects.</p>
-                </div>
-                <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                    <User size={14} /> Faculty Access
+        <div className="h-[calc(100vh-2rem)] flex flex-col max-w-7xl mx-auto px-4 md:px-8 relative">
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent-blue/5 rounded-full blur-3xl -z-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+
+            <div className="flex flex-col md:flex-row items-end justify-between mb-10 shrink-0 gap-6">
+                <div className="flex items-center gap-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-accent-blue to-cyan-500 rounded-[2.5rem] flex items-center justify-center text-white shadow-xl shadow-accent-blue/20 hover:scale-105 transition-transform">
+                        <User size={40} />
+                    </div>
+                    <div>
+                        <div className="px-3 py-1 bg-accent-blue/10 text-accent-blue rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-flex items-center gap-1.5 border border-accent-blue/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse"></span>
+                            Faculty Access
+                        </div>
+                        <h1 className="text-4xl font-black text-primary tracking-tight">Faculty Dashboard</h1>
+                        <p className="text-secondary font-medium text-lg">Select a program to manage curriculum updates</p>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {courses.map(course => (
-                    <div key={course._id} className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all">
-                        <div className="flex justify-between items-start mb-4">
-                            <span className="inline-block px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-semibold">
-                                {course.code}
-                            </span>
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">{course.title}</h3>
-                        <p className="text-sm text-gray-500 mb-6">{course.department}</p>
-
-                        <button
-                            onClick={() => navigate(`/faculty/course/${course._id}`)}
-                            className="w-full py-2.5 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+            <main className="flex-1 overflow-y-auto pb-10 custom-scrollbar pr-2 -mr-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {courses.map((course, idx) => (
+                        <div 
+                            key={course._id} 
+                            onClick={() => navigate(`/ faculty / course / ${ course._id } `)}
+                            className="group bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:shadow-accent-blue/10 transition-all duration-500 cursor-pointer relative overflow-hidden border border-gray-100 hover:border-accent-blue/20"
                         >
-                            View Curriculum <ArrowRight size={16} />
+                            <div className="relative z-10">
+                                <div className="flex justify-between items-start mb-8">
+                                    <div className={`px - 4 py - 1.5 rounded - full text - [10px] font - black uppercase tracking - widest shadow - sm border ${
+    idx % 3 === 0 ? 'bg-blue-50 text-blue-600 border-blue-100' :
+        idx % 3 === 1 ? 'bg-orange-50 text-orange-600 border-orange-100' :
+            'bg-emerald-50 text-emerald-600 border-emerald-100'
+} `}>
+                                        {course.code}
+                                    </div>
+                                    <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-secondary opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all">
+                                        <ArrowRight size={18} />
+                                    </div>
+                                </div>
+
+                                <h3 className="text-2xl font-black text-primary leading-[1.2] mb-3 group-hover:text-accent-blue transition-colors">
+                                    {course.title}
+                                </h3>
+                                
+                                <div className="flex items-center gap-2 text-secondary font-bold text-xs mb-8">
+                                    <Building2 size={14} className="opacity-40" />
+                                    {course.department}
+                                </div>
+
+                                <div className="bg-gray-50/50 rounded-2xl p-5 flex items-center justify-between border border-gray-100/50 group-hover:bg-white group-hover:border-accent-blue/10 transition-all">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] uppercase font-black text-secondary tracking-widest opacity-50">Duration</p>
+                                        <div className="flex items-center gap-1.5 font-black text-primary">
+                                            <Clock size={12} className="text-accent-blue" />
+                                            <span>{course.durationYears} Years</span>
+                                        </div>
+                                    </div>
+                                    <div className="w-px h-8 bg-gray-200"></div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] uppercase font-black text-secondary tracking-widest opacity-50">Academic</p>
+                                        <div className="flex items-center gap-1.5 font-black text-primary text-right">
+                                            <Layers size={12} className="text-accent-peach" />
+                                            <span>{course.totalSemesters} Semesters</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    className="w-full mt-6 py-3.5 rounded-2xl bg-primary text-white font-black text-sm hover:shadow-xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center justify-center gap-2"
+                                >
+                                    View Curriculum <Zap size={16} className="text-accent-yellow" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {courses.length === 0 && (
+                    <div className="flex flex-col items-center justify-center p-24 bg-white rounded-[3rem] border-2 border-dashed border-gray-100 text-center">
+                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-8 text-secondary/20">
+                            <Book size={48} />
+                        </div>
+                        <h4 className="text-2xl font-black text-primary mb-2">No Active Programs</h4>
+                        <p className="text-secondary font-medium max-w-sm mb-8">There are no course programs available in the master registry yet.</p>
+                        
+                        <button
+                            onClick={async () => {
+                                try {
+                                    await api.post('/api/curriculum/seed');
+                                    window.location.reload();
+                                } catch (e) { console.error(e); }
+                            }}
+                            className="px-8 py-4 bg-primary text-white rounded-full font-black text-sm shadow-xl hover:shadow-2xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center gap-2"
+                        >
+                            <Plus size={20} /> Seed Demo Data
                         </button>
                     </div>
-                ))}
-            </div>
-
-            {courses.length === 0 && (
-                <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-300">
-                    <p className="text-gray-500 mb-4">No active course programs found.</p>
-                    <button
-                        onClick={async () => {
-                            try {
-                                const token = localStorage.getItem('token');
-                                await fetch('http://localhost:8000/api/curriculum/seed', {
-                                    headers: { 'Authorization': `Bearer ${token}` }
-                                });
-                                window.location.reload();
-                            } catch (e) { console.error(e); }
-                        }}
-                        className="px-6 py-2 bg-blue-100 text-blue-700 rounded-lg font-bold hover:bg-blue-200 transition-colors"
-                    >
-                        Seed Demo Data
-                    </button>
-                </div>
-            )}
+                )}
+            </main>
         </div>
     );
 };
 
 export default FacultyScreen;
+```
