@@ -21,6 +21,33 @@ const SettingsScreen = () => {
         bio: user.bio || '',
     });
 
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const { data } = await api.get('/user/profile');
+                setUser(data);
+                // Update local storage to keep it fresh
+                localStorage.setItem('user', JSON.stringify(data));
+
+                // Pre-fill form
+                setFormData({
+                    firstName: data.firstName || '',
+                    lastName: data.lastName || '',
+                    email: data.email || '',
+                    avatar: data.avatar || '',
+                    college: data.college || '',
+                    department: data.department || '',
+                    designation: data.designation || '',
+                    location: data.location || '',
+                    bio: data.bio || '',
+                });
+            } catch (error) {
+                console.error("Failed to fetch profile", error);
+            }
+        };
+        fetchProfile();
+    }, []);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };

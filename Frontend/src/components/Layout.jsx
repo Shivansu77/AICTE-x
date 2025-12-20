@@ -1,7 +1,8 @@
-import React from 'react';
-import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import api from '../utils/api';
 
 const SidebarItem = ({ icon: Icon, label, path, active }) => {
   return (
@@ -28,11 +29,28 @@ const Layout = ({ children }) => {
   const role = user.role || "Faculty";
   const name = user.firstName ? `Dr. ${user.lastName}` : "Faculty";
 
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/login');
   };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (role === 'teacher' || role === 'faculty') {
+        try {
+          const { data } = await api.get('/api/requests/my-requests');
+          setNotifications(data);
+        } catch (error) {
+          console.error("Failed to fetch notifications", error);
+        }
+      }
+    };
+    fetchNotifications();
+  }, [role, location.pathname]);
 
   const navItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
@@ -91,7 +109,7 @@ const Layout = ({ children }) => {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-peach/5 rounded-full blur-3xl -z-10 -translate-x-1/3 translate-y-1/3"></div>
 
         {/* Top Header */}
-        <header className="flex justify-between items-center mb-10 pl-4">
+        <header className="flex justify-between items-center mb-10 pl-4 z-20 relative">
           <div>
             <h2 className="text-4xl font-extrabold text-primary">
               {navItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
@@ -100,11 +118,53 @@ const Layout = ({ children }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-secondary hover:text-accent-blue transition-colors relative">
-              <Bell size={22} />
-              <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-accent-peach rounded-full border-2 border-white"></span>
-            </button>
-            <div className="flex items-center gap-3 bg-white px-5 py-2 rounded-full shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+            {/* Global Notification Bell */}
+            <div className="relative">
+              <button
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-secondary hover:text-accent-blue transition-colors relative"
+              >
+                <Bell size={22} />
+                {notifications.some(r => r.status !== 'pending') && (
+                  <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse"></span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 top-full mt-4 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 z-50 animate-in slide-in-from-top-4 origin-top-right">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-bold text-lg text-primary">Notifications</h4>
+                    <button onClick={() => setShowNotifications(false)} className="text-secondary hover:text-red-500"><X size={18} /></button>
+                  </div>
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {notifications.filter(r => r.status !== 'pending').length > 0 ? (
+                      notifications.filter(r => r.status !== 'pending').map(req => (
+                        <div key={req._id} className="p-4 bg-gray-50 rounded-xl border-l-4 border-l-accent-blue hover:bg-blue-50/50 transition-colors">
+                          <div className="flex justify-between items-start mb-1">
+                            <p className="text-sm font-bold text-primary">Request {req.status === 'approved' ? 'Approved' : 'Rejected'}</p>
+                            <span className="text-[10px] text-secondary">{new Date(req.updatedAt).toLocaleDateString()}</span>
+                          </div>
+                          <p className="text-xs text-secondary leading-relaxed">
+                            Your request to <b>{req.requestType}</b> has been <span className={`font-bold ${req.status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>{req.status}</span>.
+                          </p>
+                          {req.reviewComments && <p className="text-xs text-secondary/70 mt-2 italic">"{req.reviewComments}"</p>}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-secondary">
+                        <Bell size={40} className="mx-auto mb-2 opacity-20" />
+                        <p className="text-sm">No new notifications.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-3 bg-white px-5 py-2 rounded-full shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+            >
               <User size={20} className="text-secondary" />
               <span className="font-bold">Prof. Profile</span>
               <div className="w-6 h-6 bg-accent-green rounded-full flex items-center justify-center text-[10px] text-white font-bold ml-1">

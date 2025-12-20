@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Edit2, Trash2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Edit2, Trash2, Bell } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import jsPDF from 'jspdf';
@@ -90,6 +90,8 @@ const CurriculumDetail = () => {
     const role = user.role || 'student';
 
     const [history, setHistory] = useState([]);
+    const [myRequests, setMyRequests] = useState([]);
+    const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
         const fetchCourse = async () => {
@@ -102,6 +104,13 @@ const CurriculumDetail = () => {
                     const histRes = await api.get(`/api/curriculum/history/code/${response.data.code}`);
                     setHistory(histRes.data);
                 }
+
+                // Fetch Requests
+                if (role === 'teacher' || role === 'faculty') {
+                    const reqRes = await api.get('/api/requests/my-requests');
+                    setMyRequests(reqRes.data);
+                }
+
             } catch (err) {
                 console.error("Error fetching course details:", err);
                 setError(err.response?.data?.message || "Failed to load course details.");
@@ -134,6 +143,9 @@ const CurriculumDetail = () => {
             alert("Request submitted successfully!");
             setShowRequestModal(false);
             setRequestData({ type: 'Update Content', justification: '', proposedChanges: '', unitNumber: '', newTopic: '' });
+            // Refresh requests
+            const reqRes = await api.get('/api/requests/my-requests');
+            setMyRequests(reqRes.data);
         } catch (error) {
             console.error(error);
             alert(error.response?.data?.message || "Failed to submit request.");
@@ -222,6 +234,11 @@ const CurriculumDetail = () => {
     if (error) return <div className="flex items-center justify-center min-h-screen font-bold text-red-500">{error}</div>;
     if (!course) return <div className="flex items-center justify-center min-h-screen font-bold text-secondary">Course not found.</div>;
 
+    const filteredRequests = myRequests.filter(r =>
+        (r.courseId && course.courseId && r.courseId._id === course.courseId._id) || // If populate matches
+        (r.courseId === course.courseId) // If flat ID matches
+    );
+
     return (
         <div className="max-w-4xl mx-auto relative pb-20">
             <Link to={-1} className="inline-flex items-center gap-2 text-secondary font-bold mb-6 hover:text-accent-blue transition-colors">
@@ -259,7 +276,7 @@ const CurriculumDetail = () => {
                         {course.description}
                     </p>
 
-                    <div className="mt-8 flex flex-wrap gap-4">
+                    <div className="mt-8 flex flex-wrap gap-4 items-center">
                         <button
                             onClick={generatePDF}
                             className="bg-accent-blue text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-accent-blue/30 hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
@@ -275,6 +292,34 @@ const CurriculumDetail = () => {
                             >
                                 <Plus size={20} /> Request Update
                             </button>
+                        )}
+
+                        {/* Notification Bell */}
+                        {(role === 'teacher' || role === 'faculty') && (
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowNotifications(!showNotifications)}
+                                    className="bg-white text-secondary border-2 border-secondary/10 font-bold p-3 rounded-full hover:bg-gray-50 hover:border-secondary/30 transition-all active:scale-95 relative"
+                                >
+                                    <Bell size={20} />
+                                    {myRequests.some(r => r.status !== 'pending') && <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>}
+                                </button>
+
+                                {showNotifications && (
+                                    <div className="absolute left-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in slide-in-from-top-2">
+                                        <h4 className="font-bold text-primary mb-3">Notifications</h4>
+                                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                                            {myRequests.filter(r => r.status !== 'pending').map(req => (
+                                                <div key={req._id} className="p-3 bg-gray-50 rounded-xl border-l-4 border-l-accent-blue">
+                                                    <p className="text-xs font-bold text-primary mb-1">Request {req.status === 'approved' ? 'Approved' : 'Rejected'}</p>
+                                                    <p className="text-xs text-secondary">Your request for <b>{req.requestType}</b> was {req.status}.</p>
+                                                </div>
+                                            ))}
+                                            {myRequests.filter(r => r.status !== 'pending').length === 0 && <p className="text-xs text-secondary">No new notifications.</p>}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
@@ -376,6 +421,36 @@ const CurriculumDetail = () => {
                             <p className="text-secondary text-sm">No history available.</p>
                         )}
                     </div>
+
+                    {/* My Requests Section */}
+                    {(role === 'teacher' || role === 'faculty') && (
+                        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5 mt-6 sticky top-[400px]">
+                            <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                                <FileText size={20} className="text-accent-peach" />
+                                My Pending Requests
+                            </h3>
+                            <div className="space-y-3">
+                                {filteredRequests.length > 0 ? (
+                                    filteredRequests.map(req => (
+                                        <div key={req._id} className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="text-xs font-bold text-primary line-clamp-1">{req.requestType}</span>
+                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${req.status === 'approved' ? 'bg-green-100 text-green-700' :
+                                                        req.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                                                    }`}>
+                                                    {req.status}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-secondary/70 line-clamp-2">"{req.justification}"</p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-secondary text-sm">No active requests for this course.</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             </div>
 
