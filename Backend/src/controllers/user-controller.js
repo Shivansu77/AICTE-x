@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
+const StudentQuery = require('../models/StudentQuery');
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -133,8 +134,8 @@ const updateProfile = async (req, res) => {
 
         // Build update object
         const updateFields = {};
-        if (firstName) updateFields.firstName = firstName;
-        if (lastName) updateFields.lastName = lastName;
+        if (firstName !== undefined) updateFields.firstName = firstName;
+        if (lastName !== undefined) updateFields.lastName = lastName;
         if (avatar !== undefined) updateFields.avatar = avatar;
         if (college !== undefined) updateFields.college = college;
         if (department !== undefined) updateFields.department = department;
@@ -168,6 +169,79 @@ const updateProfile = async (req, res) => {
     }
 };
 
+// Student Query functions
+const submitStudentQuery = async (req, res) => {
+    try {
+        const { subject, message, category } = req.body;
+        const studentId = req.user.userId;
+
+        const query = new StudentQuery({
+            studentId,
+            subject,
+            message,
+            category: category || 'general_query'
+        });
+
+        await query.save();
+        res.status(201).json({ message: 'Query submitted successfully', query });
+    } catch (error) {
+        console.error('Submit query error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+const getStudentQueries = async (req, res) => {
+    try {
+        const queries = await StudentQuery.find()
+            .populate('studentId', 'firstName lastName email')
+            .sort({ createdAt: -1 });
+        res.json(queries);
+    } catch (error) {
+        console.error('Get queries error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+const respondToStudentQuery = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { adminResponse, status } = req.body;
+        const adminId = req.user.userId;
+
+        const query = await StudentQuery.findByIdAndUpdate(
+            id,
+            {
+                adminResponse,
+                respondedBy: adminId,
+                responseDate: new Date(),
+                status: status || 'resolved'
+            },
+            { new: true }
+        ).populate('studentId', 'firstName lastName email');
+
+        if (!query) {
+            return res.status(404).json({ message: 'Query not found' });
+        }
+
+        res.json({ message: 'Response sent successfully', query });
+    } catch (error) {
+        console.error('Respond to query error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+const getMyQueries = async (req, res) => {
+    try {
+        const studentId = req.user.userId;
+        const queries = await StudentQuery.find({ studentId })
+            .sort({ createdAt: -1 });
+        res.json(queries);
+    } catch (error) {
+        console.error('Get my queries error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -175,5 +249,9 @@ module.exports = {
     getAllStudents,
     getAllTeachers,
     getUsersByRole,
-    updateProfile
+    updateProfile,
+    submitStudentQuery,
+    getStudentQueries,
+    respondToStudentQuery,
+    getMyQueries
 };
