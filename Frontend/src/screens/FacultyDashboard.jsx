@@ -3,13 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { BookOpen, Users, Clock, Bell, FileText, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../utils/api';
 
-const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-md transition-all">
-        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-sm ${color}`}>
+const StatCard = ({ icon: Icon, label, value, color, onClick }) => (
+    <div
+        onClick={onClick}
+        className={`bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex items-center gap-5 hover:shadow-lg hover:border-gray-200 transition-all ${onClick ? 'cursor-pointer active:scale-95' : ''}`}
+    >
+        <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white shadow-sm ${color} ${onClick ? 'group-hover:scale-110' : ''} transition-transform`}>
             <Icon size={24} />
         </div>
         <div>
-            <h3 className="text-secondary font-bold text-xs uppercase tracking-wider mb-1">{label}</h3>
+            <h3 className="text-gray-500 font-bold text-xs uppercase tracking-wider mb-1">{label}</h3>
             <p className="text-3xl font-black text-gray-800">{value}</p>
         </div>
     </div>
@@ -68,31 +71,54 @@ const FacultyDashboard = () => {
         myCourses: 0,
         pendingReviews: 0,
         approvedUpdates: 0,
-        totalStudents: 128 // Mock for now
+        totalStudents: 0
     });
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showAllUpdates, setShowAllUpdates] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [reqRes, courseRes] = await Promise.all([
-                    api.get('/api/requests/my-requests'),
-                    api.get('/api/courses')
-                ]);
-
-                const requests = reqRes.data;
+                // Fetch courses
+                const courseRes = await api.get('/api/courses');
                 const courses = courseRes.data;
+
+                // Fetch requests (optional - handle auth gracefully)
+                let requests = [];
+                try {
+                    const reqRes = await api.get('/api/requests/my-requests');
+                    requests = reqRes.data;
+                } catch (reqErr) {
+                    if (reqErr.response?.status === 401) {
+                        console.warn('Auth required for requests, continuing without them');
+                    } else {
+                        console.error('Error fetching requests:', reqErr);
+                    }
+                }
+
+                // Fetch student count (optional - handle auth gracefully)
+                let studentCount = 0;
+                try {
+                    const studentsRes = await api.get('/api/users/students');
+                    studentCount = studentsRes.data?.length || 0;
+                } catch (studErr) {
+                    if (studErr.response?.status === 401) {
+                        console.warn('Auth required for students, showing 0');
+                    } else {
+                        console.error('Error fetching students:', studErr);
+                    }
+                }
 
                 setStats({
                     myCourses: courses.length,
                     pendingReviews: requests.filter(r => r.status === 'pending').length,
                     approvedUpdates: requests.filter(r => r.status === 'approved').length,
-                    totalStudents: 128
+                    totalStudents: studentCount
                 });
 
-                // Set recent notifications (Top 5)
-                setNotifications(requests.slice(0, 5));
+                // Set recent notifications
+                setNotifications(requests);
 
             } catch (error) {
                 console.error("Failed to load faculty data", error);
@@ -104,14 +130,41 @@ const FacultyDashboard = () => {
         fetchData();
     }, []);
 
+    // Show only 3 items by default, or all if expanded
+    const displayedNotifications = showAllUpdates ? notifications : notifications.slice(0, 3);
+    const hasMoreNotifications = notifications.length > 3;
+
     return (
         <div className="space-y-8">
             {/* Stats Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard icon={BookOpen} label="My Courses" value={loading ? "..." : stats.myCourses} color="bg-blue-500" />
-                <StatCard icon={Users} label="Total Students" value={loading ? "..." : stats.totalStudents} color="bg-purple-500" />
-                <StatCard icon={Clock} label="Pending Reviews" value={loading ? "..." : stats.pendingReviews} color="bg-orange-500" />
-                <StatCard icon={CheckCircle} label="Approved Updates" value={loading ? "..." : stats.approvedUpdates} color="bg-green-500" />
+                <StatCard
+                    icon={BookOpen}
+                    label="My Courses"
+                    value={loading ? "..." : stats.myCourses}
+                    color="bg-blue-500"
+                    onClick={() => navigate('/curriculum')}
+                />
+                <StatCard
+                    icon={Users}
+                    label="Total Students"
+                    value={loading ? "..." : stats.totalStudents}
+                    color="bg-purple-500"
+                />
+                <StatCard
+                    icon={Clock}
+                    label="Pending Reviews"
+                    value={loading ? "..." : stats.pendingReviews}
+                    color="bg-orange-500"
+                    onClick={() => setShowAllUpdates(true)}
+                />
+                <StatCard
+                    icon={CheckCircle}
+                    label="Approved Updates"
+                    value={loading ? "..." : stats.approvedUpdates}
+                    color="bg-green-500"
+                    onClick={() => setShowAllUpdates(true)}
+                />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -141,13 +194,33 @@ const FacultyDashboard = () => {
                             <Bell size={16} />
                         </button>
                     </div>
-                    <div className="space-y-1 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div className="space-y-1">
                         {loading ? (
                             <p className="text-sm text-center text-gray-400 py-4">Loading updates...</p>
                         ) : notifications.length > 0 ? (
-                            notifications.map(n => (
-                                <NotificationItem key={n._id} request={n} />
-                            ))
+                            <>
+                                {displayedNotifications.map(n => (
+                                    <NotificationItem key={n._id} request={n} />
+                                ))}
+
+                                {/* Show More/Less Button */}
+                                {hasMoreNotifications && (
+                                    <button
+                                        onClick={() => setShowAllUpdates(!showAllUpdates)}
+                                        className="w-full py-3 mt-2 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-all flex items-center justify-center gap-2"
+                                    >
+                                        {showAllUpdates ? (
+                                            <>
+                                                Show Less <ChevronUp size={16} />
+                                            </>
+                                        ) : (
+                                            <>
+                                                Show {notifications.length - 3} More <ChevronDown size={16} />
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </>
                         ) : (
                             <p className="text-sm text-center text-gray-400 py-4">No recent updates.</p>
                         )}

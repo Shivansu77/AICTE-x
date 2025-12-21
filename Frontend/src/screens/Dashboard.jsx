@@ -21,44 +21,47 @@ const CourseCard = ({ _id, title, code, credits, color, icon: Icon, description,
     const bgClass = colorClasses[color] || colorClasses.blue;
 
     return (
-        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5 hover:translate-y-[-4px] transition-all duration-300 group">
-            <div className="flex justify-between items-start mb-4">
-                <span className={`px-4 py-1.5 rounded-full text-xs font-bold text-white ${bgClass}`}>
+        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 group flex flex-col h-full">
+            <div className="flex justify-between items-center mb-5">
+                <span className={`px-4 py-1.5 rounded-full text-xs font-bold text-white ${bgClass} shadow-sm`}>
                     {code}
                 </span>
-                <span className="text-secondary text-sm font-bold flex items-center gap-1">
-                    <Clock size={14} /> {credits} Credits
+                <span className="text-gray-500 text-sm font-semibold flex items-center gap-1.5">
+                    <Clock size={14} className="opacity-60" /> {credits} Credits
                 </span>
             </div>
 
-            <div className="flex gap-6 items-center mb-6">
-                <div className={`shrink-0 w-24 h-24 ${bgClass}/20 rounded-3xl flex items-center justify-center`}>
-                    <div className={`w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm text-${color}-600`}>
-                        <Icon size={24} className={`text-gray-700`} />
-                    </div>
+            <div className="flex gap-5 mb-6 flex-1">
+                <div className={`shrink-0 w-16 h-16 ${bgClass}/10 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
+                    <Icon size={28} className="text-gray-700" />
                 </div>
-                <div>
-                    <h3 className="text-2xl font-extrabold text-primary mb-2 group-hover:text-accent-blue transition-colors">
+                <div className="flex-1 min-w-0">
+                    <h3 className="text-xl font-extrabold text-gray-900 mb-2 group-hover:text-accent-blue transition-colors leading-snug">
                         {title}
                     </h3>
-                    <p className="text-secondary text-sm font-medium leading-relaxed line-clamp-2">
+                    <p className="text-gray-600 text-sm font-medium leading-relaxed line-clamp-2">
                         {description}
                     </p>
                 </div>
             </div>
 
-            <div className="flex gap-2 mt-auto">
-                <Link to={`/curriculum/${_id}`} className={`flex-1 py-1 px-2 rounded-full border-2 border-transparent hover:bg-gray-50 text-secondary font-bold text-sm transition-colors flex items-center justify-center gap-2`}>
-                    <Eye size={16} /> View Details
+            <div className="flex gap-3 mt-auto pt-4 border-t border-gray-100">
+                <Link
+                    to={`/curriculum/${_id}`}
+                    className="flex-1 py-2.5 px-4 rounded-xl border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-sm transition-all flex items-center justify-center gap-2 group/btn"
+                >
+                    <Eye size={16} className="group-hover/btn:scale-110 transition-transform" />
+                    View Details
                 </Link>
 
                 {/* Only Faculty can see Manage button */}
                 {(role === 'teacher' || role === 'faculty') && (
                     <Link
                         to={`/curriculum/${_id}`}
-                        className={`flex-1 py-3 px-6 rounded-full ${bgClass} text-white font-bold text-sm shadow-md hover:shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95`}
+                        className={`flex-1 py-2.5 px-4 rounded-xl ${bgClass} text-white font-bold text-sm shadow-md hover:shadow-lg hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 group/btn`}
                     >
-                        <Edit3 size={16} /> Manage
+                        <Edit3 size={16} className="group-hover/btn:rotate-12 transition-transform" />
+                        Manage
                     </Link>
                 )}
             </div>
@@ -163,8 +166,8 @@ const Dashboard = () => {
                                 key={label}
                                 onClick={() => setActiveFilter(label)}
                                 className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${activeFilter === label
-                                        ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
-                                        : "bg-white text-secondary hover:bg-white/80 border border-gray-100"
+                                    ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
+                                    : "bg-white text-secondary hover:bg-white/80 border border-gray-100"
                                     }`}
                             >
                                 {label}

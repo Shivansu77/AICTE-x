@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import { Book, Plus, ArrowRight, User, GraduationCap, Building2, Clock, Layers, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -56,18 +55,17 @@ const FacultyScreen = () => {
             <main className="flex-1 overflow-y-auto pb-10 custom-scrollbar pr-2 -mr-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {courses.map((course, idx) => (
-                        <div 
-                            key={course._id} 
-                            onClick={() => navigate(`/ faculty / course / ${ course._id } `)}
+                        <div
+                            key={course._id}
+                            onClick={() => navigate(`/faculty/course/${course._id}`)}
                             className="group bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:shadow-accent-blue/10 transition-all duration-500 cursor-pointer relative overflow-hidden border border-gray-100 hover:border-accent-blue/20"
                         >
                             <div className="relative z-10">
                                 <div className="flex justify-between items-start mb-8">
-                                    <div className={`px - 4 py - 1.5 rounded - full text - [10px] font - black uppercase tracking - widest shadow - sm border ${
-    idx % 3 === 0 ? 'bg-blue-50 text-blue-600 border-blue-100' :
-        idx % 3 === 1 ? 'bg-orange-50 text-orange-600 border-orange-100' :
-            'bg-emerald-50 text-emerald-600 border-emerald-100'
-} `}>
+                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                            idx % 3 === 1 ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                                                'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                        }`}>
                                         {course.code}
                                     </div>
                                     <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-secondary opacity-0 group-hover:opacity-100 group-hover:translate-x-0 -translate-x-4 transition-all">
@@ -78,7 +76,7 @@ const FacultyScreen = () => {
                                 <h3 className="text-2xl font-black text-primary leading-[1.2] mb-3 group-hover:text-accent-blue transition-colors">
                                     {course.title}
                                 </h3>
-                                
+
                                 <div className="flex items-center gap-2 text-secondary font-bold text-xs mb-8">
                                     <Building2 size={14} className="opacity-40" />
                                     {course.department}
@@ -119,7 +117,7 @@ const FacultyScreen = () => {
                         </div>
                         <h4 className="text-2xl font-black text-primary mb-2">No Active Programs</h4>
                         <p className="text-secondary font-medium max-w-sm mb-8">There are no course programs available in the master registry yet.</p>
-                        
+
                         <button
                             onClick={async () => {
                                 try {
@@ -139,4 +137,3 @@ const FacultyScreen = () => {
 };
 
 export default FacultyScreen;
-```

@@ -14,24 +14,45 @@ const FacultyCourseView = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const [courseRes, subjectsRes, requestsRes] = await Promise.all([
-                    api.get(`/api/courses/${id}`),
-                    api.get(`/api/curriculum/course/${id}`),
-                    api.get('/api/requests/my-requests')
-                ]);
-
+                const courseRes = await api.get(`/api/courses/${id}`);
                 setCourse(courseRes.data);
-                setSubjects(subjectsRes.data);
-                setRequests(requestsRes.data);
+
+                // Fetch subjects
+                try {
+                    const subjectsRes = await api.get(`/api/curriculum/course/${id}`);
+                    setSubjects(subjectsRes.data);
+                } catch (subErr) {
+                    console.error('Error fetching subjects:', subErr);
+                    setSubjects([]);
+                }
+
+                // Fetch user's requests (optional - fail gracefully if unauthorized)
+                try {
+                    const requestsRes = await api.get('/api/requests/my-requests');
+                    setRequests(requestsRes.data);
+                } catch (reqErr) {
+                    if (reqErr.response?.status === 401) {
+                        console.warn('User not authenticated for requests, continuing without them');
+                        setRequests([]);
+                    } else {
+                        console.error('Error fetching requests:', reqErr);
+                        setRequests([]);
+                    }
+                }
+
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching data:', error);
-                setLoading(false);
+                console.error('Error fetching course:', error);
+                if (error.response?.status === 401) {
+                    // If course fetch fails with 401, user needs to re-login
+                    navigate('/login');
+                } else {
+                    setLoading(false);
+                }
             }
         };
         fetchData();
-    }, [id]);
+    }, [id, navigate]);
 
     const getRequestStatus = (subjectId) => {
         // Find latest request for this subject
@@ -127,8 +148,8 @@ const FacultyCourseView = () => {
                                                         {/* Status Badge Overlay */}
                                                         {latestReq && (
                                                             <div className={`absolute top-0 right-0 px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-bl-xl ${latestReq.status === 'pending' ? 'bg-orange-100 text-orange-600' :
-                                                                    latestReq.status === 'approved' ? 'bg-blue-100 text-blue-600' :
-                                                                        'bg-red-100 text-red-600'
+                                                                latestReq.status === 'approved' ? 'bg-blue-100 text-blue-600' :
+                                                                    'bg-red-100 text-red-600'
                                                                 }`}>
                                                                 {latestReq.status === 'pending' ? 'Review Expected' : latestReq.status}
                                                             </div>
