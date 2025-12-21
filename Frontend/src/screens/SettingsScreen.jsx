@@ -80,7 +80,12 @@ const SettingsScreen = () => {
             localStorage.setItem('user', JSON.stringify(updatedUser));
             setUser(updatedUser);
 
-            setMessage({ type: 'success', text: 'Profile updated successfully!' });
+            setMessage({ type: 'success', text: 'Profile updated successfully! Refreshing...' });
+
+            // Reload page after a short delay to show success message and update all components
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } catch (error) {
             console.error("Update failed", error);
             setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to update profile.' });

@@ -13,5 +13,6 @@ router.get('/history/code/:code', auth, curriculumController.getCurriculumHistor
 router.get('/:id', curriculumController.getCurriculumById);
 router.post('/', auth, curriculumController.createSubject);
 router.put('/:id', auth, curriculumController.updateSubjectDirectly);
+router.delete('/:id', auth, curriculumController.deleteSubject);
 
 module.exports = router;

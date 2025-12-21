@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Book, Clock, Edit3, ArrowRight, Eye, User } from 'lucide-react';
+import { Book, Clock, Edit3, ArrowRight, Eye, User, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import FacultyScreen from './FacultyScreen';
@@ -153,9 +153,12 @@ const Dashboard = () => {
             )}
 
             {/* CURRICULUM BROWSER (Visible to ALL) */}
-            <div className="pt-8 border-t border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-black text-primary">Browse Curricula</h2>
+            <div className="pt-4">
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 className="text-3xl font-black text-gray-900 mb-1">Browse Curriculum</h2>
+                        <p className="text-gray-600 font-medium">Explore model curricula across different programs and semesters</p>
+                    </div>
                 </div>
 
                 {/* Filtering Pills */}

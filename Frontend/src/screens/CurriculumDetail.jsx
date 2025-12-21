@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Edit2, Trash2, Bell } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Edit2, Trash2, Bell, X } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const UnitCard = ({ unitNumber, title, topics, hours, role, onEdit, onAddTopic, onRemoveTopic }) => {
-    const [isOpen, setIsOpen] = useState(false); // Default to closed for cleaner look if many units
+const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, onEdit, onAddTopic, onRemoveTopic, onAddSubtopic, onRemoveSubtopic }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [expandedTopic, setExpandedTopic] = useState(null);
 
     return (
         <div className="bg-white rounded-[2rem] p-1 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 mb-4 overflow-hidden group">
@@ -55,19 +56,69 @@ const UnitCard = ({ unitNumber, title, topics, hours, role, onEdit, onAddTopic, 
                             </button>
                         )}
                     </div>
-                    <ul className="space-y-4">
+                    <ul className="space-y-2">
                         {topics.map((topic, idx) => (
-                            <li key={idx} className="flex items-start gap-4 group/topic relative">
-                                <div className="mt-2 w-1.5 h-1.5 rounded-full bg-accent-blue/40 group-hover/topic:bg-accent-blue group-hover/topic:scale-150 transition-all shrink-0"></div>
-                                <span className="font-medium text-primary/80 text-base leading-relaxed group-hover/topic:text-primary transition-colors flex-1">{topic}</span>
-                                {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                            <li key={idx} className="group/topic relative">
+                                <div className="flex items-start gap-4">
                                     <button
-                                        onClick={() => onRemoveTopic(topic)}
-                                        className="absolute -right-2 top-0 p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover/topic:opacity-100 transition-all"
-                                        title="Remove Topic"
+                                        onClick={() => setExpandedTopic(expandedTopic === topic ? null : topic)}
+                                        className="flex-1 flex items-start gap-3 hover:bg-gray-50 p-3 rounded-xl transition-colors text-left group/topicbtn"
                                     >
-                                        <Trash2 size={16} />
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-blue/40 group-hover/topicbtn:bg-accent-blue group-hover/topicbtn:scale-150 transition-all shrink-0"></div>
+                                        <div className="flex-1">
+                                            <span className="font-bold text-primary/80 text-base leading-relaxed group-hover/topicbtn:text-primary transition-colors">
+                                                {topic}
+                                            </span>
+                                            {topicDetails[topic] && topicDetails[topic].length > 0 && (
+                                                <span className="ml-2 text-xs text-gray-400 font-medium">
+                                                    ({topicDetails[topic].length} items)
+                                                </span>
+                                            )}
+                                        </div>
+                                        <ChevronDown size={16} className={`text-gray-400 transition-transform ${expandedTopic === topic ? 'rotate-180' : ''}`} />
                                     </button>
+                                    {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                                        <button
+                                            onClick={() => onRemoveTopic(topic)}
+                                            className="p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover/topic:opacity-100 transition-all"
+                                            title="Remove Topic"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Subtopics Section */}
+                                {expandedTopic === topic && (
+                                    <div className="ml-8 mt-2 pl-4 border-l-2 border-gray-100 animate-in slide-in-from-top-2 duration-200">
+                                        <div className="space-y-2">
+                                            {topicDetails[topic]?.map((subtopic, subIdx) => (
+                                                <div key={subIdx} className="flex items-center justify-between p-2 hover:bg-blue-50 rounded-lg group/sub">
+                                                    <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
+                                                        <div className="w-1 h-1 rounded-full bg-blue-400"></div>
+                                                        {subtopic}
+                                                    </span>
+                                                    {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                                                        <button
+                                                            onClick={() => onRemoveSubtopic(topic, subtopic)}
+                                                            className="text-gray-300 hover:text-red-500 opacity-0 group-hover/sub:opacity-100 transition-all p-1"
+                                                            title="Remove Subtopic"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                                                <button
+                                                    onClick={() => onAddSubtopic(topic)}
+                                                    className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors w-full justify-center border border-dashed border-blue-200 hover:border-blue-300"
+                                                >
+                                                    <Plus size={12} /> Add Detail
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
                                 )}
                             </li>
                         ))}
@@ -77,7 +128,6 @@ const UnitCard = ({ unitNumber, title, topics, hours, role, onEdit, onAddTopic, 
         </div>
     );
 };
-
 const CurriculumDetail = () => {
     const { id } = useParams();
     const [course, setCourse] = useState(null);
@@ -143,9 +193,20 @@ const CurriculumDetail = () => {
             alert("Request submitted successfully!");
             setShowRequestModal(false);
             setRequestData({ type: 'Update Content', justification: '', proposedChanges: '', unitNumber: '', newTopic: '' });
+
             // Refresh requests
             const reqRes = await api.get('/api/requests/my-requests');
             setMyRequests(reqRes.data);
+
+            // Refetch course data to show any new units or changes
+            const courseRefresh = await api.get(`/api/curriculum/${id}`);
+            setCourse(courseRefresh.data);
+
+            // Refresh history as well
+            if (courseRefresh.data && courseRefresh.data.code) {
+                const histRes = await api.get(`/api/curriculum/history/code/${courseRefresh.data.code}`);
+                setHistory(histRes.data);
+            }
         } catch (error) {
             console.error(error);
             alert(error.response?.data?.message || "Failed to submit request.");

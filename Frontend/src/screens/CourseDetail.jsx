@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Book, FileText, ChevronRight, Edit3 } from 'lucide-react';
+import { ArrowLeft, Plus, Book, FileText, ChevronRight, Edit3, Trash2 } from 'lucide-react';
 
 const CourseDetail = () => {
     const { id } = useParams();
@@ -77,6 +77,37 @@ const CourseDetail = () => {
             }
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    const handleDeleteSubject = async (subjectId, e) => {
+        e.stopPropagation(); // Prevent navigation when clicking delete
+        if (!window.confirm('Are you sure you want to delete this subject? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:8000/api/curriculum/${subjectId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                // Refresh subjects list
+                const subjectsRes = await fetch(`http://localhost:8000/api/curriculum/course/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                setSubjects(await subjectsRes.json());
+                alert('Subject deleted successfully');
+            } else {
+                alert('Failed to delete subject');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Error deleting subject');
         }
     };
 
@@ -192,6 +223,15 @@ const CourseDetail = () => {
                                         <div className="w-12 h-12 rounded-full border-2 border-gray-100 flex items-center justify-center group-hover:bg-orange-500 group-hover:border-orange-500 group-hover:text-white transition-all text-gray-300">
                                             <ChevronRight size={20} />
                                         </div>
+
+                                        {/* Delete Button (Admin only) */}
+                                        <button
+                                            onClick={(e) => handleDeleteSubject(sub._id, e)}
+                                            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-red-500 hover:text-white flex items-center justify-center text-gray-400 transition-all opacity-0 group-hover:opacity-100 z-10 shadow-sm"
+                                            title="Delete Subject"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
                                     </div>
                                 ))}
                             </div>
