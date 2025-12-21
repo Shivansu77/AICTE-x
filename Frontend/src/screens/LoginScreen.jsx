@@ -26,7 +26,7 @@ const LoginScreen = () => {
 
       // Navigate based on role
       if (response.data.user.role === 'student') {
-        navigate('/student');
+        navigate('/');
       } else {
         navigate('/');
       }

@@ -64,23 +64,23 @@ const Layout = ({ children }) => {
 
   const navItems = role === 'student'
     ? [
-        ...baseNavItems.slice(0, 1),
-        { icon: MessageSquare, label: 'Contact Administration', path: '/contact' },
-        ...baseNavItems.slice(1)
-      ]
+      ...baseNavItems.slice(0, 1),
+      { icon: MessageSquare, label: 'Contact Administration', path: '/contact' },
+      ...baseNavItems.slice(1)
+    ]
     : role === 'admin'
-    ? [
+      ? [
         ...baseNavItems.slice(0, 1),
         { icon: MessageSquare, label: 'Student Queries', path: '/admin/queries' },
         ...baseNavItems.slice(1)
       ]
-    : baseNavItems;
+      : baseNavItems;
 
   return (
     <div className="min-h-screen bg-cream flex p-6 gap-6 font-sans text-primary">
       {/* Sidebar */}
       <aside className="w-72 flex flex-col">
-        <div className="px-8 py-6 mb-8">
+        <div className="pl-10 pr-8 py-6 mb-8">
           <h1 className="text-3xl font-extrabold flex items-center gap-2">
             <span className="text-accent-peach">AICTE</span>
             <span className="text-accent-blue">Unified Portal</span>

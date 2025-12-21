@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Book, Plus, ArrowRight, User, GraduationCap, Building2, Clock, Layers, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { useUser } from '../utils/UserContext';
 
 const FacultyScreen = () => {
     const navigate = useNavigate();
+    const { user } = useUser();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const isFaculty = user?.role === 'teacher' || user?.role === 'faculty' || user?.role === 'admin';
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -42,12 +45,18 @@ const FacultyScreen = () => {
                         <User size={40} />
                     </div>
                     <div>
-                        <div className="px-3 py-1 bg-accent-blue/10 text-accent-blue rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-flex items-center gap-1.5 border border-accent-blue/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse"></span>
-                            Faculty Access
-                        </div>
-                        <h1 className="text-4xl font-black text-primary tracking-tight">Faculty Dashboard</h1>
-                        <p className="text-secondary font-medium text-lg">Select a program to manage curriculum updates</p>
+                        {isFaculty && (
+                            <div className="px-3 py-1 bg-accent-blue/10 text-accent-blue rounded-full text-[10px] font-black uppercase tracking-widest mb-2 inline-flex items-center gap-1.5 border border-accent-blue/20">
+                                <span className="w-1.5 h-1.5 rounded-full bg-accent-blue animate-pulse"></span>
+                                Faculty Access
+                            </div>
+                        )}
+                        <h1 className="text-4xl font-black text-primary tracking-tight">
+                            {isFaculty ? "Faculty Dashboard" : "Student Curriculum"}
+                        </h1>
+                        <p className="text-secondary font-medium text-lg">
+                            {isFaculty ? "Select a program to manage curriculum updates" : "Browse available academic programs"}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -57,14 +66,14 @@ const FacultyScreen = () => {
                     {courses.map((course, idx) => (
                         <div
                             key={course._id}
-                            onClick={() => navigate(`/faculty/course/${course._id}`)}
+                            onClick={() => navigate(isFaculty ? `/faculty/course/${course._id}` : `/student/course/${course._id}`)}
                             className="group bg-white rounded-[2.5rem] p-8 shadow-sm hover:shadow-2xl hover:shadow-accent-blue/10 transition-all duration-500 cursor-pointer relative overflow-hidden border border-gray-100 hover:border-accent-blue/20"
                         >
                             <div className="relative z-10">
                                 <div className="flex justify-between items-start mb-8">
                                     <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border ${idx % 3 === 0 ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                            idx % 3 === 1 ? 'bg-orange-50 text-orange-600 border-orange-100' :
-                                                'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                        idx % 3 === 1 ? 'bg-orange-50 text-orange-600 border-orange-100' :
+                                            'bg-emerald-50 text-emerald-600 border-emerald-100'
                                         }`}>
                                         {course.code}
                                     </div>
@@ -103,7 +112,7 @@ const FacultyScreen = () => {
                                 <button
                                     className="w-full mt-6 py-3.5 rounded-2xl bg-primary text-white font-black text-sm hover:shadow-xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center justify-center gap-2"
                                 >
-                                    View Curriculum <Zap size={16} className="text-accent-yellow" />
+                                    {isFaculty ? "Manage Curriculum" : "View Curriculum"} <Zap size={16} className="text-accent-yellow" />
                                 </button>
                             </div>
                         </div>
@@ -118,17 +127,19 @@ const FacultyScreen = () => {
                         <h4 className="text-2xl font-black text-primary mb-2">No Active Programs</h4>
                         <p className="text-secondary font-medium max-w-sm mb-8">There are no course programs available in the master registry yet.</p>
 
-                        <button
-                            onClick={async () => {
-                                try {
-                                    await api.post('/api/curriculum/seed');
-                                    window.location.reload();
-                                } catch (e) { console.error(e); }
-                            }}
-                            className="px-8 py-4 bg-primary text-white rounded-full font-black text-sm shadow-xl hover:shadow-2xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center gap-2"
-                        >
-                            <Plus size={20} /> Seed Demo Data
-                        </button>
+                        {isFaculty && (
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        await api.post('/api/curriculum/seed');
+                                        window.location.reload();
+                                    } catch (e) { console.error(e); }
+                                }}
+                                className="px-8 py-4 bg-primary text-white rounded-full font-black text-sm shadow-xl hover:shadow-2xl hover:translate-y-[-2px] active:scale-95 transition-all flex items-center gap-2"
+                            >
+                                <Plus size={20} /> Seed Demo Data
+                            </button>
+                        )}
                     </div>
                 )}
             </main>

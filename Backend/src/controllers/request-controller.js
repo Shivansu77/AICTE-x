@@ -130,24 +130,34 @@ exports.updateRequestStatus = async (req, res) => {
                 }
 
                 if (request.requestType === 'Add Topic Detail' && changes.unitNumber && changes.newTopic && changes.description) {
+                    console.log('[DEBUG] Processing Add Topic Detail...');
                     const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
                     if (unitIndex !== -1) {
                         const unit = newSubjectData.units[unitIndex];
-                        // Initialize topicDetails map if it doesn't exist (it is a Map now)
-                        if (!unit.topicDetails) {
-                            unit.topicDetails = new Map();
-                        }
-                        // Mongoose Map needs .get / .set or treat as object if using lean/toObject()
-                        // Since we used .toObject() above, it's a plain object or Map depending on mongoose version/options
-                        // However, in standard JS object from Mongoose toObject(), Maps become objects usually.
-                        // Let's assume it's an object for safety with the schema definition `type: Map`.
-                        // Actually, `toObject()` defaults to converting Maps to Objects.
-                        // So we can treat it as an object where keys are topics.
+                        console.log('[DEBUG] Found Unit:', unit.unitNumber);
 
-                        // Wait, if it's undefined in old data, we init it.
-                        let details = unit.topicDetails[changes.newTopic] || [];
-                        details.push(changes.description);
-                        unit.topicDetails[changes.newTopic] = details;
+                        // Ensure topicDetails is an object
+                        let currentDetails = unit.topicDetails || {};
+                        if (typeof currentDetails !== 'object') currentDetails = {};
+
+                        // Get existing array or init
+                        let topicArr = currentDetails[changes.newTopic] || [];
+                        if (!Array.isArray(topicArr)) topicArr = [];
+
+                        console.log(`[DEBUG] Current details for "${changes.newTopic}":`, topicArr);
+
+                        // Push new detail
+                        topicArr.push(changes.description);
+
+                        // Reassign strictly to ensure update
+                        unit.topicDetails = {
+                            ...currentDetails,
+                            [changes.newTopic]: topicArr
+                        };
+
+                        console.log(`[DEBUG] Updated unit.topicDetails:`, JSON.stringify(unit.topicDetails));
+                    } else {
+                        console.error(`[DEBUG] Unit ${changes.unitNumber} NOT FOUND`);
                     }
                 }
 
@@ -156,7 +166,10 @@ exports.updateRequestStatus = async (req, res) => {
                     if (unitIndex !== -1) {
                         const unit = newSubjectData.units[unitIndex];
                         if (unit.topicDetails && unit.topicDetails[changes.newTopic]) {
-                            unit.topicDetails[changes.newTopic] = unit.topicDetails[changes.newTopic].filter(d => d !== changes.description);
+                            unit.topicDetails = {
+                                ...unit.topicDetails,
+                                [changes.newTopic]: unit.topicDetails[changes.newTopic].filter(d => d !== changes.description)
+                            };
                         }
                     }
                 }
@@ -169,7 +182,6 @@ exports.updateRequestStatus = async (req, res) => {
                     }
                 }
 
-                log('Saving newSubject...');
                 // Create and Save New Version
                 const newSubject = new Curriculum(newSubjectData);
                 await newSubject.save();

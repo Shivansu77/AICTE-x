@@ -303,6 +303,7 @@ const AdminDashboard = () => {
                     value={loading ? "..." : stats.faculty}
                     colorClass={{ bg: 'bg-orange-50/50', iconBg: 'bg-orange-100', text: 'text-orange-600' }}
                     icon={Users}
+                    onClick={() => navigate('/admin/users')}
                     delay={0.2}
                 />
                 <StatCard

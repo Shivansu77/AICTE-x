@@ -5,7 +5,7 @@ const UpdateReqSchema = new mongoose.Schema({
     curriculumId: { type: mongoose.Schema.Types.ObjectId, ref: 'Curriculum', required: true },
     facultyId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 
-    requestType: { type: String, enum: ['Add Topic', 'Remove Topic', 'Update Content', 'Add Unit', 'Update Unit', 'Add Tool', 'Outcome Improvement', 'Other'], required: true },
+    requestType: { type: String, enum: ['Add Topic', 'Remove Topic', 'Update Content', 'Add Unit', 'Update Unit', 'Add Topic Detail', 'Remove Topic Detail', 'New Tool/Technology', 'Outcome Improvement', 'Other'], required: true },
 
     justification: { type: String, required: true }, // Academic justification
     industryReference: { type: String }, // Optional industry reference

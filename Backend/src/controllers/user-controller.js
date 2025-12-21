@@ -242,6 +242,19 @@ const getMyQueries = async (req, res) => {
     }
 };
 
+// Get all users (admin only)
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find()
+            .select('-password')
+            .sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error) {
+        console.error('Get all users error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -249,6 +262,7 @@ module.exports = {
     getAllStudents,
     getAllTeachers,
     getUsersByRole,
+    getAllUsers, // New export
     updateProfile,
     submitStudentQuery,
     getStudentQueries,

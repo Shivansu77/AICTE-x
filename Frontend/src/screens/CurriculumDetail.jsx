@@ -5,7 +5,8 @@ import api from '../utils/api';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, onEdit, onAddTopic, onRemoveTopic, onAddSubtopic, onRemoveSubtopic }) => {
+const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, onEdit, onAddTopic, onRemoveTopic, onUpdateTopicDetail, onRemoveSubtopic }) => {
+    console.log(`Unit ${unitNumber} topicDetails:`, topicDetails, 'Is Array?', Array.isArray(topicDetails));
     const [isOpen, setIsOpen] = useState(false);
     const [expandedTopic, setExpandedTopic] = useState(null);
 
@@ -111,7 +112,13 @@ const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, o
                                             ))}
                                             {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
                                                 <button
-                                                    onClick={() => onAddSubtopic(topic)}
+                                                    onClick={() => {
+                                                        if (typeof onUpdateTopicDetail === 'function') {
+                                                            onUpdateTopicDetail(topic);
+                                                        } else {
+                                                            console.error("onUpdateTopicDetail is missing or not a function", onUpdateTopicDetail);
+                                                        }
+                                                    }}
                                                     className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors w-full justify-center border border-dashed border-blue-200 hover:border-blue-300"
                                                 >
                                                     <Plus size={12} /> Add Detail
@@ -442,7 +449,7 @@ const CurriculumDetail = () => {
                                             setRequestData({ type: 'Remove Topic', unitNumber: unit.unitNumber, newTopic: topic, justification: '', proposedChanges: '' });
                                             setShowRequestModal(true);
                                         }}
-                                        onAddSubtopic={(topic) => {
+                                        onUpdateTopicDetail={(topic) => {
                                             setRequestData({ type: 'Add Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, justification: '', description: '' });
                                             setShowRequestModal(true);
                                         }}

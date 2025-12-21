@@ -11,6 +11,7 @@ import CommunityScreen from './screens/CommunityScreen';
 import ManageCourses from './screens/ManageCourses';
 import CourseDetail from './screens/CourseDetail';
 import FacultyCourseView from './screens/FacultyCourseView';
+import AdminUsers from './screens/AdminUsers'; // Import corrected
 
 import FacultyScreen from './screens/FacultyScreen';
 import StudentScreen from './screens/StudentScreen';
@@ -34,7 +35,9 @@ const DashboardRouter = () => {
 // Route Handler for /curriculum
 const CurriculumRouter = () => {
   const { user } = useUser();
-  return user.role === 'admin' ? <ManageCourses /> : <FacultyScreen />;
+  if (user.role === 'admin') return <ManageCourses />;
+  if (user.role === 'student') return <FacultyScreen />;
+  return <FacultyScreen />;
 };
 
 function App() {
@@ -47,6 +50,8 @@ function App() {
 
           {/* Student Routes (No Layout) */}
           <Route path="/student" element={<StudentScreen />} />
+          {/* Student Program View (Reusing Faculty View in Read-Only Mode) */}
+          <Route path="/student/course/:id" element={<FacultyCourseView />} />
 
           {/* Protected Routes with Layout */}
           <Route element={<AppLayout />}>
@@ -58,8 +63,10 @@ function App() {
             <Route path="/contact" element={<ContactAdministration />} />
             <Route path="/about" element={<AboutUs />} />
 
+
             {/* Admin Routes */}
             <Route path="/admin/courses" element={<ManageCourses />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/course/:id" element={<CourseDetail />} />
             <Route path="/admin/queries" element={<AdminQueries />} />
 
