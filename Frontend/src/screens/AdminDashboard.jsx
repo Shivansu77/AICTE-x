@@ -118,6 +118,16 @@ const RequestDetailsModal = ({ request, onClose, onApprove, onReject }) => {
                                     <span className="text-gray-600 font-medium block mb-1">Topic Name</span>
                                     <b className="text-gray-900 text-base">{proposedChanges.newTopic}</b>
                                 </div>
+                                {proposedChanges.description && (
+                                    <div className="mt-3 pt-3 border-t border-blue-100">
+                                        <span className="text-gray-600 font-medium block mb-1">
+                                            {request.requestType.includes('Remove') ? 'Detail to Remove' : 'New Detail Content'}
+                                        </span>
+                                        <p className="text-gray-900 text-sm italic bg-white/50 p-3 rounded-lg border border-blue-100">
+                                            "{proposedChanges.description}"
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="text-sm">

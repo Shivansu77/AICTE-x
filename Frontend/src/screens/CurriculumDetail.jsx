@@ -181,7 +181,7 @@ const CurriculumDetail = () => {
                 requestType: requestData.type,
                 justification: requestData.justification,
                 proposedChanges: {
-                    description: requestData.description,
+                    description: requestData.description || requestData.proposedChanges,
                     unitNumber: requestData.unitNumber,
                     newTopic: requestData.newTopic,
                     unitTitle: requestData.unitTitle,
@@ -442,6 +442,14 @@ const CurriculumDetail = () => {
                                             setRequestData({ type: 'Remove Topic', unitNumber: unit.unitNumber, newTopic: topic, justification: '', proposedChanges: '' });
                                             setShowRequestModal(true);
                                         }}
+                                        onAddSubtopic={(topic) => {
+                                            setRequestData({ type: 'Add Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, justification: '', description: '' });
+                                            setShowRequestModal(true);
+                                        }}
+                                        onRemoveSubtopic={(topic, subtopic) => {
+                                            setRequestData({ type: 'Remove Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, description: subtopic, justification: 'Removing detail', proposedChanges: '' });
+                                            setShowRequestModal(true);
+                                        }}
                                     />
                                 ))
                             ) : (
@@ -568,6 +576,8 @@ const CurriculumDetail = () => {
                                     <option>Remove Topic</option>
                                     <option>Add Unit</option>
                                     <option>Update Unit</option>
+                                    <option>Add Topic Detail</option>
+                                    <option>Remove Topic Detail</option>
                                     <option>New Tool/Technology</option>
                                     <option>Outcome Improvement</option>
                                     <option>Other</option>
@@ -599,6 +609,44 @@ const CurriculumDetail = () => {
                                             className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary"
                                             value={requestData.newTopic}
                                             onChange={e => setRequestData({ ...requestData, newTopic: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (requestData.type === 'Add Topic Detail' || requestData.type === 'Remove Topic Detail') ? (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-secondary mb-2">Unit No.</label>
+                                            <input
+                                                type="number"
+                                                required
+                                                readOnly
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 font-bold text-gray-500"
+                                                value={requestData.unitNumber}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-secondary mb-2">Topic</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                readOnly
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 font-bold text-gray-500"
+                                                value={requestData.newTopic}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-secondary mb-2">
+                                            {requestData.type === 'Add Topic Detail' ? 'Detail to Add' : 'Detail to Remove'}
+                                        </label>
+                                        <textarea
+                                            required
+                                            rows="2"
+                                            placeholder={requestData.type === 'Add Topic Detail' ? "e.g. In-depth cover of custom hooks" : "Detail text"}
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary resize-none"
+                                            value={requestData.description || ''}
+                                            onChange={e => setRequestData({ ...requestData, description: e.target.value })}
                                         />
                                     </div>
                                 </div>
