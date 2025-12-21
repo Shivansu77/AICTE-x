@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X, MessageSquare } from 'lucide-react';
+import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X, MessageSquare, Info } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import api from '../utils/api';
@@ -58,6 +58,7 @@ const Layout = ({ children }) => {
     { icon: BookOpen, label: 'Curriculum', path: '/curriculum' },
     { icon: Megaphone, label: 'Announcements', path: '/announcements' },
     { icon: Users, label: 'Community', path: '/community' },
+    { icon: Info, label: 'About Us', path: '/about' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
 

@@ -17,6 +17,7 @@ import StudentScreen from './screens/StudentScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import ContactAdministration from './screens/ContactAdministration';
 import AdminQueries from './screens/AdminQueries';
+import AboutUs from './screens/AboutUs';
 
 // Layout Wrapper
 const AppLayout = () => (
@@ -55,6 +56,7 @@ function App() {
             <Route path="/announcements" element={<AnnouncementsScreen />} />
             <Route path="/community" element={<CommunityScreen />} />
             <Route path="/contact" element={<ContactAdministration />} />
+            <Route path="/about" element={<AboutUs />} />
 
             {/* Admin Routes */}
             <Route path="/admin/courses" element={<ManageCourses />} />
