@@ -129,6 +129,38 @@ exports.updateRequestStatus = async (req, res) => {
                     }
                 }
 
+                if (request.requestType === 'Add Topic Detail' && changes.unitNumber && changes.newTopic && changes.description) {
+                    const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
+                    if (unitIndex !== -1) {
+                        const unit = newSubjectData.units[unitIndex];
+                        // Initialize topicDetails map if it doesn't exist (it is a Map now)
+                        if (!unit.topicDetails) {
+                            unit.topicDetails = new Map();
+                        }
+                        // Mongoose Map needs .get / .set or treat as object if using lean/toObject()
+                        // Since we used .toObject() above, it's a plain object or Map depending on mongoose version/options
+                        // However, in standard JS object from Mongoose toObject(), Maps become objects usually.
+                        // Let's assume it's an object for safety with the schema definition `type: Map`.
+                        // Actually, `toObject()` defaults to converting Maps to Objects.
+                        // So we can treat it as an object where keys are topics.
+
+                        // Wait, if it's undefined in old data, we init it.
+                        let details = unit.topicDetails[changes.newTopic] || [];
+                        details.push(changes.description);
+                        unit.topicDetails[changes.newTopic] = details;
+                    }
+                }
+
+                if (request.requestType === 'Remove Topic Detail' && changes.unitNumber && changes.newTopic && changes.description) {
+                    const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
+                    if (unitIndex !== -1) {
+                        const unit = newSubjectData.units[unitIndex];
+                        if (unit.topicDetails && unit.topicDetails[changes.newTopic]) {
+                            unit.topicDetails[changes.newTopic] = unit.topicDetails[changes.newTopic].filter(d => d !== changes.description);
+                        }
+                    }
+                }
+
                 if (request.requestType === 'Update Unit' && changes.unitNumber) {
                     const unitIndex = newSubjectData.units.findIndex(u => u.unitNumber == changes.unitNumber);
                     if (unitIndex !== -1) {

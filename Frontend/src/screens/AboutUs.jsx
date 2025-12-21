@@ -92,8 +92,8 @@ const AboutUs = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-4xl mx-auto px-4"
       >
-        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-gray-900">
-          Empowering India's <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-blue-500 to-cyan-500">Digital Campus</span>
+        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-blue-500 to-cyan-500">
+          Empowering India's Digital Campus
         </h1>
 
         <p className="text-lg text-gray-600 font-medium leading-relaxed max-w-2xl mx-auto">

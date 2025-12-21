@@ -33,7 +33,8 @@ const CurriculumSchema = new mongoose.Schema({
         title: { type: String, required: true },
         unitNumber: { type: Number, required: true },
         hours: { type: Number, required: true },
-        topics: [String]
+        topics: [String],
+        topicDetails: { type: Map, of: [String], default: {} }
     }],
 
     courseOutcomes: [{ type: String }], // COs
