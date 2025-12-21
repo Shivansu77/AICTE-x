@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, Lock, Bell, Save, Shield, Mail, Upload, Camera, MapPin, Briefcase, BookOpen } from 'lucide-react';
 import api from '../utils/api';
+import { useUser } from '../utils/UserContext';
 
 const SettingsScreen = () => {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
+    const { user, setUser } = useUser();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
     const fileInputRef = useRef(null);
@@ -22,31 +23,19 @@ const SettingsScreen = () => {
     });
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const { data } = await api.get('/user/profile');
-                setUser(data);
-                // Update local storage to keep it fresh
-                localStorage.setItem('user', JSON.stringify(data));
-
-                // Pre-fill form
-                setFormData({
-                    firstName: data.firstName || '',
-                    lastName: data.lastName || '',
-                    email: data.email || '',
-                    avatar: data.avatar || '',
-                    college: data.college || '',
-                    department: data.department || '',
-                    designation: data.designation || '',
-                    location: data.location || '',
-                    bio: data.bio || '',
-                });
-            } catch (error) {
-                console.error("Failed to fetch profile", error);
-            }
-        };
-        fetchProfile();
-    }, []);
+        // Pre-fill form when user data is available
+        setFormData({
+            firstName: user.firstName || '',
+            lastName: user.lastName || '',
+            email: user.email || '',
+            avatar: user.avatar || '',
+            college: user.college || '',
+            department: user.department || '',
+            designation: user.designation || '',
+            location: user.location || '',
+            bio: user.bio || '',
+        });
+    }, [user]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,17 +64,11 @@ const SettingsScreen = () => {
         try {
             const response = await api.put('/user/profile', formData);
 
-            // Update local storage and state
+            // Update user context (which also updates localStorage)
             const updatedUser = response.data.user;
-            localStorage.setItem('user', JSON.stringify(updatedUser));
             setUser(updatedUser);
 
-            setMessage({ type: 'success', text: 'Profile updated successfully! Refreshing...' });
-
-            // Reload page after a short delay to show success message and update all components
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
+            setMessage({ type: 'success', text: 'Profile updated successfully!' });
         } catch (error) {
             console.error("Update failed", error);
             setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to update profile.' });
