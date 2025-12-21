@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Book, Clock, Edit3, ArrowRight, Eye, User, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useUser } from '../utils/UserContext';
 import FacultyScreen from './FacultyScreen';
 import AdminDashboard from './AdminDashboard';
 import FacultyDashboard from './FacultyDashboard';
+import { useNavigate } from 'react-router-dom';
 
 // ...
 // --- ADMIN PORTAL VIEW ---
@@ -73,30 +75,69 @@ const Dashboard = () => {
     const [curricula, setCurricula] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState("All Semesters");
+    const [queries, setQueries] = useState([]);
+    const [queryForm, setQueryForm] = useState({
+        subject: '',
+        message: '',
+        category: 'general_query'
+    });
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState('');
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const { user } = useUser();
     const role = user.role || 'student'; // Default to student
+    const navigate = useNavigate();
+
+    const fetchCurricula = async () => {
+        try {
+            const response = await api.get('/api/curriculum');
+            setCurricula(response.data);
+        } catch (error) {
+            console.error("Failed to fetch curriculum", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchMyQueries = async () => {
+        try {
+            const response = await api.get('/user/my-queries');
+            setQueries(response.data);
+        } catch (error) {
+            console.error('Failed to fetch queries:', error);
+        }
+    };
+
+    const handleSubmitQuery = async (e) => {
+        e.preventDefault();
+        setSubmitLoading(true);
+        setSubmitMessage('');
+
+        try {
+            await api.post('/user/student-query', queryForm);
+            setSubmitMessage('Query submitted successfully!');
+            setQueryForm({ subject: '', message: '', category: 'general_query' });
+            fetchMyQueries();
+        } catch (error) {
+            setSubmitMessage('Failed to submit query. Please try again.');
+        } finally {
+            setSubmitLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // If Admin, we might not need to fetch curricula immediately if the AdminDashboard handles its own data, 
-        // but for now let's keep fetching or let AdminDashboard handle it.
-        if (role === 'admin') {
-            setLoading(false);
-            return;
-        }
-
-        const fetchCurricula = async () => {
-            try {
-                const response = await api.get('/api/curriculum');
-                setCurricula(response.data);
-            } catch (error) {
-                console.error("Failed to fetch curriculum", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchCurricula();
+
+        // Refetch when the tab gains focus
+        const handleFocus = () => fetchCurricula();
+        window.addEventListener('focus', handleFocus);
+        return () => window.removeEventListener('focus', handleFocus);
+    }, []);
+
+    useEffect(() => {
+        if (role === 'student') {
+            fetchMyQueries();
+        }
     }, [role]);
 
     if (loading) {
@@ -133,22 +174,6 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* ANNOUNCEMENT SECTION */}
-                    <div className="bg-accent-yellow/10 border-2 border-accent-yellow/20 rounded-[2rem] p-6">
-                        <h3 className="text-lg font-bold text-primary mb-4 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-accent-yellow rounded-full flex items-center justify-center text-white"><Clock size={16} /></span>
-                            Latest Announcements
-                        </h3>
-                        <div className="space-y-3">
-                            <div className="bg-white p-4 rounded-2xl shadow-sm flex items-start gap-4">
-                                <div className="p-2 bg-accent-peach/10 text-accent-peach rounded-lg font-bold text-xs uppercase">New</div>
-                                <div>
-                                    <h4 className="font-bold text-primary text-sm">SIH 2025 Registration Open</h4>
-                                    <p className="text-xs text-secondary mt-1">Smart India Hackathon registrations are now live! Register your teams before Jan 20th.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </>
             )}
 
@@ -162,31 +187,19 @@ const Dashboard = () => {
                 </div>
 
                 {/* Filtering Pills */}
-                <div className="flex items-center justify-between gap-4 mb-6">
-                    <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                        {["All Semesters", "Semester 3", "Semester 4", "Semester 5"].map((label, idx) => (
-                            <button
-                                key={label}
-                                onClick={() => setActiveFilter(label)}
-                                className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${activeFilter === label
-                                    ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
-                                    : "bg-white text-secondary hover:bg-white/80 border border-gray-100"
-                                    }`}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
-
-                    <button
-                        onClick={async () => {
-                            await api.get('/api/curriculum/seed');
-                            window.location.reload();
-                        }}
-                        className="px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap bg-accent-blue/10 text-accent-blue hover:bg-accent-blue/20 transition-colors shrink-0"
-                    >
-                        Reset/Seed Data
-                    </button>
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide mb-6">
+                    {["All Semesters", "Semester 3", "Semester 4", "Semester 5"].map((label, idx) => (
+                        <button
+                            key={label}
+                            onClick={() => setActiveFilter(label)}
+                            className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${activeFilter === label
+                                ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
+                                : "bg-white text-secondary hover:bg-white/80 border border-gray-100"
+                                }`}
+                        >
+                            {label}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Course Grid */}
@@ -200,8 +213,8 @@ const Dashboard = () => {
                     </div>
                 ) : (
                     <div className="text-center py-20">
-                        <h3 className="text-xl font-bold text-secondary">No courses found.</h3>
-                        <p className="text-secondary/70">Try seeding data using the button above.</p>
+                        <h3 className="text-xl font-bold text-secondary">No subjects found.</h3>
+                        <p className="text-secondary/70">Add courses and subjects through the admin panel.</p>
                     </div>
                 )}
             </div>
