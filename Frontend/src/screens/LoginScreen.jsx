@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight, Lock, Mail } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
+import { useUser } from '../utils/UserContext';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const LoginScreen = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,8 +22,14 @@ const LoginScreen = () => {
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      setUser(response.data.user);
 
-      navigate('/');
+      // Navigate based on role
+      if (response.data.user.role === 'student') {
+        navigate('/student');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {

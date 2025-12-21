@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X } from 'lucide-react';
+import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X, MessageSquare } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import api from '../utils/api';
+import { useUser } from '../utils/UserContext';
 
 const SidebarItem = ({ icon: Icon, label, path, active }) => {
   return (
@@ -24,10 +25,10 @@ const SidebarItem = ({ icon: Icon, label, path, active }) => {
 const Layout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  // Safe check for user existence
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const { user } = useUser();
   const role = user.role || "Faculty";
-  const name = user.firstName ? `Dr. ${user.lastName}` : "Faculty";
+  const title = role === 'teacher' || role === 'faculty' ? 'Dr.' : '';
+  const name = user.firstName ? (role === 'admin' ? `${user.firstName} ${user.lastName}` : `${title} ${user.lastName}`).trim() : (role === 'admin' ? 'Admin' : role === 'teacher' || role === 'faculty' ? 'Faculty' : 'Student');
 
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -52,13 +53,27 @@ const Layout = ({ children }) => {
     fetchNotifications();
   }, [role, location.pathname]);
 
-  const navItems = [
+  const baseNavItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: BookOpen, label: 'Curriculum', path: '/curriculum' },
     { icon: Megaphone, label: 'Announcements', path: '/announcements' },
     { icon: Users, label: 'Community', path: '/community' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
+
+  const navItems = role === 'student'
+    ? [
+        ...baseNavItems.slice(0, 1),
+        { icon: MessageSquare, label: 'Contact Administration', path: '/contact' },
+        ...baseNavItems.slice(1)
+      ]
+    : role === 'admin'
+    ? [
+        ...baseNavItems.slice(0, 1),
+        { icon: MessageSquare, label: 'Student Queries', path: '/admin/queries' },
+        ...baseNavItems.slice(1)
+      ]
+    : baseNavItems;
 
   return (
     <div className="min-h-screen bg-cream flex p-6 gap-6 font-sans text-primary">
@@ -85,8 +100,12 @@ const Layout = ({ children }) => {
 
         <div className="px-4 mt-auto">
           <div className="bg-accent-yellow/20 p-6 rounded-3xl flex flex-col items-center text-center gap-3">
-            <div className="w-16 h-16 bg-accent-yellow rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-sm uppercase">
-              {role[0]}
+            <div className="w-16 h-16 bg-accent-yellow rounded-full flex items-center justify-center text-2xl font-bold text-white shadow-sm uppercase overflow-hidden">
+              {user.avatar ? (
+                <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                role[0]
+              )}
             </div>
             <div>
               <h3 className="font-bold text-lg">{name}</h3>
@@ -112,9 +131,11 @@ const Layout = ({ children }) => {
         <header className="flex justify-between items-center mb-10 pl-4 z-20 relative">
           <div>
             <h2 className="text-4xl font-extrabold text-primary">
-              {navItems.find(i => i.path === location.pathname)?.label || 'Dashboard'}
+              {user.role === 'student' ? 'Student Portal' : (navItems.find(i => i.path === location.pathname)?.label || 'Dashboard')}
             </h2>
-            <p className="text-secondary font-medium mt-1">Welcome back, get ready to teach!</p>
+            <p className="text-secondary font-medium mt-1">
+              {user.role === 'student' ? 'Welcome back, ready to learn!' : 'Welcome back, get ready to teach!'}
+            </p>
           </div>
 
           <div className="flex items-center gap-4">

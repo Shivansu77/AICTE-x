@@ -19,7 +19,7 @@ app.use(cors({
   origin: true, // Allow any origin for development
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => {
   res.send('Hello, World!');

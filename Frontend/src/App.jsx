@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { UserProvider, useUser } from './utils/UserContext';
 import Layout from './components/Layout';
 import Dashboard from './screens/Dashboard';
 import LoginScreen from './screens/LoginScreen';
@@ -12,7 +13,10 @@ import CourseDetail from './screens/CourseDetail';
 import FacultyCourseView from './screens/FacultyCourseView';
 
 import FacultyScreen from './screens/FacultyScreen';
+import StudentScreen from './screens/StudentScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import ContactAdministration from './screens/ContactAdministration';
+import AdminQueries from './screens/AdminQueries';
 
 // Layout Wrapper
 const AppLayout = () => (
@@ -21,38 +25,50 @@ const AppLayout = () => (
   </Layout>
 );
 
+// Route Handler for /
+const DashboardRouter = () => {
+  return <Dashboard />;
+};
+
 // Route Handler for /curriculum
 const CurriculumRouter = () => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const { user } = useUser();
   return user.role === 'admin' ? <ManageCourses /> : <FacultyScreen />;
 };
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/register" element={<RegisterScreen />} />
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
 
-        {/* Protected Routes */}
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/curriculum" element={<CurriculumRouter />} />
-          <Route path="/curriculum/:id" element={<CurriculumDetail />} />
-          <Route path="/announcements" element={<AnnouncementsScreen />} />
-          <Route path="/community" element={<CommunityScreen />} />
+          {/* Student Routes (No Layout) */}
+          <Route path="/student" element={<StudentScreen />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/courses" element={<ManageCourses />} />
-          <Route path="/admin/course/:id" element={<CourseDetail />} />
+          {/* Protected Routes with Layout */}
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<DashboardRouter />} />
+            <Route path="/curriculum" element={<CurriculumRouter />} />
+            <Route path="/curriculum/:id" element={<CurriculumDetail />} />
+            <Route path="/announcements" element={<AnnouncementsScreen />} />
+            <Route path="/community" element={<CommunityScreen />} />
+            <Route path="/contact" element={<ContactAdministration />} />
 
-          {/* Faculty Routes */}
-          <Route path="/faculty/course/:id" element={<FacultyCourseView />} />
+            {/* Admin Routes */}
+            <Route path="/admin/courses" element={<ManageCourses />} />
+            <Route path="/admin/course/:id" element={<CourseDetail />} />
+            <Route path="/admin/queries" element={<AdminQueries />} />
 
-          <Route path="/settings" element={<SettingsScreen />} />
-        </Route>
-      </Routes>
-    </Router>
+            {/* Faculty Routes */}
+            <Route path="/faculty/course/:id" element={<FacultyCourseView />} />
+
+            <Route path="/settings" element={<SettingsScreen />} />
+          </Route>
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, FileText, AlertCircle, Users, BookOpen } from 'lucide-react';
+import { CheckCircle, XCircle, FileText, AlertCircle, Users, BookOpen, MessageSquare } from 'lucide-react';
+import api from '../utils/api';
 
 const StatCard = ({ title, value, color, icon: Icon, onClick }) => (
     <div onClick={onClick} className={`bg-white p-6 rounded-[2rem] shadow-sm border border-black/5 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all ${onClick ? 'hover:scale-[1.02]' : ''}`}>
@@ -126,31 +127,34 @@ const RequestDetailsModal = ({ request, onClose, onApprove, onReject }) => {
     );
 };
 
-import api from '../utils/api';
-
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [stats, setStats] = useState({ courses: 0, faculty: 0, pending: 0 }); // Placeholder for now
+    const [stats, setStats] = useState({ courses: 0, faculty: 0, pending: 0, studentQueries: 0 });
     const [requests, setRequests] = useState([]);
+    const [studentQueries, setStudentQueries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedRequest, setSelectedRequest] = useState(null);
+    const [selectedQuery, setSelectedQuery] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 // Fetch Data in Parallel
-                const [reqRes, courseRes, facultyRes] = await Promise.all([
+                const [reqRes, courseRes, facultyRes, queryRes] = await Promise.all([
                     api.get('/api/requests/pending'),
                     api.get('/api/courses'),
-                    api.get('/user/teachers')
+                    api.get('/user/teachers'),
+                    api.get('/user/student-queries')
                 ]);
 
                 setRequests(reqRes.data);
+                setStudentQueries(queryRes.data);
 
                 setStats({
                     courses: courseRes.data.length,
                     faculty: facultyRes.data.length,
-                    pending: reqRes.data.length
+                    pending: reqRes.data.length,
+                    studentQueries: queryRes.data.filter(q => q.status === 'pending').length
                 });
 
             } catch (error) {
@@ -179,7 +183,7 @@ const AdminDashboard = () => {
     return (
         <div className="space-y-8">
             {/* Stats Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Courses"
                     value={loading ? "..." : stats.courses}
@@ -189,9 +193,10 @@ const AdminDashboard = () => {
                 />
                 <StatCard title="Active Faculty" value={loading ? "..." : stats.faculty} color="bg-accent-peach" icon={Users} />
                 <StatCard title="Pending Requests" value={loading ? "..." : stats.pending} color="bg-accent-yellow" icon={AlertCircle} />
+                <StatCard title="Student Queries" value={loading ? "..." : stats.studentQueries} color="bg-accent-green" icon={MessageSquare} />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Pending Approvals */}
                 <div className="bg-white/50 p-6 rounded-[2.5rem] border-2 border-white min-h-[400px]">
                     <div className="flex justify-between items-center mb-6 px-2">
@@ -222,18 +227,47 @@ const AdminDashboard = () => {
                                         onReject={() => handleAction(req._id, 'rejected')}
                                         onViewDetails={() => setSelectedRequest(req)}
                                     />
-                                    {/* Override the View Details button behavior by passing a prop? or just cloning?
-                                        RequestItem is defined above. I need to modify RequestItem or pass a prop.
-                                        Let's Modify RequestItem definition in the file itself.
-                                        Actually, I am replacing the `AdminDashboard` component but `RequestItem` is defined outside.
-                                        I'll include `RequestItem` RE-DEFINITION inside this replacement block if I can replacing the whole file content?
-                                        NO, I am targeting AdminDashboard.
-                                        Wait, RequestItem definition is lines 17-40. AdminDashboard starts at 44.
-                                        But I can't easily edit RequestItem props in the Usage loop if RequestItem doesn't accept `onViewDetails`.
-                                        RequestItem defined accepts: `title, requestedBy, type, date, onApprove, onReject`.
-                                        Line 35 has a hardcoded button.
-                                        I should replace `RequestItem` definition too.
-                                     */}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                {/* Student Queries */}
+                <div className="bg-white/50 p-6 rounded-[2.5rem] border-2 border-white min-h-[400px]">
+                    <div className="flex justify-between items-center mb-6 px-2">
+                        <h3 className="text-2xl font-extrabold text-primary">Student Queries</h3>
+                        <button className="text-accent-blue font-bold text-sm hover:underline">View All</button>
+                    </div>
+
+                    {loading ? (
+                        <div className="text-center py-10 text-gray-400 font-bold animate-pulse">Loading Queries...</div>
+                    ) : studentQueries.filter(q => q.status === 'pending').length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-64 text-center">
+                            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 mb-4">
+                                <MessageSquare size={32} />
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-600">No Pending Queries</h4>
+                            <p className="text-gray-400 text-sm">All student queries have been addressed.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {studentQueries.filter(q => q.status === 'pending').map(query => (
+                                <div key={query._id} className="border border-gray-200 rounded-lg p-4">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h4 className="font-medium text-gray-900">{query.subject}</h4>
+                                        <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">Pending</span>
+                                    </div>
+                                    <p className="text-gray-700 text-sm mb-2">{query.message}</p>
+                                    <p className="text-xs text-gray-500">By {query.studentId?.firstName} {query.studentId?.lastName}</p>
+                                    <div className="flex gap-2 mt-3">
+                                        <button
+                                            onClick={() => setSelectedQuery(query)}
+                                            className="text-blue-600 text-sm hover:text-blue-800"
+                                        >
+                                            Respond
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -261,6 +295,105 @@ const AdminDashboard = () => {
                     onReject={() => handleAction(selectedRequest._id, 'rejected')}
                 />
             )}
+
+            {selectedQuery && (
+                <QueryResponseModal
+                    query={selectedQuery}
+                    onClose={() => setSelectedQuery(null)}
+                    onRespond={async (response, status) => {
+                        try {
+                            await api.put(`/user/student-query/${selectedQuery._id}/respond`, {
+                                adminResponse: response,
+                                status: status
+                            });
+                            // Refresh data
+                            const queryRes = await api.get('/user/student-queries');
+                            setStudentQueries(queryRes.data);
+                            setStats(prev => ({
+                                ...prev,
+                                studentQueries: queryRes.data.filter(q => q.status === 'pending').length
+                            }));
+                            setSelectedQuery(null);
+                            alert('Response sent successfully!');
+                        } catch (error) {
+                            console.error('Failed to respond:', error);
+                            alert('Failed to send response');
+                        }
+                    }}
+                />
+            )}
+        </div>
+    );
+};
+
+const QueryResponseModal = ({ query, onClose, onRespond }) => {
+    const [response, setResponse] = useState('');
+    const [status, setStatus] = useState('resolved');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onRespond(response, status);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-8 py-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <h3 className="text-xl font-extrabold text-primary">Respond to Student Query</h3>
+                    <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors font-bold">
+                        X
+                    </button>
+                </div>
+                <div className="p-8 space-y-6">
+                    <div>
+                        <h4 className="font-bold text-primary mb-2">{query.subject}</h4>
+                        <p className="text-secondary text-sm mb-4">{query.message}</p>
+                        <p className="text-xs text-gray-500">From: {query.studentId?.firstName} {query.studentId?.lastName}</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Your Response</label>
+                            <textarea
+                                value={response}
+                                onChange={(e) => setResponse(e.target.value)}
+                                rows={4}
+                                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Type your response here..."
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select
+                                value={status}
+                                onChange={(e) => setStatus(e.target.value)}
+                                className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option value="resolved">Resolved</option>
+                                <option value="reviewed">Reviewed (Needs Follow-up)</option>
+                            </select>
+                        </div>
+
+                        <div className="flex gap-4 pt-4">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="flex-1 py-3 px-6 rounded-full bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="flex-1 py-3 px-6 rounded-full bg-blue-500 text-white font-bold hover:bg-blue-600 shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1"
+                            >
+                                Send Response
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 };
