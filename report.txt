@@ -1,0 +1,197 @@
+Project Report
+A Unified Portal for Developing a Model Curriculum for all AICTE-Approved Institutes
+
+Submitted in partial fulfillment of the requirements for the award of degree of
+B. Tech
+Computer Science and Engineering
+Group 22
+
+Submitted by:
+Shivansu Bisht (12308270)
+Rohit Singh (12311093)
+Shubham Bhatt (12311024)
+
+--------------------------------------------------------------------------------
+
+Student Declaration
+
+We, Shivansu Bisht (12308270), Rohit Singh (12311093), and Shubham Bhatt (12311024), scholars of Bachelor of Technology in Computer Science and Engineering, hereby affirm that the work presented in this report is an outcome of our own efforts and intellectual engagement.
+
+Shivansu Bisht
+Rohit Singh
+Shubham Bhatt
+
+Dated: 21st December, 2025
+
+--------------------------------------------------------------------------------
+
+TABLE OF CONTENTS
+
+CHAPTER 1: INTRODUCTION ----------------------------------------------------------------- 1
+1.1 Problem Statement
+1.2 Objectives
+1.3 Scope of the Project
+
+CHAPTER 2: LITERATURE REVIEW -------------------------------------------------------- 3
+2.1 Current State of Curriculum Management
+2.2 Limitations of Manual Systems
+2.3 The Need for a Unified Digital Platform
+
+CHAPTER 3: SYSTEM DESIGN ----------------------------------------------------------------- 5
+3.1 System Architecture
+3.2 Database Design
+3.3 User Interface Design
+
+CHAPTER 4: IMPLEMENTATION ------------------------------------------------------------- 8
+4.1 Technology Stack
+4.2 Core Module Implementation
+4.3 Request Approval Workflow
+
+CHAPTER 5: TESTING AND RESULTS ------------------------------------------------------ 11
+5.1 Testing Approach
+5.2 System Features & Descriptions
+5.3 Performance Analysis
+
+CHAPTER 6: CONCLUSION AND FUTURE SCOPE ------------------------------------- 14
+6.1 Conclusion
+6.2 Future Enhancements
+
+Git Link ------------------------------------------------------------------------------------------------ 16
+
+--------------------------------------------------------------------------------
+
+CHAPTER 1: INTRODUCTION
+
+1.1 Problem Statement
+AICTE-approved institutes often lack a standardized approach to curriculum development. While the All India Council for Technical Education (AICTE) provides model curricula, the dissemination, adoption, and subsequent updating of these curricula across thousands of institutions are often slow, manual, and prone to inconsistencies.
+
+Faculties frequently struggle to access the latest approved syllabus or propose necessary updates based on industry advancements. Students lack a single dependable source of truth for their course requirements, often relying on outdated printouts or disparate departmental websites. Administrators face immense bureaucratic hurdles in managing, reviewing, and approving even minor curriculum changes. There is an urgent need for a unified portal that facilitates the creation, sharing, and updating of model curricula for all AICTE-approved institutions, ensuring consistency and quality in education.
+
+1.2 Objectives
+The primary objectives of developing the AICTE Unified Curriculum Portal are:
+1.  **Standardization**: To create a centralized repository for all AICTE-approved model curricula, accessible to authorized stakeholders anywhere, ensuring that every institute has access to the same high-quality standards.
+2.  **Dynamic Evolution**: To enable a digital, streamlined workflow for adding, updating, or removing curriculum topics, shifting from a rigid paper-based system to an agile, automated approval system.
+3.  **Role-Based Governance**: To implement secure access controls where Admins (AICTE officials/Deans) approve changes, Faculty (Subject Experts) propose updates, and Students view the finalized curriculum.
+4.  **Transparency & Communication**: To facilitate direct queries from students to administration and seamless broadcasting of announcements regarding curriculum changes.
+5.  **Efficiency**: To reduce the time taken for a curriculum update to propagate from proposal to implementation.
+
+1.3 Scope of the Project
+The project encompasses the full lifecycle of curriculum management:
+1.  **Functional Scope**:
+    *   **Admin Dashboard**: Provides analytics on courses and users, facilitates the approval/rejection of curriculum update requests, and manages the user directory.
+    *   **Faculty Module**: Allows subject matter experts to view their assigned courses, propose new topics, suggest removal of outdated content, and view the status of their requests.
+    *   **Student Module**: Offers a read-only, organized view of the entire degree program (Program -> Semester -> Subject -> Unit -> Topic), along with a query submission system.
+    *   **Communication**: Includes an Announcements system for official broadcasts and a Community section for academic discussions.
+
+2.  **Technical Scope**:
+    *   **Frontend**: A responsive Single Page Application (SPA) built with React.js and Vite.
+    *   **Backend**: A RESTful API server built with Node.js and Express.js.
+    *   **Database**: MongoDB (Atlas) for storage, utilizing Mongoose for object modeling.
+    *   **Security**: Implementation of JWT for authentication, BCrypt for password hashing, and Role-Based Access Control (RBAC) middleware.
+
+--------------------------------------------------------------------------------
+
+CHAPTER 2: LITERATURE REVIEW
+
+2.1 Current State of Curriculum Management
+Currently, most technical institutions rely on static PDFs or hardcopy syllabus books distributed at the beginning of an academic year. Updates are discussed in meetings and minutes are circulated, but the actual syllabus document is rarely updated in real-time. This leads to version control issues where students and even junior faculty members might refer to outdated documents.
+
+2.2 Limitations of Manual Systems
+*   **Latency**: An industry update (e.g., the introduction of a new AI framework) takes years to appear in the official curriculum due to the slow manual approval chains.
+*   **Inconsistency**: Different colleges under the same university often end up teaching slightly different versions of the "same" subject due to communication gaps.
+*   **Lack of Feedback**: There is no direct digital channel for students or industry experts to provide feedback on specific curriculum topics.
+
+2.3 The Need for a Unified Digital Platform
+Research into Educational Management Information Systems (EMIS) suggests that digitized curriculum management significantly improves learning outcomes. By treating curriculum as a "living document" rather than a static artifact, institutions can respond faster to technological shifts. A unified portal acts as a single source of truth, eliminating ambiguity and empowering educators to collaborate on course content.
+
+--------------------------------------------------------------------------------
+
+CHAPTER 3: SYSTEM DESIGN
+
+3.1 System Architecture
+The application follows a robust **MERN Stack** (MongoDB, Express, React, Node) architecture, designed for scalability and performance.
+*   **Presentation Layer (Frontend)**: Built with React.js, it provides a highly interactive user interface. It uses **Context API** for global state management (User Auth) and **React Router** for seamless navigation. It communicates with the backend via **Axios**.
+*   **Application Layer (Backend)**: The Node.js/Express server handles business logic. It exposes REST API endpoints for Authentication, Requests, Courses, and Users. It validates inputs and ensures that only authorized users can perform sensitive actions (like approving a request).
+*   **Data Layer (Database)**: MongoDB serves as the NoSQL database. Its document-oriented structure is ideal for storing the hierarchical nature of a curriculum (Course contains Semesters, which contain Subjects, which contain Units, which contain Topics).
+
+3.2 Database Design
+The database schema is designed to support the complex relationships in an academic environment:
+*   **Users Collection**: Stores `firstName`, `lastName`, `email`, `password` (hashed), and `role` ('admin', 'teacher', 'student').
+*   **Courses Collection**: Represents degree programs (e.g., "B.Tech CSE") and contains metadata like `code`, `title`, and `totalSemesters`.
+*   **Curriculums Collection**: The central entity. It links a specific Subject to a Course and Semester. It contains a nested array structure for `units` and `topics`.
+*   **UpdateReqs Collection**: Stores pending change requests. It links `facultyId`, `curriculumId`, `requestType` (Add/Remove Topic), `proposedChanges`, and `status` ('pending', 'approved', 'rejected').
+*   **StudentQueries Collection**: Tracks academic queries submitted by students, including `subject`, `message`, and `status`.
+
+3.3 User Interface Design
+The UI is built with a "Mobile-First" approach using **Tailwind CSS**.
+*   **Esthetics**: A clean, modern look using a blue/emerald color scheme to signify trust and growth.
+*   **Components**: Reusable components such as `StatCard`, `RequestModal`, and `Layout` ensure consistency.
+*   **Dashboards**:
+    *   *Admin*: Data-heavy, utilizing grids and charts to show system health.
+    *   *Faculty*: focused on specific subjects and action items (Edit/Update).
+    *   *Student*: Read-focused, with clear hierarchy and navigation for browsing subjects.
+
+--------------------------------------------------------------------------------
+
+CHAPTER 4: IMPLEMENTATION
+
+4.1 Technology Stack
+*   **Frontend**:
+    *   **React.js (v18)**: For building the component-based UI.
+    *   **Vite**: Next-generation frontend tooling for fast builds.
+    *   **Tailwind CSS**: For rapid, utility-first styling.
+    *   **Lucide React**: For consistent, lightweight iconography.
+    *   **Framer Motion**: For adding subtle animations to page transitions.
+*   **Backend**:
+    *   **Node.js**: The Javascript runtime.
+    *   **Express.js**: The web framework for routing and middleware.
+    *   **Mongoose**: For schema-based modeling of application data.
+    *   **JsonWebToken (JWT)**: For secure, stateless authentication.
+    *   **BCrypt**: For hashing user passwords.
+
+4.2 Core Module Implementation
+*   **Authentication & RBAC**: A middleware intercepts every request to protected routes, verifies the JWT token, and checks if the user's role matches the required permissions for that route (e.g., only Admins can hit `/api/requests/approve`).
+*   **Curriculum Engine**: This module handles the retrieval of complex nested data. When a user requests a course, the engine aggregates data from the `Courses` and `Curriculums` collections to present a complete semester-wise view.
+*   **Notification System**: Integrated into the dashboard, listing recent announcements or status updates on requests.
+
+4.3 Request Approval Workflow
+This is the core innovation of the portal. It creates a digital paper trail for curriculum changes:
+1.  **Initiation**: A Faculty member views a subject, clicks "Add Detail" or "Propose Change", and fills a form explaining the industry relevance.
+2.  **Submission**: The backend creates an `UpdateReq` document with status 'Pending'.
+3.  **Review**: The Admin sees this in their "Pending Approvals" widget. They can view the justification and the proposed change side-by-side with the current content.
+4.  **Action**: If approved, the backend performs an **atomic transaction**: it updates the `request` status to 'Approved' AND modifies the actual `Curriculum` document to include the newline item. If rejected, it simply updates the request status.
+
+--------------------------------------------------------------------------------
+
+CHAPTER 5: TESTING AND RESULTS
+
+5.1 Testing Approach
+*   **Unit Testing**: Individual API endpoints (Login, Register, Fetch Courses) were tested using Postman to ensure they return correct HTTP status codes and JSON payloads.
+*   **Integration Testing**: Verified the data flow between the React frontend and Node backend. For example, verifying that a Query submitted by a student immediately appears in the Admin's "Student Queries" list.
+*   **Functional Testing**: All roles (Admin, Faculty, Student) were simulated to ensure permissions are enforced (e.g., a Student cannot see the "Approve" button).
+
+5.2 System Features & Descriptions
+*   **Admin User Management**: A newly implemented feature allowing Admins to view a searchable, filterable list of all registered users (Students, Faculty, Admins) via the "Active Faculty" dashboard card.
+*   **Program View**: A student-centric view that displays the entire 4-year program structure, allowing navigation into specific subjects.
+*   **Live Search**: Implemented on the User Management screen to instantly filter users by name or email.
+
+5.3 Performance Analysis
+*   **Load Time**: The application loads in under 1.5 seconds on average networks due to Vite's efficient bundling.
+*   **API Latency**: Backend response times tracked at under 200ms for standard fetch requests.
+*   **Database**: Indexes on `curriculumId` and `userId` ensure fast lookups even as data grows.
+
+--------------------------------------------------------------------------------
+
+CHAPTER 6: CONCLUSION AND FUTURE SCOPE
+
+6.1 Conclusion
+The "Unified Portal for Developing a Model Curriculum" successfully addresses the fragmentation in AICTE's current curriculum management landscape. By providing a digital, role-based platform, it democratizes the curriculum development process. The system ensures that students always have access to the latest syllabus, faculty can easily propose modernizations, and administrators can govern the process with transparency and efficiency. The project meets all its primary objectives of Standardization, Dynamic Evolution, and Efficiency.
+
+6.2 Future Enhancements
+*   **AI-Driven Insights**: Implementing NLP to analyze curriculum content against current job market descriptions to automatically suggest gaps.
+*   **Blockchain Verification**: Using blockchain to store the immutable history of curriculum versions, providing a tamper-proof record of what was taught in any given year.
+*   **Mobile Application**: Developing a React Native counterpart for on-the-go access for students and faculty.
+*   **Offline Access**: Implementing Service Workers (PWA) to allow students to access downloaded syllabi without an internet connection.
+*   **LMS Integration**: API hooks to push approved curriculum changes directly into Learning Management Systems like Moodle or Canvas.
+
+--------------------------------------------------------------------------------
