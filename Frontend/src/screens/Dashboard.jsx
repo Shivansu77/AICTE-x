@@ -166,7 +166,7 @@ const Dashboard = () => {
                     <div className="bg-gradient-to-r from-accent-blue via-accent-blue to-cyan-500 rounded-[2.5rem] p-8 shadow-lg text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full transalte-x-1/2 -translate-y-1/2 blur-3xl"></div>
                         <div className="relative z-10 max-w-2xl">
-                            <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold mb-3 backdrop-blur-md border border-white/20">AICTE Unified Portal</span>
+                            <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold mb-3 backdrop-blur-md border border-white/20">Aicte-X</span>
                             <h1 className="text-3xl font-extrabold mb-4 leading-tight">One Nation, One Curriculum</h1>
                             <p className="text-white/90 font-medium leading-relaxed">
                                 A unified platform for developing, sharing, and standardizing model curricula across all AICTE-approved institutes. Ensuring consistency and quality education for the future of India.

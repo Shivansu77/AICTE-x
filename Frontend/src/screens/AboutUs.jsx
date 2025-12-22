@@ -3,6 +3,13 @@ import { Github, MapPin, Building, ExternalLink, Heart, Sparkles, Globe, BookOpe
 import confetti from 'canvas-confetti';
 import { motion } from 'framer-motion';
 
+import iitLogo from '../assets/iit_logo.png';
+import annaLogo from '../assets/anna_logo.png';
+import nitLogo from '../assets/nit_logo.png';
+import bitsLogo from '../assets/bits_logo.png';
+import lpuLogo from '../assets/lpu_logo.png';
+import cuLogo from '../assets/cu_logo.png';
+
 const BentoCard = ({ children, className = "", delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -92,7 +99,7 @@ const AboutUs = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-4xl mx-auto px-4"
       >
-        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-blue-500 to-cyan-500">
+        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-green">
           Empowering India's Digital Campus
         </h1>
 
@@ -102,85 +109,46 @@ const AboutUs = () => {
       </motion.div>
 
       {/* Grid Layout - More Compact */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-        {/* Mission Card - Spans 2 cols */}
-        <BentoCard className="md:col-span-2 flex flex-col justify-center bg-white" delay={0.1}>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full bg-accent-blue/10 flex items-center justify-center">
-              <Globe size={16} className="text-accent-blue" />
-            </div>
-            <h2 className="text-xl font-bold text-gray-900">Our Mission</h2>
-          </div>
-
-          <p className="text-gray-600 text-sm leading-relaxed mb-4 font-medium">
-            To create a seamless, transparent, and efficient ecosystem where model curricula are easily accessible, adaptable, and implementable for all affiliated institutions.
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: 'Standardization', color: 'bg-blue-50 text-blue-600 border-blue-100' },
-              { label: 'Accessibility', color: 'bg-purple-50 text-purple-600 border-purple-100' },
-              { label: 'Innovation', color: 'bg-orange-50 text-orange-600 border-orange-100' },
-              { label: 'Quality', color: 'bg-green-50 text-green-600 border-green-100' }
-            ].map((tag) => (
-              <span key={tag.label} className={`px-3 py-1 rounded-lg text-xs font-bold border ${tag.color} cursor-default`}>
-                #{tag.label}
-              </span>
+      {/* University Marquee Section */}
+      <div className="py-10 overflow-hidden relative">
+        <h2 className="text-2xl font-black text-center text-gray-900 mb-8">Trusted by Top Institutions</h2>
+        <div className="relative w-full flex overflow-x-hidden group">
+          <motion.div
+            className="flex gap-12 items-center whitespace-nowrap"
+            animate={{ x: [0, -1000] }}
+            transition={{
+              repeat: Infinity,
+              ease: "linear",
+              duration: 25
+            }}
+          >
+            {[...Array(2)].map((_, i) => (
+              <React.Fragment key={i}>
+                {[
+                  { name: "IIT Delhi", img: iitLogo, color: "bg-red-50" },
+                  { name: "Anna University", img: annaLogo, color: "bg-blue-50" },
+                  { name: "NIT Trichy", img: nitLogo, color: "bg-green-50" },
+                  { name: "BITS Pilani", img: bitsLogo, color: "bg-purple-50" },
+                  { name: "LPU", img: lpuLogo, color: "bg-orange-50" },
+                  { name: "Chandigarh University", img: cuLogo, color: "bg-rose-50" },
+                  { name: "IIT Delhi", img: iitLogo, color: "bg-red-50" }, // Repeat for fullness
+                  { name: "Anna University", img: annaLogo, color: "bg-blue-50" },
+                  { name: "NIT Trichy", img: nitLogo, color: "bg-green-50" },
+                  { name: "BITS Pilani", img: bitsLogo, color: "bg-purple-50" },
+                  { name: "LPU", img: lpuLogo, color: "bg-orange-50" },
+                  { name: "Chandigarh University", img: cuLogo, color: "bg-rose-50" },
+                ].map((uni, idx) => (
+                  <div key={idx} className="flex flex-col items-center gap-3 mx-6 grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110 cursor-pointer">
+                    <div className={`w-28 h-28 rounded-full ${uni.color} flex items-center justify-center shadow-sm border-4 border-white overflow-hidden p-2`}>
+                      <img src={uni.img} alt={uni.name} className="w-full h-full object-contain mix-blend-multiply" />
+                    </div>
+                    <span className="font-bold text-gray-700">{uni.name}</span>
+                  </div>
+                ))}
+              </React.Fragment>
             ))}
-          </div>
-        </BentoCard>
-
-        {/* Stats Cards - Compact */}
-        <StatCard
-          icon={Building}
-          value="1000+"
-          label="Institutions"
-          colorClass={{ bg: 'bg-blue-50/50', iconBg: 'bg-blue-100', text: 'text-accent-blue' }}
-          delay={0.2}
-        />
-
-        <StatCard
-          icon={BookOpen}
-          value="500+"
-          label="Curricula"
-          colorClass={{ bg: 'bg-orange-50/50', iconBg: 'bg-orange-100', text: 'text-accent-peach' }}
-          delay={0.3}
-        />
-
-        <StatCard
-          icon={Users}
-          value="1M+"
-          label="Students"
-          colorClass={{ bg: 'bg-green-50/50', iconBg: 'bg-green-100', text: 'text-accent-green' }}
-          delay={0.4}
-        />
-
-        {/* Magic Interaction Card */}
-        <BentoCard className="bg-gradient-to-br from-accent-blue via-blue-500 to-accent-blue text-white group cursor-pointer relative overflow-hidden flex flex-col items-center justify-center p-4" delay={0.5}>
-          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 z-0"></div>
-          <div className="relative z-10 text-center">
-            <Heart size={24} className="text-white fill-white animate-pulse mx-auto mb-2" />
-            <h3 className="text-lg font-bold mb-0.5">Made with Love</h3>
-            <button
-              onClick={handleMagicClick}
-              className="mt-2 text-xs font-bold text-blue-100 hover:text-white underline decoration-blue-300/50 underline-offset-2 transition-colors"
-            >
-              Click for a surprise!
-            </button>
-          </div>
-        </BentoCard>
-
-
-        <BentoCard className="md:col-span-2 flex items-center gap-4 bg-gray-900 text-white" delay={0.6}>
-          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-            <Globe size={20} className="text-accent-yellow" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-white leading-tight">Nationwide Reach</h3>
-            <p className="text-gray-400 text-xs mt-1">Connecting campuses from Kashmir to Kanyakumari.</p>
-          </div>
-        </BentoCard>
+          </motion.div>
+        </div>
       </div>
 
       {/* Developers Section */}
