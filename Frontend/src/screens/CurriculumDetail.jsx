@@ -244,39 +244,54 @@ const CurriculumDetail = () => {
         doc.setTextColor(100, 100, 100);
         doc.text(`Semester: ${course.semester}   |   Credits: ${course.credits}   |   Version: ${course.version}.0`, 14, 63);
 
+        // Description
+        doc.setFontSize(10);
+        doc.setTextColor(60, 60, 60);
+        const splitDescription = doc.splitTextToSize(course.description || '', 180);
+        doc.text(splitDescription, 14, 70);
+
+        const descHeight = splitDescription.length * 4; // Approx height
+        let currentY = 70 + descHeight + 5;
+
         doc.setDrawColor(200, 200, 200);
-        doc.line(14, 68, 196, 68);
+        doc.line(14, currentY, 196, currentY);
+        currentY += 10;
 
         // Outcomes
         if (course.courseOutcomes && course.courseOutcomes.length > 0) {
             doc.setFontSize(14);
             doc.setTextColor(24, 119, 242);
-            doc.text("Course Outcomes", 14, 80);
+            doc.text("Course Outcomes", 14, currentY);
 
             const outcomesData = course.courseOutcomes.map(co => [co]);
             autoTable(doc, {
-                startY: 85,
+                startY: currentY + 5,
                 body: outcomesData,
                 theme: 'plain',
                 styles: { fontSize: 10, cellPadding: 2 },
             });
+            currentY = doc.lastAutoTable.finalY + 10;
         }
-
-        let startY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 80;
 
         // Syllabus Units
         doc.setFontSize(14);
         doc.setTextColor(24, 119, 242);
-        doc.text("Detailed Syllabus", 14, startY);
+        doc.text("Detailed Syllabus", 14, currentY);
 
         const tableData = [];
         course.units.forEach(unit => {
-            const topicsFormatted = unit.topics.join(', ');
+            const topicsFormatted = unit.topics.map(topic => {
+                let text = topic;
+                if (unit.topicDetails && unit.topicDetails[topic] && unit.topicDetails[topic].length > 0) {
+                    text += '\n  • ' + unit.topicDetails[topic].join('\n  • ');
+                }
+                return text;
+            }).join('\n\n');
             tableData.push([`Unit ${unit.unitNumber}: ${unit.title} (${unit.hours} Hrs)`, topicsFormatted]);
         });
 
         autoTable(doc, {
-            startY: startY + 5,
+            startY: currentY + 5,
             head: [['Unit Title', 'Topics Covered']],
             body: tableData,
             theme: 'grid',
@@ -284,6 +299,28 @@ const CurriculumDetail = () => {
             styles: { fontSize: 10, cellPadding: 4, overflow: 'linebreak' },
             columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 'auto' } },
         });
+
+        // References (if any)
+        if (course.references && course.references.length > 0) {
+            let refY = doc.lastAutoTable.finalY + 10;
+            // Check for page break
+            if (refY > 250) {
+                doc.addPage();
+                refY = 20;
+            }
+
+            doc.setFontSize(14);
+            doc.setTextColor(24, 119, 242);
+            doc.text("References / Textbooks", 14, refY);
+
+            const refData = course.references.map(ref => [ref]);
+            autoTable(doc, {
+                startY: refY + 5,
+                body: refData,
+                theme: 'plain',
+                styles: { fontSize: 10, cellPadding: 2 },
+            });
+        }
 
         // Footer
         const pageCount = doc.internal.getNumberOfPages();

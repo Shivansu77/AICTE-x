@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Github, MapPin, Building, ExternalLink, Globe, BookOpen, Users, GraduationCap, Building2, School } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import iitLogo from '../assets/iit_logo.png';
+import nitLogo from '../assets/nit_logo.png';
+import bitsLogo from '../assets/bits_logo.png';
+import cuLogo from '../assets/cu_logo.png';
+import lpuLogo from '../assets/lpu_logo.png';
+
 const BentoCard = ({ children, className = "", delay = 0 }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -85,7 +91,7 @@ const AboutUs = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
               <Building size={20} className="text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800">Trusted by India's Premier Institutions</h3>
+            <h3 className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600">Trusted by India's Premier Institutions</h3>
           </div>
           <p className="text-gray-600 text-sm max-w-2xl mx-auto">
             Powering the future of education across India's most prestigious universities and technical institutes
@@ -95,9 +101,9 @@ const AboutUs = () => {
         {/* Featured Universities Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {[
-            { name: 'IIT Kanpur', logo: <GraduationCap size={32} className="text-blue-600" />, description: 'Premier Technical Institute' },
-            { name: 'IIT Kharagpur', logo: <Building2 size={32} className="text-indigo-600" />, description: 'India\'s Oldest IIT' },
-            { name: 'NIT Trichy', logo: <GraduationCap size={32} className="text-green-600" />, description: 'Top NIT Excellence' }
+            { name: 'IIT Kanpur', logo: iitLogo, description: 'Premier Technical Institute' },
+            { name: 'IIT Kharagpur', logo: iitLogo, description: 'India\'s Oldest IIT' },
+            { name: 'NIT Trichy', logo: nitLogo, description: 'Top NIT Excellence' }
           ].map((uni, index) => (
             <motion.div
               key={uni.name}
@@ -107,8 +113,8 @@ const AboutUs = () => {
               className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  {uni.logo}
+                <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform p-2">
+                  <img src={uni.logo} alt={uni.name} className="w-full h-full object-contain" />
                 </div>
                 <h4 className="text-lg font-bold text-gray-800 mb-1">{uni.name}</h4>
                 <p className="text-sm text-gray-600">{uni.description}</p>
@@ -136,8 +142,11 @@ const AboutUs = () => {
               ].map((university, index) => {
                 // Determine icon for universities
                 const getIcon = (uniName) => {
-                  if (uniName.includes('IIT')) return <GraduationCap size={16} className="text-blue-600 mr-2" />;
-                  if (uniName.includes('NIT')) return <Building2 size={16} className="text-green-600 mr-2" />;
+                  if (uniName.includes('IIT')) return <img src={iitLogo} alt="IIT" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('NIT')) return <img src={nitLogo} alt="NIT" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('BITS')) return <img src={bitsLogo} alt="BITS" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('Chandigarh University')) return <img src={cuLogo} alt="CU" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('LPU')) return <img src={lpuLogo} alt="LPU" className="w-6 h-6 object-contain mr-2" />;
                   return <School size={16} className="text-purple-600 mr-2" />;
                 };
 
@@ -167,8 +176,11 @@ const AboutUs = () => {
               ].map((university, index) => {
                 // Determine icon for universities
                 const getIcon = (uniName) => {
-                  if (uniName.includes('IIT')) return <GraduationCap size={16} className="text-blue-600 mr-2" />;
-                  if (uniName.includes('NIT')) return <Building2 size={16} className="text-green-600 mr-2" />;
+                  if (uniName.includes('IIT')) return <img src={iitLogo} alt="IIT" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('NIT')) return <img src={nitLogo} alt="NIT" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('BITS')) return <img src={bitsLogo} alt="BITS" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('Chandigarh University')) return <img src={cuLogo} alt="CU" className="w-6 h-6 object-contain mr-2" />;
+                  if (uniName.includes('LPU')) return <img src={lpuLogo} alt="LPU" className="w-6 h-6 object-contain mr-2" />;
                   return <School size={16} className="text-purple-600 mr-2" />;
                 };
 
@@ -199,6 +211,10 @@ const AboutUs = () => {
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600">1M+</div>
             <div className="text-xs text-gray-600 uppercase tracking-wider">Students</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">500+</div>
+            <div className="text-xs text-gray-600 uppercase tracking-wider">Curricula</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-600">500+</div>

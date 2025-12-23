@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X, MessageSquare, Info } from 'lucide-react';
+import { BookOpen, Home, Settings, User, Bell, LogOut, Megaphone, Users, X, MessageSquare, Info, Brain } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import api from '../utils/api';
@@ -72,6 +72,7 @@ const Layout = ({ children }) => {
       ? [
         ...baseNavItems.slice(0, 1),
         { icon: MessageSquare, label: 'Student Queries', path: '/admin/queries' },
+        { icon: Brain, label: 'AI Syllabus Approval', path: '/admin/ai-approval' },
         ...baseNavItems.slice(1)
       ]
       : baseNavItems;
