@@ -19,12 +19,20 @@ const CommunityScreen = () => {
     const [activeChannel, setActiveChannel] = useState(role === 'admin' ? 'governance' : 'academic');
 
     const fetchMessages = async () => {
+        // Check if user is authenticated
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await api.get(`/api/messages?channel=${activeChannel}`);
             setMessages(response.data);
             setLoading(false);
         } catch (error) {
             console.error('Failed to fetch messages', error);
+            setLoading(false);
         }
     };
 

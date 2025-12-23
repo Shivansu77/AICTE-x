@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Github, MapPin, Building, ExternalLink, Heart, Sparkles, Globe, BookOpen, Users } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { Github, MapPin, Building, ExternalLink, Globe, BookOpen, Users, GraduationCap, Building2, School } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const BentoCard = ({ children, className = "", delay = 0 }) => (
@@ -55,33 +54,7 @@ const AboutUs = () => {
     fetchDevelopers();
   }, []);
 
-  const handleMagicClick = () => {
-    const duration = 3 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
-    const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
-    const interval = setInterval(function () {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      const particleCount = 50 * (timeLeft / duration);
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-      });
-      confetti({
-        ...defaults,
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-      });
-    }, 250);
-  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12 pt-4">
@@ -99,6 +72,141 @@ const AboutUs = () => {
         <p className="text-lg text-gray-600 font-medium leading-relaxed max-w-2xl mx-auto">
           The AICTE Unified Curriculum Portal is a revolutionary platform designed to <span className="text-gray-900 font-bold">standardize</span>, <span className="text-gray-900 font-bold">streamline</span>, and <span className="text-gray-900 font-bold">elevate</span> the quality of technical education across the nation.
         </p>
+      </motion.div>
+
+      {/* Universities Showcase Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="relative bg-gradient-to-br from-slate-50 to-blue-50/30 rounded-3xl p-8 mx-4 shadow-lg border border-blue-100/50"
+      >
+        {/* Section Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-md border border-blue-100 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+              <Building size={20} className="text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800">Trusted by India's Premier Institutions</h3>
+          </div>
+          <p className="text-gray-600 text-sm max-w-2xl mx-auto">
+            Powering the future of education across India's most prestigious universities and technical institutes
+          </p>
+        </div>
+
+        {/* Featured Universities Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {[
+            { name: 'IIT Kanpur', logo: <GraduationCap size={32} className="text-blue-600" />, description: 'Premier Technical Institute' },
+            { name: 'IIT Kharagpur', logo: <Building2 size={32} className="text-indigo-600" />, description: 'India\'s Oldest IIT' },
+            { name: 'NIT Trichy', logo: <GraduationCap size={32} className="text-green-600" />, description: 'Top NIT Excellence' }
+          ].map((uni, index) => (
+            <motion.div
+              key={uni.name}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 + (index * 0.1) }}
+              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                  {uni.logo}
+                </div>
+                <h4 className="text-lg font-bold text-gray-800 mb-1">{uni.name}</h4>
+                <p className="text-sm text-gray-600">{uni.description}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Universities Scrolling Bar */}
+        <div className="relative">
+          <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-50 to-transparent z-10"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-50 to-transparent z-10"></div>
+
+          <div className="relative overflow-hidden py-4">
+            <div className="flex animate-scroll">
+              {/* First set of universities */}
+              {[
+                'IIT Delhi', 'IIT Bombay', 'IIT Madras', 'IIT Roorkee', 'IIT Guwahati',
+                'NIT Surathkal', 'NIT Warangal', 'NIT Calicut', 'NIT Rourkela', 'NIT Jaipur',
+                'CU Delhi', 'DU Delhi', 'JNU Delhi', 'BHU Varanasi', 'AMU Aligarh',
+                'LPU Punjab', 'Chandigarh University', 'SRM Chennai', 'VIT Vellore', 'Amrita University',
+                'BITS Pilani', 'Manipal University', 'Symbiosis Pune', 'Christ University', 'MS Ramaiah',
+                'PES University', 'RV College', 'BMS College', 'Dayananda Sagar', 'Jain University',
+                'KIIT Bhubaneswar', 'Kalinga University', 'SOA University', 'XIMB Bhubaneswar', 'ICFAI University'
+              ].map((university, index) => {
+                // Determine icon for universities
+                const getIcon = (uniName) => {
+                  if (uniName.includes('IIT')) return <GraduationCap size={16} className="text-blue-600 mr-2" />;
+                  if (uniName.includes('NIT')) return <Building2 size={16} className="text-green-600 mr-2" />;
+                  return <School size={16} className="text-purple-600 mr-2" />;
+                };
+
+                return (
+                  <div
+                    key={`${university}-${index}`}
+                    className="flex-shrink-0 mx-3 px-5 py-3 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300 group"
+                  >
+                    <div className="flex items-center gap-2">
+                      {getIcon(university)}
+                      <span className="text-sm font-semibold text-gray-700 whitespace-nowrap group-hover:text-blue-600 transition-colors">
+                        {university}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+              {/* Duplicate set for seamless scrolling */}
+              {[
+                'IIT Delhi', 'IIT Bombay', 'IIT Madras', 'IIT Roorkee', 'IIT Guwahati',
+                'NIT Surathkal', 'NIT Warangal', 'NIT Calicut', 'NIT Rourkela', 'NIT Jaipur',
+                'CU Delhi', 'DU Delhi', 'JNU Delhi', 'BHU Varanasi', 'AMU Aligarh',
+                'LPU Punjab', 'Chandigarh University', 'SRM Chennai', 'VIT Vellore', 'Amrita University',
+                'BITS Pilani', 'Manipal University', 'Symbiosis Pune', 'Christ University', 'MS Ramaiah',
+                'PES University', 'RV College', 'BMS College', 'Dayananda Sagar', 'Jain University',
+                'KIIT Bhubaneswar', 'Kalinga University', 'SOA University', 'XIMB Bhubaneswar', 'ICFAI University'
+              ].map((university, index) => {
+                // Determine icon for universities
+                const getIcon = (uniName) => {
+                  if (uniName.includes('IIT')) return <GraduationCap size={16} className="text-blue-600 mr-2" />;
+                  if (uniName.includes('NIT')) return <Building2 size={16} className="text-green-600 mr-2" />;
+                  return <School size={16} className="text-purple-600 mr-2" />;
+                };
+
+                return (
+                  <div
+                    key={`${university}-duplicate-${index}`}
+                    className="flex-shrink-0 mx-3 px-5 py-3 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg hover:scale-105 transition-all duration-300 group"
+                  >
+                    <div className="flex items-center gap-2">
+                      {getIcon(university)}
+                      <span className="text-sm font-semibold text-gray-700 whitespace-nowrap group-hover:text-blue-600 transition-colors">
+                        {university}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Trust Indicators */}
+        <div className="flex justify-center items-center gap-8 mt-6 pt-6 border-t border-blue-100">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-blue-600">1000+</div>
+            <div className="text-xs text-gray-600 uppercase tracking-wider">Institutions</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600">1M+</div>
+            <div className="text-xs text-gray-600 uppercase tracking-wider">Students</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-600">500+</div>
+            <div className="text-xs text-gray-600 uppercase tracking-wider">Curricula</div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Grid Layout - More Compact */}
@@ -155,21 +263,6 @@ const AboutUs = () => {
           colorClass={{ bg: 'bg-green-50/50', iconBg: 'bg-green-100', text: 'text-accent-green' }}
           delay={0.4}
         />
-
-        {/* Magic Interaction Card */}
-        <BentoCard className="bg-gradient-to-br from-accent-blue via-blue-500 to-accent-blue text-white group cursor-pointer relative overflow-hidden flex flex-col items-center justify-center p-4" delay={0.5}>
-          <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 z-0"></div>
-          <div className="relative z-10 text-center">
-            <Heart size={24} className="text-white fill-white animate-pulse mx-auto mb-2" />
-            <h3 className="text-lg font-bold mb-0.5">Made with Love</h3>
-            <button
-              onClick={handleMagicClick}
-              className="mt-2 text-xs font-bold text-blue-100 hover:text-white underline decoration-blue-300/50 underline-offset-2 transition-colors"
-            >
-              Click for a surprise!
-            </button>
-          </div>
-        </BentoCard>
 
 
         <BentoCard className="md:col-span-2 flex items-center gap-4 bg-gray-900 text-white" delay={0.6}>

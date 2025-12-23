@@ -1,0 +1,5 @@
+AICTE Unified Curriculum Portal | Github                                                                                    Dec'25 - Present
+ Engineered a curriculum management platform with role-based access and secure JWT authentication.
+ Streamlined version-controlled updates with approval workflows, reducing administrative overhead by 40%.
+ Architected responsive UI with real-time community chat and integrated announcement system.
+ Tech stacks used: JavaScript, React, Node.js, Express.js, MongoDB, JWT, Vite, TailwindCSS.
