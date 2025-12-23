@@ -54,8 +54,6 @@ const AboutUs = () => {
     fetchDevelopers();
   }, []);
 
-
-
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-12 pt-4">
 
@@ -65,7 +63,7 @@ const AboutUs = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-4xl mx-auto px-4"
       >
-        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-accent-blue via-blue-500 to-cyan-500">
+        <h1 className="text-4xl md:text-6xl font-black mb-4 leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-accent-blue to-accent-green">
           Empowering India's Digital Campus
         </h1>
 
@@ -263,7 +261,6 @@ const AboutUs = () => {
           colorClass={{ bg: 'bg-green-50/50', iconBg: 'bg-green-100', text: 'text-accent-green' }}
           delay={0.4}
         />
-
 
         <BentoCard className="md:col-span-2 flex items-center gap-4 bg-gray-900 text-white" delay={0.6}>
           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
