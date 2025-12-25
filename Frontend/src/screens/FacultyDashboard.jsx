@@ -81,13 +81,13 @@ const FacultyDashboard = () => {
         const fetchData = async () => {
             try {
                 // Fetch courses
-                const courseRes = await api.get('/api/courses');
+                const courseRes = await api.get('/courses');
                 const courses = courseRes.data;
 
                 // Fetch requests (optional - handle auth gracefully)
                 let requests = [];
                 try {
-                    const reqRes = await api.get('/api/requests/my-requests');
+                    const reqRes = await api.get('/requests/my-requests');
                     requests = reqRes.data;
                 } catch (reqErr) {
                     if (reqErr.response?.status === 401) {
@@ -100,7 +100,7 @@ const FacultyDashboard = () => {
                 // Fetch student count (optional - handle auth gracefully)
                 let studentCount = 0;
                 try {
-                    const studentsRes = await api.get('/api/users/students');
+                    const studentsRes = await api.get('/users/students');
                     studentCount = studentsRes.data?.length || 0;
                 } catch (studErr) {
                     if (studErr.response?.status === 401) {

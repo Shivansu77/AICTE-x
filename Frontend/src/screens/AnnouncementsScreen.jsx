@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import announcementImg from '../assets/announcement.png';
 import { Megaphone, Calendar, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import api from '../utils/api';
 
@@ -9,7 +10,7 @@ const AnnouncementsScreen = () => {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await api.get('/api/announcement');
+                const response = await api.get('/announcement');
                 setAnnouncements(response.data);
             } catch (error) {
                 console.error('Failed to fetch announcements', error);
@@ -45,11 +46,11 @@ const AnnouncementsScreen = () => {
         e.preventDefault();
         setPosting(true);
         try {
-            await api.post('/api/announcement', announcement);
+            await api.post('/announcement', announcement);
             alert('Announcement Posted Successfully!');
             setAnnouncement({ title: '', content: '', type: 'info' });
             // Refresh list
-            const response = await api.get('/api/announcement');
+            const response = await api.get('/announcement');
             setAnnouncements(response.data);
         } catch (error) {
             console.error(error);
@@ -64,15 +65,14 @@ const AnnouncementsScreen = () => {
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-4 mb-8">
-                <div className="w-16 h-16 bg-accent-blue rounded-[2rem] flex items-center justify-center text-white shadow-lg">
-                    <Megaphone size={32} />
+                <div className="w-20 h-20 rounded-[2rem] flex items-center justify-center shadow-lg overflow-hidden border border-black/5 bg-white">
+                    <img src={announcementImg} alt="Announcements" className="w-full h-full object-cover" />
                 </div>
                 <div>
                     <h1 className="text-4xl font-extrabold text-primary">Announcements</h1>
                     <p className="text-secondary font-medium">Implementation updates, events, and notices.</p>
                 </div>
             </div>
-
             {/* Admin Only: Post Announcement Form */}
             {role === 'admin' && (
                 <div className="bg-white p-6 rounded-[2.5rem] border border-black/5 shadow-sm mb-8">
@@ -141,7 +141,7 @@ const AnnouncementsScreen = () => {
                                             onClick={async () => {
                                                 if (window.confirm('Delete this announcement?')) {
                                                     try {
-                                                        await api.delete(`/api/announcement/${ann._id}`);
+                                                        await api.delete(`/announcement/${ann._id}`);
                                                         setAnnouncements(prev => prev.filter(a => a._id !== ann._id));
                                                     } catch (err) {
                                                         console.error(err);

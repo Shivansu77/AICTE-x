@@ -18,12 +18,12 @@ const FacultyCourseView = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const courseRes = await api.get(`/api/courses/${id}`);
+                const courseRes = await api.get(`/courses/${id}`);
                 setCourse(courseRes.data);
 
                 // Fetch subjects
                 try {
-                    const subjectsRes = await api.get(`/api/curriculum/course/${id}`);
+                    const subjectsRes = await api.get(`/curriculum/course/${id}`);
                     setSubjects(subjectsRes.data);
                 } catch (subErr) {
                     console.error('Error fetching subjects:', subErr);
@@ -33,7 +33,7 @@ const FacultyCourseView = () => {
                 // Fetch user's requests only if faculty
                 if (isFaculty) {
                     try {
-                        const requestsRes = await api.get('/api/requests/my-requests');
+                        const requestsRes = await api.get('/requests/my-requests');
                         setRequests(requestsRes.data);
                     } catch (reqErr) {
                         console.warn('Error fetching requests or unauthorized:', reqErr);
@@ -63,7 +63,7 @@ const FacultyCourseView = () => {
 
     const handleSeedSubjects = async () => {
         try {
-            await api.get('/api/curriculum/seed');
+            await api.get('/curriculum/seed');
             window.location.reload();
         } catch (error) {
             alert('Failed to seed subjects');

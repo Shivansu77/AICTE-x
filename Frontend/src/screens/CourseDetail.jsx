@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Book, FileText, ChevronRight, Edit3, Trash2 } from 'lucide-react';
+import api from '../utils/api';
 
 const CourseDetail = () => {
     const { id } = useParams();
@@ -33,14 +34,13 @@ const CourseDetail = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = localStorage.getItem('token');
                 const [courseRes, subjectsRes] = await Promise.all([
-                    fetch(`http://localhost:8000/api/courses/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
-                    fetch(`http://localhost:8000/api/curriculum/course/${id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+                    api.get(`/courses/${id}`),
+                    api.get(`/curriculum/course/${id}`)
                 ]);
 
-                if (courseRes.ok) setCourse(await courseRes.json());
-                if (subjectsRes.ok) setSubjects(await subjectsRes.json());
+                setCourse(courseRes.data);
+                setSubjects(subjectsRes.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -53,28 +53,16 @@ const CourseDetail = () => {
     const handleCreateSubject = async (e, forcedSemester = 1) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
             // forcedSemester comes from the form submit handler
             const payload = { ...formData, courseId: id, semester: forcedSemester || formData.semester, units: [] };
 
-            const response = await fetch('http://localhost:8000/api/curriculum', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(payload)
-            });
+            await api.post('/curriculum', payload);
 
-            if (response.ok) {
-                setShowForm(false);
-                setFormData({ title: '', code: '', description: '', credits: 3, semester: 1, units: [] });
-                // Refresh subjects
-                const subjectsRes = await fetch(`http://localhost:8000/api/curriculum/course/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
-                setSubjects(await subjectsRes.json());
-            } else {
-                alert('Failed to create subject');
-            }
+            setShowForm(false);
+            setFormData({ title: '', code: '', description: '', credits: 3, semester: 1, units: [] });
+            // Refresh subjects
+            const subjectsRes = await api.get(`/curriculum/course/${id}`);
+            setSubjects(subjectsRes.data);
         } catch (error) {
             console.error(error);
         }
@@ -87,24 +75,13 @@ const CourseDetail = () => {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8000/api/curriculum/${subjectId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            await api.delete(`/curriculum/${subjectId}`);
 
-            if (response.ok) {
-                // Refresh subjects list
-                const subjectsRes = await fetch(`http://localhost:8000/api/curriculum/course/${id}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                setSubjects(await subjectsRes.json());
-                alert('Subject deleted successfully');
-            } else {
-                alert('Failed to delete subject');
-            }
+            // Refresh subjects list
+            const subjectsRes = await api.get(`/curriculum/course/${id}`);
+            setSubjects(subjectsRes.data);
+            alert('Subject deleted successfully');
+
         } catch (error) {
             console.error(error);
             alert('Error deleting subject');

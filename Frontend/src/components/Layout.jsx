@@ -43,7 +43,7 @@ const Layout = ({ children }) => {
     const fetchNotifications = async () => {
       if (role === 'teacher' || role === 'faculty') {
         try {
-          const { data } = await api.get('/api/requests/my-requests');
+          const { data } = await api.get('/requests/my-requests');
           setNotifications(data);
         } catch (error) {
           console.error("Failed to fetch notifications", error);
@@ -72,7 +72,7 @@ const Layout = ({ children }) => {
       ? [
         ...baseNavItems.slice(0, 1),
         { icon: MessageSquare, label: 'Student Queries', path: '/admin/queries' },
-        { icon: Brain, label: 'AI Syllabus Approval', path: '/admin/ai-approval' },
+        { icon: Brain, label: 'AI Syllabus Approval', path: '/admin/approvals' },
         ...baseNavItems.slice(1)
       ]
       : baseNavItems;

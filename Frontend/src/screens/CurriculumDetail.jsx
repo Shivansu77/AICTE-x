@@ -1,54 +1,75 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Edit2, Trash2, Bell, X } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Edit2, Trash2, Bell, X, Save, RotateCcw } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, onEdit, onAddTopic, onRemoveTopic, onUpdateTopicDetail, onRemoveSubtopic }) => {
-    console.log(`Unit ${unitNumber} topicDetails:`, topicDetails, 'Is Array?', Array.isArray(topicDetails));
+const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, isEditing, onUpdateUnit, onAddTopic, onRemoveTopic, onUpdateTopic, onAddSubtopic, onRemoveSubtopic, onUpdateSubtopic, onUpdateTopicDetail, onEdit }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [expandedTopic, setExpandedTopic] = useState(null);
 
     return (
         <div className="bg-white rounded-[2rem] p-1 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 mb-4 overflow-hidden group">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
+            <div
                 className={`w-full flex justify-between items-center p-6 text-left transition-colors ${isOpen ? 'bg-accent-blue/5' : 'bg-white group-hover:bg-gray-50'} rounded-[1.8rem]`}
             >
-                <div className="flex items-center gap-5">
+                <div className="flex items-center gap-5 flex-1">
                     <div className={`shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-xl transition-all ${isOpen ? 'bg-accent-blue text-white shadow-lg shadow-accent-blue/30 scale-110' : 'bg-accent-blue/10 text-accent-blue'
                         }`}>
                         {unitNumber}
                     </div>
-                    <div>
-                        <h3 className={`text-xl font-bold transition-colors ${isOpen ? 'text-accent-blue' : 'text-primary'} flex items-center gap-3`}>
-                            {title}
-                            {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
-                                <span
-                                    onClick={(e) => { e.stopPropagation(); onEdit(); }}
-                                    className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-100 text-gray-300 hover:text-accent-blue transition-colors cursor-pointer"
-                                    title="Edit Unit"
-                                >
-                                    <Edit2 size={14} />
-                                </span>
-                            )}
-                        </h3>
-                        <p className="text-secondary text-xs font-bold flex items-center gap-1 mt-1.5 uppercase tracking-wide">
-                            <Clock size={12} /> {hours} Hours
-                        </p>
+                    <div className="flex-1">
+                        {isEditing ? (
+                            <div className="flex flex-col gap-2">
+                                <input
+                                    type="text"
+                                    value={title}
+                                    onChange={(e) => onUpdateUnit('title', e.target.value)}
+                                    className="text-xl font-bold text-primary bg-white border border-gray-200 rounded-lg px-3 py-1 focus:ring-2 focus:ring-accent-blue outline-none w-full"
+                                    placeholder="Unit Title"
+                                />
+                                <div className="flex items-center gap-2">
+                                    <Clock size={14} className="text-secondary" />
+                                    <input
+                                        type="number"
+                                        value={hours}
+                                        onChange={(e) => onUpdateUnit('hours', parseInt(e.target.value) || 0)}
+                                        className="text-xs font-bold text-secondary bg-white border border-gray-200 rounded-lg px-2 py-1 w-20 focus:ring-2 focus:ring-accent-blue outline-none"
+                                        placeholder="Hours"
+                                    />
+                                    <span className="text-xs font-bold text-secondary uppercase">Hours</span>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="flex items-center gap-3">
+                                    <h3 className={`text-xl font-bold transition-colors ${isOpen ? 'text-accent-blue' : 'text-primary'} flex items-center gap-3`}>
+                                        {title}
+                                    </h3>
+                                    {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                                        <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="text-gray-300 hover:text-accent-blue transition-colors p-1">
+                                            <Edit2 size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                                <p className="text-secondary text-xs font-bold flex items-center gap-1 mt-1.5 uppercase tracking-wide">
+                                    <Clock size={12} /> {hours} Hours
+                                </p>
+                            </>
+                        )}
                     </div>
                 </div>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all bg-white shadow-sm border border-gray-100 ${isOpen ? 'text-accent-blue rotate-180 border-accent-blue/20' : 'text-gray-400'}`}>
+                <button onClick={() => setIsOpen(!isOpen)} className={`w-10 h-10 rounded-full flex items-center justify-center transition-all bg-white shadow-sm border border-gray-100 ${isOpen ? 'text-accent-blue rotate-180 border-accent-blue/20' : 'text-gray-400'}`}>
                     <ChevronDown size={20} />
-                </div>
-            </button>
+                </button>
+            </div>
 
             {isOpen && (
                 <div className="p-8 pt-2 pl-[5.5rem] animate-in slide-in-from-top-4 duration-300">
                     <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
                         <h4 className="text-xs font-black text-secondary/50 uppercase tracking-widest">Topics Covered</h4>
-                        {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                        {isEditing && (
                             <button
                                 onClick={onAddTopic}
                                 className="text-accent-blue hover:bg-blue-50 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 transition-colors"
@@ -61,72 +82,90 @@ const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, o
                         {topics.map((topic, idx) => (
                             <li key={idx} className="group/topic relative">
                                 <div className="flex items-start gap-4">
-                                    <button
-                                        onClick={() => setExpandedTopic(expandedTopic === topic ? null : topic)}
-                                        className="flex-1 flex items-start gap-3 hover:bg-gray-50 p-3 rounded-xl transition-colors text-left group/topicbtn"
-                                    >
-                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-blue/40 group-hover/topicbtn:bg-accent-blue group-hover/topicbtn:scale-150 transition-all shrink-0"></div>
-                                        <div className="flex-1">
-                                            <span className="font-bold text-primary/80 text-base leading-relaxed group-hover/topicbtn:text-primary transition-colors">
-                                                {topic}
-                                            </span>
-                                            {topicDetails[topic] && topicDetails[topic].length > 0 && (
-                                                <span className="ml-2 text-xs text-gray-400 font-medium">
-                                                    ({topicDetails[topic].length} items)
-                                                </span>
-                                            )}
-                                        </div>
-                                        <ChevronDown size={16} className={`text-gray-400 transition-transform ${expandedTopic === topic ? 'rotate-180' : ''}`} />
-                                    </button>
-                                    {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
-                                        <button
-                                            onClick={() => onRemoveTopic(topic)}
-                                            className="p-2 text-gray-300 hover:text-red-500 opacity-0 group-hover/topic:opacity-100 transition-all"
-                                            title="Remove Topic"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    )}
-                                </div>
-
-                                {/* Subtopics Section */}
-                                {expandedTopic === topic && (
-                                    <div className="ml-8 mt-2 pl-4 border-l-2 border-gray-100 animate-in slide-in-from-top-2 duration-200">
-                                        <div className="space-y-2">
-                                            {topicDetails[topic]?.map((subtopic, subIdx) => (
-                                                <div key={subIdx} className="flex items-center justify-between p-2 hover:bg-blue-50 rounded-lg group/sub">
-                                                    <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
-                                                        <div className="w-1 h-1 rounded-full bg-blue-400"></div>
-                                                        {subtopic}
+                                    <div className="flex-1">
+                                        {isEditing ? (
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <input
+                                                    type="text"
+                                                    value={topic}
+                                                    onChange={(e) => onUpdateTopic(idx, e.target.value)}
+                                                    className="flex-1 font-bold text-primary/80 text-base bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-accent-blue outline-none"
+                                                    placeholder="Topic Name"
+                                                />
+                                                <button
+                                                    onClick={() => onRemoveTopic(idx)}
+                                                    className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+                                                    title="Remove Topic"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setExpandedTopic(expandedTopic === topic ? null : topic)}
+                                                className="w-full flex items-start gap-3 hover:bg-gray-50 p-3 rounded-xl transition-colors text-left group/topicbtn"
+                                            >
+                                                <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-blue/40 group-hover/topicbtn:bg-accent-blue group-hover/topicbtn:scale-150 transition-all shrink-0"></div>
+                                                <div className="flex-1">
+                                                    <span className="font-bold text-primary/80 text-base leading-relaxed group-hover/topicbtn:text-primary transition-colors">
+                                                        {topic}
                                                     </span>
-                                                    {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
+                                                    {topicDetails[topic] && topicDetails[topic].length > 0 && (
+                                                        <span className="ml-2 text-xs text-gray-400 font-medium">
+                                                            ({topicDetails[topic].length} items)
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <ChevronDown size={16} className={`text-gray-400 transition-transform ${expandedTopic === topic ? 'rotate-180' : ''}`} />
+                                            </button>
+                                        )}
+
+                                        {/* Subtopics Section */}
+                                        {(expandedTopic === topic || isEditing) && (
+                                            <div className={`ml-4 mt-2 pl-4 border-l-2 border-gray-100 ${!isEditing && 'animate-in slide-in-from-top-2 duration-200'}`}>
+                                                <div className="space-y-2">
+                                                    {topicDetails[topic]?.map((subtopic, subIdx) => (
+                                                        <div key={subIdx} className="flex items-center gap-2">
+                                                            {isEditing ? (
+                                                                <>
+                                                                    <div className="w-1 h-1 rounded-full bg-blue-400 shrink-0"></div>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={subtopic}
+                                                                        onChange={(e) => onUpdateSubtopic(topic, subIdx, e.target.value)}
+                                                                        className="flex-1 text-sm text-gray-700 bg-white border border-gray-200 rounded px-2 py-1 focus:ring-1 focus:ring-accent-blue outline-none"
+                                                                        placeholder="Detail / Subtopic"
+                                                                    />
+                                                                    <button
+                                                                        onClick={() => onRemoveSubtopic(topic, subIdx)}
+                                                                        className="text-gray-300 hover:text-red-500 p-1"
+                                                                    >
+                                                                        <X size={14} />
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                <div className="flex items-center justify-between p-2 hover:bg-blue-50 rounded-lg w-full">
+                                                                    <span className="text-sm text-gray-700 font-medium flex items-center gap-2">
+                                                                        <div className="w-1 h-1 rounded-full bg-blue-400"></div>
+                                                                        {subtopic}
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                    {isEditing && (
                                                         <button
-                                                            onClick={() => onRemoveSubtopic(topic, subtopic)}
-                                                            className="text-gray-300 hover:text-red-500 opacity-0 group-hover/sub:opacity-100 transition-all p-1"
-                                                            title="Remove Subtopic"
+                                                            onClick={() => onAddSubtopic(topic)}
+                                                            className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors w-full justify-center border border-dashed border-blue-200 hover:border-blue-300 mt-2"
                                                         >
-                                                            <X size={14} />
+                                                            <Plus size={12} /> Add Detail
                                                         </button>
                                                     )}
                                                 </div>
-                                            ))}
-                                            {(role === 'teacher' || role === 'faculty' || role === 'admin') && (
-                                                <button
-                                                    onClick={() => {
-                                                        if (typeof onUpdateTopicDetail === 'function') {
-                                                            onUpdateTopicDetail(topic);
-                                                        } else {
-                                                            console.error("onUpdateTopicDetail is missing or not a function", onUpdateTopicDetail);
-                                                        }
-                                                    }}
-                                                    className="text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors w-full justify-center border border-dashed border-blue-200 hover:border-blue-300"
-                                                >
-                                                    <Plus size={12} /> Add Detail
-                                                </button>
-                                            )}
-                                        </div>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -135,13 +174,14 @@ const UnitCard = ({ unitNumber, title, topics, topicDetails = {}, hours, role, o
         </div>
     );
 };
+
 const CurriculumDetail = () => {
     const { id } = useParams();
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showRequestModal, setShowRequestModal] = useState(false);
-    const [requestData, setRequestData] = useState({ type: 'Update Content', justification: '', proposedChanges: '', unitNumber: '', newTopic: '' });
+    const [requestData, setRequestData] = useState({ type: 'Bulk Update', justification: '', proposedChanges: null });
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const role = user.role || 'student';
@@ -150,21 +190,26 @@ const CurriculumDetail = () => {
     const [myRequests, setMyRequests] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
 
+    // Edit Mode State
+    const [isEditing, setIsEditing] = useState(false);
+    const [draftUnits, setDraftUnits] = useState([]);
+
     useEffect(() => {
         const fetchCourse = async () => {
             try {
-                const response = await api.get(`/api/curriculum/${id}`);
+                const response = await api.get(`/curriculum/${id}`);
                 setCourse(response.data);
+                setDraftUnits(JSON.parse(JSON.stringify(response.data.units || []))); // Deep copy for draft
 
                 // Fetch History once course is loaded
                 if (response.data && response.data.code) {
-                    const histRes = await api.get(`/api/curriculum/history/code/${response.data.code}`);
+                    const histRes = await api.get(`/curriculum/history/code/${response.data.code}`);
                     setHistory(histRes.data);
                 }
 
                 // Fetch Requests
                 if (role === 'teacher' || role === 'faculty') {
-                    const reqRes = await api.get('/api/requests/my-requests');
+                    const reqRes = await api.get('/requests/my-requests');
                     setMyRequests(reqRes.data);
                 }
 
@@ -182,36 +227,57 @@ const CurriculumDetail = () => {
     const handleRaiseRequest = async (e) => {
         e.preventDefault();
         try {
-            const payload = {
-                courseId: course.courseId?._id || course.courseId,
-                curriculumId: course._id,
-                requestType: requestData.type,
-                justification: requestData.justification,
-                proposedChanges: {
-                    description: requestData.description || requestData.proposedChanges,
-                    unitNumber: requestData.unitNumber,
-                    newTopic: requestData.newTopic,
-                    unitTitle: requestData.unitTitle,
-                    unitHours: requestData.unitHours
-                }
-            };
+            let payload = {};
 
-            await api.post('/api/requests', payload);
+            if (requestData.type === 'Bulk Update') {
+                payload = {
+                    courseId: course.courseId?._id || course.courseId,
+                    curriculumId: course._id,
+                    requestType: 'Bulk Update',
+                    justification: requestData.justification,
+                    proposedChanges: {
+                        units: draftUnits,
+                        description: "Full curriculum update proposed by faculty."
+                    }
+                };
+            } else {
+                payload = {
+                    courseId: course.courseId?._id || course.courseId,
+                    curriculumId: course._id,
+                    requestType: requestData.type,
+                    justification: requestData.justification,
+                    proposedChanges: {
+                        description: requestData.description || requestData.proposedChanges,
+                        unitNumber: requestData.unitNumber,
+                        newTopic: requestData.newTopic,
+                        unitTitle: requestData.unitTitle,
+                        unitHours: requestData.unitHours
+                    }
+                };
+            }
+
+            await api.post('/requests', payload);
             alert("Request submitted successfully!");
             setShowRequestModal(false);
-            setRequestData({ type: 'Update Content', justification: '', proposedChanges: '', unitNumber: '', newTopic: '' });
+
+            if (requestData.type === 'Bulk Update') {
+                setIsEditing(false);
+                setRequestData({ type: 'Bulk Update', justification: '', proposedChanges: null });
+            } else {
+                setRequestData({ type: 'Update Content', justification: '', proposedChanges: '', unitNumber: '', newTopic: '' });
+            }
 
             // Refresh requests
-            const reqRes = await api.get('/api/requests/my-requests');
+            const reqRes = await api.get('/requests/my-requests');
             setMyRequests(reqRes.data);
 
             // Refetch course data to show any new units or changes
-            const courseRefresh = await api.get(`/api/curriculum/${id}`);
+            const courseRefresh = await api.get(`/curriculum/${id}`);
             setCourse(courseRefresh.data);
 
             // Refresh history as well
             if (courseRefresh.data && courseRefresh.data.code) {
-                const histRes = await api.get(`/api/curriculum/history/code/${courseRefresh.data.code}`);
+                const histRes = await api.get(`/curriculum/history/code/${courseRefresh.data.code}`);
                 setHistory(histRes.data);
             }
         } catch (error) {
@@ -392,14 +458,37 @@ const CurriculumDetail = () => {
                             <Download size={20} /> Download Syllabus PDF
                         </button>
 
-                        {/* Only Faculty can see Request Change on LATEST version */}
+                        {/* Faculty Edit Mode Toggle */}
                         {(role === 'teacher' || role === 'faculty' || role === 'admin') && course.isLatest && (
-                            <button
-                                onClick={() => setShowRequestModal(true)}
-                                className="bg-white text-secondary border-2 border-secondary/10 font-bold py-3 px-6 rounded-full hover:bg-gray-50 hover:border-secondary/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-                            >
-                                <Plus size={20} /> Request Update
-                            </button>
+                            !isEditing ? (
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="bg-white text-secondary border-2 border-secondary/10 font-bold py-3 px-6 rounded-full hover:bg-gray-50 hover:border-secondary/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                                >
+                                    <Edit2 size={20} /> Edit Curriculum
+                                </button>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => {
+                                            setRequestData({ type: 'Bulk Update', justification: '', proposedChanges: null });
+                                            setShowRequestModal(true);
+                                        }}
+                                        className="bg-emerald-500 text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                                    >
+                                        <CheckCircle size={20} /> Submit Changes
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsEditing(false);
+                                            setDraftUnits(JSON.parse(JSON.stringify(course.units || []))); // Reset
+                                        }}
+                                        className="bg-red-50 text-red-500 border-2 border-red-100 font-bold py-3 px-6 rounded-full hover:bg-red-100 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                                    >
+                                        <X size={20} /> Cancel
+                                    </button>
+                                </div>
+                            )
                         )}
 
                         {/* Notification Bell */}
@@ -467,32 +556,96 @@ const CurriculumDetail = () => {
                         </div>
 
                         <div className="space-y-4">
-                            {course.units && course.units.length > 0 ? (
-                                course.units.map((unit, idx) => (
+                            {(isEditing ? draftUnits : course.units) && (isEditing ? draftUnits : course.units).length > 0 ? (
+                                (isEditing ? draftUnits : course.units).map((unit, idx) => (
                                     <UnitCard
                                         key={idx}
                                         unitNumber={unit.unitNumber || idx + 1}
                                         {...unit}
                                         role={role}
+                                        isEditing={isEditing}
+                                        onUpdateUnit={(updatedUnit) => {
+                                            const newUnits = [...draftUnits];
+                                            newUnits[idx] = { ...newUnits[idx], ...updatedUnit };
+                                            setDraftUnits(newUnits);
+                                        }}
                                         onEdit={() => {
+                                            if (isEditing) return;
                                             setRequestData({ type: 'Update Unit', unitNumber: unit.unitNumber, unitTitle: unit.title, unitHours: unit.hours, justification: '', proposedChanges: '' });
                                             setShowRequestModal(true);
                                         }}
                                         onAddTopic={() => {
-                                            setRequestData({ type: 'Add Topic', unitNumber: unit.unitNumber, newTopic: '', justification: '', proposedChanges: '' });
-                                            setShowRequestModal(true);
+                                            if (isEditing) {
+                                                const newUnits = [...draftUnits];
+                                                if (!newUnits[idx].topics) newUnits[idx].topics = [];
+                                                newUnits[idx].topics.push("New Topic");
+                                                setDraftUnits(newUnits);
+                                            } else {
+                                                setRequestData({ type: 'Add Topic', unitNumber: unit.unitNumber, newTopic: '', justification: '', proposedChanges: '' });
+                                                setShowRequestModal(true);
+                                            }
                                         }}
-                                        onRemoveTopic={(topic) => {
-                                            setRequestData({ type: 'Remove Topic', unitNumber: unit.unitNumber, newTopic: topic, justification: '', proposedChanges: '' });
-                                            setShowRequestModal(true);
+                                        onRemoveTopic={(topicOrIdx) => {
+                                            if (isEditing) {
+                                                const newUnits = [...draftUnits];
+                                                newUnits[idx].topics.splice(topicOrIdx, 1);
+                                                setDraftUnits(newUnits);
+                                            } else {
+                                                setRequestData({ type: 'Remove Topic', unitNumber: unit.unitNumber, newTopic: topicOrIdx, justification: '', proposedChanges: '' });
+                                                setShowRequestModal(true);
+                                            }
+                                        }}
+                                        onUpdateTopic={(topicIdx, newVal) => {
+                                            if (isEditing) {
+                                                const newUnits = [...draftUnits];
+                                                const oldTopic = newUnits[idx].topics[topicIdx];
+                                                newUnits[idx].topics[topicIdx] = newVal;
+
+                                                // Update topicDetails key if it exists
+                                                if (newUnits[idx].topicDetails && newUnits[idx].topicDetails[oldTopic]) {
+                                                    newUnits[idx].topicDetails[newVal] = newUnits[idx].topicDetails[oldTopic];
+                                                    delete newUnits[idx].topicDetails[oldTopic];
+                                                }
+                                                setDraftUnits(newUnits);
+                                            }
                                         }}
                                         onUpdateTopicDetail={(topic) => {
+                                            if (isEditing) return;
                                             setRequestData({ type: 'Add Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, justification: '', description: '' });
                                             setShowRequestModal(true);
                                         }}
-                                        onRemoveSubtopic={(topic, subtopic) => {
-                                            setRequestData({ type: 'Remove Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, description: subtopic, justification: 'Removing detail', proposedChanges: '' });
-                                            setShowRequestModal(true);
+                                        onAddSubtopic={(topic) => {
+                                            if (isEditing) {
+                                                const newUnits = [...draftUnits];
+                                                if (!newUnits[idx].topicDetails) newUnits[idx].topicDetails = {};
+                                                if (!newUnits[idx].topicDetails[topic]) newUnits[idx].topicDetails[topic] = [];
+                                                newUnits[idx].topicDetails[topic].push("New Detail");
+                                                setDraftUnits(newUnits);
+                                            } else {
+                                                setRequestData({ type: 'Add Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, justification: '', description: '' });
+                                                setShowRequestModal(true);
+                                            }
+                                        }}
+                                        onRemoveSubtopic={(topic, subIdxOrSubtopic) => {
+                                            if (isEditing) {
+                                                const newUnits = [...draftUnits];
+                                                if (newUnits[idx].topicDetails && newUnits[idx].topicDetails[topic]) {
+                                                    newUnits[idx].topicDetails[topic].splice(subIdxOrSubtopic, 1);
+                                                }
+                                                setDraftUnits(newUnits);
+                                            } else {
+                                                setRequestData({ type: 'Remove Topic Detail', unitNumber: unit.unitNumber, newTopic: topic, description: subIdxOrSubtopic, justification: 'Removing detail', proposedChanges: '' });
+                                                setShowRequestModal(true);
+                                            }
+                                        }}
+                                        onUpdateSubtopic={(topic, subIdx, newVal) => {
+                                            if (isEditing) {
+                                                const newUnits = [...draftUnits];
+                                                if (newUnits[idx].topicDetails && newUnits[idx].topicDetails[topic]) {
+                                                    newUnits[idx].topicDetails[topic][subIdx] = newVal;
+                                                }
+                                                setDraftUnits(newUnits);
+                                            }
                                         }}
                                     />
                                 ))
@@ -611,10 +764,12 @@ const CurriculumDetail = () => {
                             <div>
                                 <label className="block text-sm font-bold text-secondary mb-2">Request Type</label>
                                 <select
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white disabled:bg-gray-100 disabled:text-gray-500"
                                     value={requestData.type}
                                     onChange={e => setRequestData({ ...requestData, type: e.target.value })}
+                                    disabled={requestData.type === 'Bulk Update'}
                                 >
+                                    {requestData.type === 'Bulk Update' && <option>Bulk Update</option>}
                                     <option>Update Content</option>
                                     <option>Add Topic</option>
                                     <option>Remove Topic</option>
@@ -629,7 +784,13 @@ const CurriculumDetail = () => {
                             </div>
 
                             {/* Conditional Inputs */}
-                            {(requestData.type === 'Add Topic' || requestData.type === 'Remove Topic') ? (
+                            {requestData.type === 'Bulk Update' ? (
+                                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
+                                    <p className="text-sm text-blue-800 font-medium">
+                                        You are submitting a full curriculum update based on your edits. Please provide a justification below.
+                                    </p>
+                                </div>
+                            ) : (requestData.type === 'Add Topic' || requestData.type === 'Remove Topic') ? (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-bold text-secondary mb-2">Target Unit No.</label>

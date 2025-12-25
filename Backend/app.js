@@ -1,39 +1,32 @@
 require('dotenv').config();
-const PORT = process.env.PORT || 8000;
 const express = require('express');
-const userRoutes = require('./src/routes/user-routes');
+const connectDB = require('./appMongoose');
+
+// Connect to Database
+connectDB();
 const cors = require('cors');
-const appMongoose = require('./appMongoose');
-const seedAdmin = require('./src/utils/seedAdmin');
+const userRoutes = require('./src/routes/user-routes');
+const courseRoutes = require('./src/routes/course-routes');
+const curriculumRoutes = require('./src/routes/curriculum-routes');
+const announcementRoutes = require('./src/routes/announcement-routes');
+const messageRoutes = require('./src/routes/message-routes');
+const requestRoutes = require('./src/routes/request-routes');
+const aiRoutes = require('./src/routes/ai-routes'); // Import AI routes
 
 const app = express();
 
-// DB Call
-appMongoose().then(async () => {
-  console.log("Database Connected");
-  await seedAdmin();
-});
+app.use(cors());
+app.use(express.json());
 
-// Manual CORS middleware
-app.use(cors({
-  origin: true, // Allow any origin for development
-  credentials: true
-}));
-app.use(express.json({ limit: '10mb' }));
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/user', userRoutes); // Alias for frontend singular usage
+app.use('/api/courses', courseRoutes);
+app.use('/api/curriculum', curriculumRoutes);
+app.use('/api/announcement', announcementRoutes);
+app.use('/api/messages', messageRoutes);
+app.use('/api/requests', requestRoutes);
+app.use('/api/ai', aiRoutes); // Use AI routes
 
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-app.get('/home', (req, res) => {
-  res.send('This is the home route');
-});
-app.use('/user', userRoutes);
-app.use('/api/curriculum', require('./src/routes/curriculum-routes'));
-app.use('/api/announcement', require('./src/routes/announcement-routes'));
-app.use('/api/messages', require('./src/routes/message-routes'));
-app.use('/api/courses', require('./src/routes/course-routes'));
-app.use('/api/requests', require('./src/routes/request-routes'));
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+const PORT = 5001;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

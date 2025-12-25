@@ -19,7 +19,7 @@ import SettingsScreen from './screens/SettingsScreen';
 import ContactAdministration from './screens/ContactAdministration';
 import AdminQueries from './screens/AdminQueries';
 import AboutUs from './screens/AboutUs';
-import AiApproval from './screens/AiApproval';
+import ApprovalDashboard from './screens/ApprovalDashboard';
 
 // Layout Wrapper
 const AppLayout = () => (
@@ -70,7 +70,7 @@ function App() {
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/course/:id" element={<CourseDetail />} />
             <Route path="/admin/queries" element={<AdminQueries />} />
-            <Route path="/admin/ai-approval" element={<AiApproval />} />
+            <Route path="/admin/approvals" element={<ApprovalDashboard />} />
 
             {/* Faculty Routes */}
             <Route path="/faculty/course/:id" element={<FacultyCourseView />} />

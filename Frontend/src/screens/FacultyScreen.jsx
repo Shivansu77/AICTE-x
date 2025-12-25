@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import girlAvatar from '../assets/girl.jpg';
 import { Book, Plus, ArrowRight, User, GraduationCap, Building2, Clock, Layers, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
@@ -14,7 +15,7 @@ const FacultyScreen = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await api.get('/api/courses');
+                const response = await api.get('/courses');
                 setCourses(response.data);
             } catch (error) {
                 console.error(error);
@@ -41,8 +42,8 @@ const FacultyScreen = () => {
 
             <div className="flex flex-col md:flex-row items-end justify-between mb-10 shrink-0 gap-6">
                 <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 bg-gradient-to-br from-accent-blue to-cyan-500 rounded-[2.5rem] flex items-center justify-center text-white shadow-xl shadow-accent-blue/20 hover:scale-105 transition-transform">
-                        <User size={40} />
+                    <div className="w-20 h-20 rounded-[2.5rem] flex items-center justify-center shadow-xl shadow-accent-blue/20 hover:scale-105 transition-transform overflow-hidden">
+                        <img src={girlAvatar} alt="Student Avatar" className="w-full h-full object-cover" />
                     </div>
                     <div>
                         {isFaculty && (
@@ -131,7 +132,7 @@ const FacultyScreen = () => {
                             <button
                                 onClick={async () => {
                                     try {
-                                        await api.post('/api/curriculum/seed');
+                                        await api.post('/curriculum/seed');
                                         window.location.reload();
                                     } catch (e) { console.error(e); }
                                 }}

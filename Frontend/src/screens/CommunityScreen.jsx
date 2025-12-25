@@ -27,7 +27,7 @@ const CommunityScreen = () => {
         }
 
         try {
-            const response = await api.get(`/api/messages?channel=${activeChannel}`);
+            const response = await api.get(`/messages?channel=${activeChannel}`);
             setMessages(response.data);
             setLoading(false);
         } catch (error) {
@@ -56,7 +56,7 @@ const CommunityScreen = () => {
         if (!newMessage.trim()) return;
 
         try {
-            await api.post('/api/messages', {
+            await api.post('/messages', {
                 content: newMessage,
                 role: user.role || 'Student',
                 senderId: currentUserId,
@@ -197,7 +197,7 @@ const CommunityScreen = () => {
                                                         onClick={async () => {
                                                             if (window.confirm('Delete this message?')) {
                                                                 try {
-                                                                    await api.delete(`/api/messages/${msg._id}`);
+                                                                    await api.delete(`/messages/${msg._id}`);
                                                                     setMessages(prev => prev.filter(m => m._id !== msg._id));
                                                                 } catch (err) {
                                                                     console.error(err);

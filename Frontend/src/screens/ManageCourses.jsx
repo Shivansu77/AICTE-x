@@ -28,7 +28,7 @@ const ManageCourses = () => {
 
     const fetchCourses = async () => {
         try {
-            const response = await api.get('/api/courses');
+            const response = await api.get('/courses');
             setCourses(response.data);
         } catch (error) {
             console.error('Error fetching courses:', error);
@@ -42,9 +42,9 @@ const ManageCourses = () => {
         try {
             let response;
             if (editingId) {
-                response = await api.put(`/api/courses/${editingId}`, formData);
+                response = await api.put(`/courses/${editingId}`, formData);
             } else {
-                response = await api.post('/api/courses', formData);
+                response = await api.post('/courses', formData);
             }
 
             if (response.status === 200 || response.status === 201) {
@@ -64,7 +64,7 @@ const ManageCourses = () => {
         if (!window.confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
 
         try {
-            const response = await api.delete(`/api/courses/${id}`);
+            const response = await api.delete(`/courses/${id}`);
             if (response.status === 200) {
                 fetchCourses();
             }
@@ -114,7 +114,7 @@ const ManageCourses = () => {
                 <div className="flex gap-4">
                     <button
                         onClick={async () => {
-                            await api.post('/api/courses/seed');
+                            await api.post('/courses/seed');
                             fetchCourses();
                         }}
                         className="bg-white text-primary px-7 py-4 rounded-full font-bold text-sm shadow-sm border border-gray-100 hover:shadow-md hover:translate-y-[-2px] transition-all flex items-center gap-2"

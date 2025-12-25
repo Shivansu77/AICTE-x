@@ -90,7 +90,7 @@ const Dashboard = () => {
 
     const fetchCurricula = async () => {
         try {
-            const response = await api.get('/api/curriculum');
+            const response = await api.get('/curriculum');
             setCurricula(response.data);
         } catch (error) {
             console.error("Failed to fetch curriculum", error);
