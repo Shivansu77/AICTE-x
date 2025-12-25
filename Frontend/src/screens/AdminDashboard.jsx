@@ -243,8 +243,8 @@ const AdminDashboard = () => {
             try {
                 // Fetch Data in Parallel
                 const [reqRes, courseRes, facultyRes, queryRes] = await Promise.all([
-                    api.get('/api/requests/pending'),
-                    api.get('/api/courses'),
+                    api.get('/requests/pending'),
+                    api.get('/courses'),
                     api.get('/user/teachers'),
                     api.get('/user/student-queries')
                 ]);
@@ -270,9 +270,9 @@ const AdminDashboard = () => {
 
     const handleAction = async (id, status) => {
         try {
-            await api.put(`/api/requests/${id}/status`, { status });
+            await api.put(`/requests/${id}/status`, { status });
             // Refresh Data
-            const reqRes = await api.get('/api/requests/pending');
+            const reqRes = await api.get('/requests/pending');
             setRequests(reqRes.data);
             setStats(prev => ({ ...prev, pending: reqRes.data.length }));
             // Could add toast here
