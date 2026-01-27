@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, Lock, Bell, Save, Shield, Mail, Upload, Camera, MapPin, Briefcase, BookOpen } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import api from '../utils/api';
 import { useUser } from '../utils/UserContext';
+import ProfileSection from '../components/settings/ProfileSection';
+import SecuritySection from '../components/settings/SecuritySection';
 
 const SettingsScreen = () => {
     const { user, setUser } = useUser();
@@ -83,202 +85,17 @@ const SettingsScreen = () => {
             {/* Tabs / Sections */}
             <div className="grid gap-8">
 
-                {/* Profile Settings */}
-                <section className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-accent-blue/10 rounded-full flex items-center justify-center text-accent-blue">
-                            <User size={20} />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-extrabold text-primary">Profile Information</h3>
-                            <p className="text-secondary text-sm">Update your personal and professional details</p>
-                        </div>
-                    </div>
+                <ProfileSection
+                    user={user}
+                    formData={formData}
+                    fileInputRef={fileInputRef}
+                    handleFileChange={handleFileChange}
+                    handleUpdateProfile={handleUpdateProfile}
+                    handleChange={handleChange}
+                    loading={loading}
+                />
 
-                    <form onSubmit={handleUpdateProfile} className="space-y-8">
-
-                        {/* Avatar Section */}
-                        <div className="flex flex-col items-center sm:flex-row gap-6 mb-8">
-                            <div className="relative group">
-                                <div className="w-24 h-24 rounded-full bg-accent-yellow/10 border-4 border-white shadow-md overflow-hidden flex items-center justify-center">
-                                    {formData.avatar ? (
-                                        <img src={formData.avatar} alt="Profile" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <User size={40} className="text-secondary/50" />
-                                    )}
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current.click()}
-                                    className="absolute bottom-0 right-0 w-8 h-8 bg-accent-blue text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer"
-                                >
-                                    <Camera size={14} />
-                                </button>
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    onChange={handleFileChange}
-                                    className="hidden"
-                                    accept="image/*"
-                                />
-                            </div>
-                            <div className="text-center sm:text-left">
-                                <h4 className="font-bold text-lg">{user.firstName} {user.lastName}</h4>
-                                <p className="text-secondary text-sm mb-2">{user.role}</p>
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current.click()}
-                                    className="text-accent-blue text-sm font-bold hover:underline"
-                                >
-                                    Change Avatar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-secondary ml-1">First Name</label>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-secondary ml-1">Last Name</label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleChange}
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-bold text-primary outline-none transition-all placeholder:text-secondary/50"
-                                />
-                            </div>
-
-                            {/* Professional Details */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-secondary ml-1 flex items-center gap-1"><Briefcase size={14} /> Designation</label>
-                                <input
-                                    type="text"
-                                    name="designation"
-                                    placeholder="e.g. Senior Professor"
-                                    value={formData.designation}
-                                    onChange={handleChange}
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-medium text-primary outline-none transition-all placeholder:text-secondary/50"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-secondary ml-1 flex items-center gap-1"><BookOpen size={14} /> Department / Subject</label>
-                                <input
-                                    type="text"
-                                    name="department"
-                                    placeholder="e.g. Computer Science"
-                                    value={formData.department}
-                                    onChange={handleChange}
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-medium text-primary outline-none transition-all placeholder:text-secondary/50"
-                                />
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-bold text-secondary ml-1 flex items-center gap-1"><Briefcase size={14} /> College / University</label>
-                                <input
-                                    type="text"
-                                    name="college"
-                                    placeholder="e.g. Indian Institute of Technology, Delhi"
-                                    value={formData.college}
-                                    onChange={handleChange}
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-medium text-primary outline-none transition-all placeholder:text-secondary/50"
-                                />
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-bold text-secondary ml-1 flex items-center gap-1"><MapPin size={14} /> Location</label>
-                                <input
-                                    type="text"
-                                    name="location"
-                                    placeholder="e.g. New Delhi, India"
-                                    value={formData.location}
-                                    onChange={handleChange}
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-medium text-primary outline-none transition-all placeholder:text-secondary/50"
-                                />
-                            </div>
-
-                            <div className="space-y-2 md:col-span-2">
-                                <label className="text-sm font-bold text-secondary ml-1">Bio</label>
-                                <textarea
-                                    name="bio"
-                                    placeholder="Tell us about yourself..."
-                                    value={formData.bio}
-                                    onChange={handleChange}
-                                    rows="4"
-                                    className="w-full bg-accent-yellow/5 border-2 border-transparent focus:border-accent-blue focus:bg-white rounded-xl py-3 px-4 font-medium text-primary outline-none transition-all placeholder:text-secondary/50 resize-none"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-secondary ml-1">Email Address</label>
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary" size={18} />
-                                <input
-                                    type="email"
-                                    value={formData.email}
-                                    disabled
-                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 pl-12 pr-4 font-medium text-secondary outline-none cursor-not-allowed"
-                                />
-                            </div>
-                            <p className="text-xs text-secondary/60 ml-1">Email cannot be changed. Contact admin for assistance.</p>
-                        </div>
-
-                        <div className="pt-4">
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="bg-accent-blue text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center gap-2"
-                            >
-                                <Save size={18} />
-                                {loading ? 'Saving...' : 'Save Profile'}
-                            </button>
-                        </div>
-                    </form>
-                </section>
-
-                {/* Security Settings */}
-                <section className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 opacity-80 pointer-events-none relative overflow-hidden">
-                    {/* Coming Soon Overlay */}
-                    <div className="absolute inset-0 z-10 bg-white/50 flex items-center justify-center">
-                        <div className="bg-white px-6 py-3 rounded-full shadow-lg border border-gray-100 font-bold text-secondary flex items-center gap-2">
-                            <Lock size={16} /> Security Settings Coming Soon
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="w-10 h-10 bg-accent-peach/10 rounded-full flex items-center justify-center text-accent-peach">
-                            <Shield size={20} />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-extrabold text-primary">Security</h3>
-                            <p className="text-secondary text-sm">Manage your password and security</p>
-                        </div>
-                    </div>
-
-                    <div className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-secondary ml-1">Current Password</label>
-                            <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4" disabled />
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-secondary ml-1">New Password</label>
-                                <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4" disabled />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-secondary ml-1">Confirm Password</label>
-                                <input type="password" placeholder="••••••••" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl py-3 px-4" disabled />
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <SecuritySection />
 
                 {/* Notifications */}
                 <section className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
