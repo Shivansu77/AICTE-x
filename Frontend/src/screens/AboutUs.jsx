@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Github, MapPin, Building, ExternalLink, Globe, BookOpen, Users, GraduationCap, Building2, School } from 'lucide-react';
+import { Building, Globe, BookOpen, Users, School } from 'lucide-react';
 import { motion } from 'framer-motion';
+
+import BentoCard from '../components/about/BentoCard';
+import StatCard from '../components/about/StatCard';
+import DeveloperCard from '../components/about/DeveloperCard';
+import UniversityCard from '../components/about/UniversityCard';
 
 import iitLogo from '../assets/iit_logo.png';
 import nitLogo from '../assets/nit_logo.png';
@@ -8,50 +13,42 @@ import bitsLogo from '../assets/bits_logo.png';
 import cuLogo from '../assets/cu_logo.png';
 import lpuLogo from '../assets/lpu_logo.png';
 
-const BentoCard = ({ children, className = "", delay = 0 }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay }}
-    className={`bg-white rounded-[1.5rem] p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-accent-blue/20 transition-all duration-300 ${className}`}
-  >
-    {children}
-  </motion.div>
-);
-
-const StatCard = ({ icon: Icon, value, label, colorClass, delay }) => (
-  <BentoCard className={`flex flex-col items-center justify-center text-center group hover:scale-[1.02] ${colorClass.bg}`} delay={delay}>
-    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${colorClass.iconBg} group-hover:scale-110 transition-transform`}>
-      <Icon size={20} className={colorClass.text} />
-    </div>
-    <h3 className={`text-2xl font-black ${colorClass.text} mb-0.5`}>{value}</h3>
-    <p className="text-secondary font-bold text-xs">{label}</p>
-  </BentoCard>
-);
+const defaultDevelopers = [
+  { login: 'Shivansu77', name: 'Shivansu Bisht', avatar_url: 'https://github.com/Shivansu77.png', bio: 'Full Stack Developer', location: 'India' },
+  { login: 'Shubh058', name: 'Shubham', avatar_url: 'https://github.com/Shubh058.png', bio: 'Frontend Developer', location: 'India' },
+  { login: 'Rohitsingh1302', name: 'Rohit Singh', avatar_url: 'https://github.com/Rohitsingh1302.png', bio: 'Backend Developer', location: 'India' }
+];
 
 const AboutUs = () => {
-  const [developers, setDevelopers] = useState([]);
+  const [developers, setDevelopers] = useState(defaultDevelopers);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDevelopers = async () => {
-      const usernames = ['Shivansu77', 'Shubh058', 'Rohitsingh1302']; // Add more if needed
+      const usernames = defaultDevelopers.map((dev) => dev.login);
       try {
-        const developerData = await Promise.all(
+        const results = await Promise.allSettled(
           usernames.map(async (username) => {
-            const response = await fetch(`https://api.github.com/users/${username}`);
+            const response = await fetch(`https://api.github.com/users/${username}`, {
+              headers: {
+                Accept: 'application/vnd.github+json'
+              }
+            });
             if (!response.ok) throw new Error(`Failed to fetch ${username}`);
             return response.json();
           })
         );
-        setDevelopers(developerData);
+
+        const merged = results.map((result, index) => (
+          result.status === 'fulfilled'
+            ? { ...defaultDevelopers[index], ...result.value }
+            : defaultDevelopers[index]
+        ));
+
+        setDevelopers(merged);
       } catch (error) {
-        console.error('Error fetching developers:', error);
-        setDevelopers([
-          { login: 'Shivansu77', name: 'Shivansu Bisht', avatar_url: 'https://github.com/Shivansu77.png', bio: 'Full Stack Developer', location: 'India' },
-          { login: 'Shubh058', name: 'Shubham', avatar_url: 'https://github.com/Shubh058.png', bio: 'Frontend Developer', location: 'India' },
-          { login: 'Rohitsingh1302', name: 'Rohit Singh', avatar_url: 'https://github.com/Rohitsingh1302.png', bio: 'Backend Developer', location: 'India' }
-        ]);
+        console.warn('Falling back to local developer data:', error);
+        setDevelopers(defaultDevelopers);
       } finally {
         setLoading(false);
       }
@@ -105,21 +102,7 @@ const AboutUs = () => {
             { name: 'IIT Kharagpur', logo: iitLogo, description: 'India\'s Oldest IIT' },
             { name: 'NIT Trichy', logo: nitLogo, description: 'Top NIT Excellence' }
           ].map((uni, index) => (
-            <motion.div
-              key={uni.name}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 + (index * 0.1) }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
-            >
-              <div className="text-center">
-                <div className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform p-2">
-                  <img src={uni.logo} alt={uni.name} className="w-full h-full object-contain" />
-                </div>
-                <h4 className="text-lg font-bold text-gray-800 mb-1">{uni.name}</h4>
-                <p className="text-sm text-gray-600">{uni.description}</p>
-              </div>
-            </motion.div>
+            <UniversityCard key={uni.name} university={uni} delay={0.3 + (index * 0.1)} />
           ))}
         </div>
 
@@ -302,46 +285,7 @@ const AboutUs = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {developers.map((dev, idx) => (
-            <BentoCard key={dev.id || idx} delay={0.7 + (idx * 0.1)} className="group hover:-translate-y-1 bg-gradient-to-br from-white to-gray-50/50">
-              <div className="flex items-start gap-4">
-                <img
-                  src={dev.avatar_url || `https://ui-avatars.com/api/?name=${dev.name || dev.login}&background=random`}
-                  alt={dev.login}
-                  className="w-16 h-16 rounded-2xl object-cover shadow-sm group-hover:shadow-md transition-shadow border-2 border-white"
-                />
-                <div className="flex-1 min-w-0 pt-1">
-                  <h3 className="text-lg font-bold text-gray-900 truncate">{dev.name || dev.login}</h3>
-                  <a href={`https://github.com/${dev.login}`} target="_blank" rel="noreferrer" className="text-accent-blue text-xs font-bold hover:underline flex items-center gap-1 mb-1">
-                    @{dev.login} <ExternalLink size={10} />
-                  </a>
-                  {dev.location && (
-                    <div className="flex items-center gap-1 text-[10px] text-gray-500 font-medium">
-                      <MapPin size={10} /> {dev.location}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <p className="mt-4 text-gray-600 text-xs leading-relaxed line-clamp-2 min-h-[2.5em]">
-                {dev.bio || "Passionate developer contributing to the future of education technology."}
-              </p>
-
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-                <div className="flex gap-1.5 opacity-60">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-400"></span>
-                </div>
-                <a
-                  href={`https://github.com/${dev.login}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-primary transition-all shadow-sm hover:shadow"
-                >
-                  <Github size={16} />
-                </a>
-              </div>
-            </BentoCard>
+            <DeveloperCard key={dev.id || idx} developer={dev} delay={0.7 + (idx * 0.1)} />
           ))}
         </div>
       )}
