@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Users, Clock, Bell, CheckCircle } from 'lucide-react';
+import { BookOpen, Users, Clock, Bell, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../utils/api';
 import StatCard from '../components/faculty/StatCard';
 import NotificationItem from '../components/faculty/NotificationItem';

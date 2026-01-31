@@ -20,6 +20,7 @@ import ContactAdministration from './screens/ContactAdministration';
 import AdminQueries from './screens/AdminQueries';
 import AboutUs from './screens/AboutUs';
 import ApprovalDashboard from './screens/ApprovalDashboard';
+import ApprovalWorkspace from './screens/ApprovalWorkspace';
 
 // Layout Wrapper
 const AppLayout = () => (
@@ -71,6 +72,7 @@ function App() {
             <Route path="/admin/course/:id" element={<CourseDetail />} />
             <Route path="/admin/queries" element={<AdminQueries />} />
             <Route path="/admin/approvals" element={<ApprovalDashboard />} />
+            <Route path="/admin/approvals/:id" element={<ApprovalWorkspace />} />
 
             {/* Faculty Routes */}
             <Route path="/faculty/course/:id" element={<FacultyCourseView />} />

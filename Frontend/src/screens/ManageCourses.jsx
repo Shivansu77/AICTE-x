@@ -102,10 +102,6 @@ const ManageCourses = () => {
             {/* Header Section */}
             <ManageHeader
                 onBack={() => navigate('/')}
-                onSeed={async () => {
-                    await api.post('/courses/seed');
-                    fetchCourses();
-                }}
                 onNew={openNewModal}
             />
 

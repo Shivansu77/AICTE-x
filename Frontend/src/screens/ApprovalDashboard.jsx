@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import SidebarHeader from '../components/approval/SidebarHeader';
 import RequestListItem from '../components/approval/RequestListItem';
-import ReviewHeader from '../components/approval/ReviewHeader';
-import AIInsightCard from '../components/approval/AIInsightCard';
-import DiffPanel from '../components/approval/DiffPanel';
-import EmptyState from '../components/approval/EmptyState';
 
 const ApprovalDashboard = () => {
+    const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
-    const [selectedReq, setSelectedReq] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    // AI Analysis State
-    const [aiData, setAiData] = useState(null);
-    const [analyzing, setAnalyzing] = useState(false);
+    const [query, setQuery] = useState('');
 
     // Initial List Fetch
     useEffect(() => {
@@ -23,7 +17,6 @@ const ApprovalDashboard = () => {
             try {
                 const response = await api.get('/requests/pending');
                 setRequests(response.data);
-                if (response.data.length > 0) setSelectedReq(response.data[0]);
             } catch (error) {
                 console.error("Failed to fetch requests", error);
             } finally {
@@ -33,48 +26,28 @@ const ApprovalDashboard = () => {
         fetchRequests();
     }, []);
 
-    // Fetch AI Analysis when selection changes
-    useEffect(() => {
-        const analyzeCurrentReq = async () => {
-            if (!selectedReq) return;
-
-            setAnalyzing(true);
-            setAiData(null); // Reset previous data
-
-            try {
-                const response = await api.post('/ai/analyze-syllabus', {
-                    justification: selectedReq.justification,
-                    proposedChanges: selectedReq.proposedChanges
-                });
-                setAiData(response.data);
-            } catch (error) {
-                console.error("AI Analysis failed", error);
-                setAiData({ score: 0, reason: "Analysis failed. Please try again." });
-            } finally {
-                setAnalyzing(false);
-            }
-        };
-
-        analyzeCurrentReq();
-    }, [selectedReq]);
-
-    const handleAction = async (id, status) => {
-        try {
-            await api.put(`/requests/${id}/status`, { status });
-            // Optimistic update
-            setRequests(prev => prev.filter(r => r._id !== id));
-            if (selectedReq?._id === id) {
-                const nextReq = requests.find(r => r._id !== id);
-                setSelectedReq(nextReq || null);
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Action failed. Please try again.");
-        }
-    };
-
     // Client-side quick score for list view (Mock/Hash based)
-    const getQuickScore = (text) => Math.min(Math.floor(70 + (text.length % 30)), 99);
+    const getQuickScore = (text = '') => Math.min(Math.floor(70 + (text.length % 30)), 99);
+    const getReviewMinutes = (text = '') => Math.max(20, Math.min(90, Math.ceil(text.length / 40)));
+    const avgScore = requests.length
+        ? Math.round(requests.reduce((sum, r) => sum + getQuickScore(r.justification || ''), 0) / requests.length)
+        : '--';
+    const highRisk = requests.filter(r => getQuickScore(r.justification || '') < 70).length;
+    const avgEtaMinutes = requests.length
+        ? Math.round(requests.reduce((sum, r) => sum + getReviewMinutes(r.justification || ''), 0) / requests.length)
+        : null;
+    const avgEta = avgEtaMinutes ? `${avgEtaMinutes}m` : '--';
+
+    const normalizedQuery = query.trim().toLowerCase();
+    const filteredRequests = normalizedQuery
+        ? requests.filter(r => {
+            const courseTitle = r.curriculumId?.title || r.courseId?.title || '';
+            const facultyName = r.facultyId?.firstName || '';
+            return [r.requestType, courseTitle, r.justification, facultyName]
+                .filter(Boolean)
+                .some(value => String(value).toLowerCase().includes(normalizedQuery));
+        })
+        : requests;
 
     if (loading) return (
         <div className="flex items-center justify-center h-screen bg-gray-50">
@@ -86,53 +59,64 @@ const ApprovalDashboard = () => {
     );
 
     return (
-        <div className="h-[calc(100vh-2rem)] flex gap-6 max-w-7xl mx-auto px-4 overflow-hidden">
-            {/* Sidebar - Request List */}
-            <div className="w-1/3 flex flex-col gap-4">
-                <SidebarHeader count={requests.length} />
-
-                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2">
-                    {requests.length === 0 && (
-                        <div className="flex flex-col items-center justify-center h-48 text-secondary/50 font-bold">
-                            <Check size={48} className="mb-2" />
-                            All Caught Up
-                        </div>
-                    )}
-                    {requests.map(req => {
-                        const quickScore = getQuickScore(req.justification);
-                        return (
-                            <RequestListItem
-                                key={req._id}
-                                request={req}
-                                isSelected={selectedReq?._id === req._id}
-                                onSelect={setSelectedReq}
-                                quickScore={quickScore}
-                            />
-                        );
-                    })}
+        <div className="min-h-[calc(100vh-2rem)] bg-gradient-to-br from-slate-50 via-white to-slate-100 rounded-[2.5rem] border border-white shadow-xl p-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-3xl font-black text-gray-900">AI Approvals</h1>
+                    <p className="text-sm text-gray-500">Select a request to open the AI review workspace.</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="px-4 py-2 rounded-full bg-white border border-gray-100 text-sm font-bold text-gray-700">
+                        Queue: {requests.length}
+                    </div>
+                    <div className="px-4 py-2 rounded-full bg-white border border-gray-100 text-sm font-bold text-gray-700">
+                        Avg Score: {avgScore}
+                    </div>
                 </div>
             </div>
 
-            {/* Main Content - Diff View */}
-            <div className="flex-1 flex flex-col bg-white/80 backdrop-blur-md rounded-[2.5rem] border border-white/50 shadow-2xl shadow-blue-900/5 overflow-hidden relative">
-                {selectedReq ? (
-                    <>
-                        {/* Header */}
-                        <ReviewHeader
-                            onReject={() => handleAction(selectedReq._id, 'rejected')}
-                            onApprove={() => handleAction(selectedReq._id, 'approved')}
+            <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6">
+                <aside className="space-y-4">
+                    <SidebarHeader count={requests.length} avgScore={avgScore} highRisk={highRisk} avgEta={avgEta} />
+
+                    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+                        <div className="text-xs font-black uppercase tracking-wider text-gray-400">Search Requests</div>
+                        <input
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder="Search by course, faculty, or keyword"
+                            className="mt-2 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
                         />
+                    </div>
+                </aside>
 
-                        <div className="px-8 pt-6">
-                            <AIInsightCard analyzing={analyzing} aiData={aiData} />
-                        </div>
-
-                        {/* Diff Content */}
-                        <DiffPanel selectedReq={selectedReq} />
-                    </>
-                ) : (
-                    <EmptyState />
-                )}
+                <section className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-black text-gray-900">Approval Queue</h2>
+                        <span className="text-xs text-gray-400">Click a request to review</span>
+                    </div>
+                    <div className="space-y-3">
+                        {filteredRequests.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-40 text-secondary/50 font-bold">
+                                <Check size={40} className="mb-2" />
+                                {requests.length === 0 ? 'All Caught Up' : 'No matches found'}
+                            </div>
+                        ) : (
+                            filteredRequests.map(req => {
+                                const quickScore = getQuickScore(req.justification || '');
+                                return (
+                                    <RequestListItem
+                                        key={req._id}
+                                        request={req}
+                                        isSelected={false}
+                                        onSelect={() => navigate(`/admin/approvals/${req._id}`)}
+                                        quickScore={quickScore}
+                                    />
+                                );
+                            })
+                        )}
+                    </div>
+                </section>
             </div>
         </div>
     );

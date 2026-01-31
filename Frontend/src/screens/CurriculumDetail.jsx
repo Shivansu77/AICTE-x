@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Bell, X, Save, RotateCcw } from 'lucide-react';
+import { ArrowLeft, BookOpen, Clock, FileText, Plus, ChevronDown, ChevronUp, Download, CheckCircle, Bell, X, Save, RotateCcw, Edit2 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../utils/api';
 import jsPDF from 'jspdf';

@@ -1,28 +1,46 @@
 import React from 'react';
-import { GitPullRequest, Zap } from 'lucide-react';
+import { GitPullRequest, Zap, Calendar, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const RequestListItem = ({ request, isSelected, onSelect, quickScore }) => (
   <motion.div
     layoutId={request._id}
     onClick={() => onSelect(request)}
-    className={`p-5 rounded-[1.5rem] cursor-pointer border-2 transition-all relative overflow-hidden group ${isSelected
-      ? 'bg-white border-accent-blue shadow-lg scale-[1.02]'
-      : 'bg-white/50 border-transparent hover:bg-white hover:border-gray-100'
+    className={`p-4 rounded-2xl cursor-pointer border transition-all relative overflow-hidden group ${isSelected
+      ? 'bg-white border-blue-200 shadow-lg'
+      : 'bg-white border-gray-100 hover:shadow-md hover:border-gray-200'
       }`}
   >
-    <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-      <GitPullRequest size={64} />
+    <div className="absolute -top-6 -right-4 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+      <GitPullRequest size={80} />
     </div>
     <div className="relative z-10">
-      <div className="flex justify-between items-start mb-2">
-        <span className="text-[10px] uppercase font-black tracking-widest text-secondary">{request.requestType}</span>
-        <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full ${quickScore > 85 ? 'bg-emerald-100 text-emerald-600' : 'bg-orange-100 text-orange-600'}`}>
-          <Zap size={10} fill="currentColor" /> {quickScore}% PRE-SCAN
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="space-y-1">
+          <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">
+            {request.requestType || 'Update'}
+          </span>
+          <h4 className="font-black text-gray-900 leading-tight line-clamp-2">
+            {request.curriculumId?.title || request.courseId?.title || 'Curriculum Update'}
+          </h4>
+        </div>
+        <div className={`flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full ${quickScore > 85 ? 'bg-emerald-100 text-emerald-700' : quickScore > 75 ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}>
+          <Zap size={10} fill="currentColor" /> {quickScore}% AI
         </div>
       </div>
-      <h4 className="font-bold text-primary leading-tight mb-1 line-clamp-2">{request.justification}</h4>
-      <p className="text-xs text-secondary font-medium">Requested by Faculty</p>
+
+      <p className="text-xs text-gray-600 font-medium line-clamp-2">
+        {request.justification || 'No justification provided.'}
+      </p>
+
+      <div className="flex items-center justify-between mt-4 text-[11px] text-gray-500 font-medium">
+        <div className="flex items-center gap-1.5">
+          <User size={12} /> {request.facultyId?.firstName || 'Faculty'}
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Calendar size={12} /> {new Date(request.createdAt).toLocaleDateString()}
+        </div>
+      </div>
     </div>
   </motion.div>
 );

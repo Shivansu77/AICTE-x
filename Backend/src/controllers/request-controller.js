@@ -38,6 +38,23 @@ exports.getPendingRequests = async (req, res) => {
     }
 };
 
+exports.getRequestById = async (req, res) => {
+    try {
+        const request = await UpdateReq.findById(req.params.id)
+            .populate('courseId', 'title code')
+            .populate('curriculumId', 'title code')
+            .populate('facultyId', 'firstName lastName');
+
+        if (!request) {
+            return res.status(404).json({ message: 'Request not found' });
+        }
+
+        res.json(request);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 exports.updateRequestStatus = async (req, res) => {
     const log = (msg) => {
         try {
