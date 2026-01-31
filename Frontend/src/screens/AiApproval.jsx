@@ -118,7 +118,7 @@ const AiApproval = () => {
   };
 
   return (
-    <div className="flex-1 min-h-screen bg-cream p-8">
+    <div className="flex-1 min-h-screen bg-cream dark:bg-primary p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -136,13 +136,13 @@ const AiApproval = () => {
           
           <div className="flex items-center gap-3">
             {/* View Mode Toggle */}
-            <div className="bg-gray-100 rounded-xl p-1 flex">
+            <div className="bg-gray-100 dark:bg-secondary/30 rounded-xl p-1 flex">
               <button
                 onClick={() => setViewMode('grouped')}
                 className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   viewMode === 'grouped' 
-                    ? 'bg-white text-primary shadow-sm' 
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white dark:bg-card text-primary shadow-sm' 
+                    : 'text-gray-500 dark:text-secondary hover:text-gray-700 dark:hover:text-primary'
                 }`}
               >
                 <Users size={16} className="inline mr-2" />
@@ -152,8 +152,8 @@ const AiApproval = () => {
                 onClick={() => setViewMode('single')}
                 className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
                   viewMode === 'single' 
-                    ? 'bg-white text-primary shadow-sm' 
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-white dark:bg-card text-primary shadow-sm' 
+                    : 'text-gray-500 dark:text-secondary hover:text-gray-700 dark:hover:text-primary'
                 }`}
               >
                 <Eye size={16} className="inline mr-2" />
@@ -178,9 +178,9 @@ const AiApproval = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
                 <BookOpen className="text-blue-500" size={20} />
               </div>
               <div>
@@ -190,9 +190,9 @@ const AiApproval = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-orange-50 dark:bg-orange-900/20 rounded-xl flex items-center justify-center">
                 <Users className="text-orange-500" size={20} />
               </div>
               <div>
@@ -202,9 +202,9 @@ const AiApproval = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
                 <CheckCircle className="text-green-500" size={20} />
               </div>
               <div>
@@ -214,9 +214,9 @@ const AiApproval = () => {
             </div>
           </div>
           
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center">
                 <Brain className="text-purple-500" size={20} />
               </div>
               <div>
@@ -243,7 +243,7 @@ const AiApproval = () => {
               </h2>
               
               {!groupedData?.curriculumGroups || groupedData.curriculumGroups.length === 0 ? (
-                <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-sm">
+                <div className="bg-white dark:bg-card p-8 rounded-[2rem] text-center border border-gray-100 dark:border-border-color shadow-sm">
                   <CheckCircle size={48} className="text-green-400 mx-auto mb-4" />
                   <p className="text-primary font-bold">All Caught Up!</p>
                   <p className="text-secondary text-sm">No pending requests.</p>
@@ -278,7 +278,7 @@ const AiApproval = () => {
                         </div>
                         
                         {group.hasCompeting && (
-                          <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-[10px] font-bold flex items-center gap-1">
+                          <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 rounded-full text-[10px] font-bold flex items-center gap-1">
                             <Trophy size={10} />
                             {group.proposals.length} competing
                           </span>
@@ -288,14 +288,14 @@ const AiApproval = () => {
                       {/* Mini Proposal Preview */}
                       <div className="space-y-2">
                         {group.proposals.slice(0, 2).map((proposal, idx) => (
-                          <div key={proposal._id} className="flex items-center justify-between text-xs bg-gray-50 rounded-lg p-2">
+                          <div key={proposal._id} className="flex items-center justify-between text-xs bg-gray-50 dark:bg-secondary/30 rounded-lg p-2">
                             <div className="flex items-center gap-2">
                               {idx === 0 ? (
                                 <Crown size={12} className="text-yellow-500" />
                               ) : (
                                 <Medal size={12} className="text-gray-400" />
                               )}
-                              <span className="text-gray-600">
+                              <span className="text-secondary">
                                 {proposal.facultyId?.firstName || 'Faculty'}
                               </span>
                             </div>
@@ -308,20 +308,20 @@ const AiApproval = () => {
                                 {proposal.aiScore.overallScore}%
                               </span>
                             ) : (
-                              <span className="text-gray-400 text-[10px]">Unscored</span>
+                              <span className="text-secondary text-[10px]">Unscored</span>
                             )}
                           </div>
                         ))}
                         {group.proposals.length > 2 && (
-                          <p className="text-[10px] text-gray-400 text-center">
+                          <p className="text-[10px] text-secondary text-center">
                             +{group.proposals.length - 2} more proposals
                           </p>
                         )}
                       </div>
                       
                       {!hasScore && (
-                        <div className="mt-3 pt-3 border-t border-gray-100">
-                          <span className="text-xs text-purple-600 font-medium flex items-center gap-1">
+                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-border-color">
+                          <span className="text-xs text-purple-600 dark:text-purple-400 font-medium flex items-center gap-1">
                             <Sparkles size={12} />
                             Click to run AI comparison
                           </span>
@@ -336,7 +336,7 @@ const AiApproval = () => {
             {/* Comparison Panel */}
             <div className="lg:col-span-2">
               {selectedGroup ? (
-                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 min-h-[600px]">
+                <div className="bg-white dark:bg-card rounded-[2.5rem] p-8 shadow-sm border border-gray-100 dark:border-border-color min-h-[600px]">
                   {/* Header */}
                   <div className="flex justify-between items-start mb-6">
                     <div>
@@ -375,7 +375,7 @@ const AiApproval = () => {
                     <div className="text-center py-16">
                       {analyzing ? (
                         <div className="flex flex-col items-center animate-pulse">
-                          <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                          <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mb-6">
                             <Loader className="animate-spin text-purple-600" size={40} />
                           </div>
                           <h3 className="text-xl font-bold text-primary mb-2">Analyzing with Gemini AI...</h3>
@@ -386,7 +386,7 @@ const AiApproval = () => {
                         </div>
                       ) : (
                         <div className="flex flex-col items-center">
-                          <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mb-6">
+                          <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-full flex items-center justify-center mb-6">
                             <Trophy className="text-purple-400" size={40} />
                           </div>
                           <h3 className="text-xl font-bold text-primary mb-2">
@@ -400,9 +400,9 @@ const AiApproval = () => {
                           {/* Quick Preview of Proposals */}
                           <div className="w-full max-w-lg space-y-3">
                             {selectedGroup.proposals.map((proposal, idx) => (
-                              <div key={proposal._id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                              <div key={proposal._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-secondary/30 rounded-xl">
                                 <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center font-bold text-sm text-gray-600">
+                                  <div className="w-8 h-8 bg-gray-200 dark:bg-secondary/50 rounded-full flex items-center justify-center font-bold text-sm text-secondary">
                                     {idx + 1}
                                   </div>
                                   <div className="text-left">
@@ -414,14 +414,14 @@ const AiApproval = () => {
                                 </div>
                                 {proposal.aiScore?.overallScore ? (
                                   <div className={`px-3 py-1 rounded-full font-bold ${
-                                    proposal.aiScore.overallScore >= 80 ? 'bg-green-100 text-green-700' :
-                                    proposal.aiScore.overallScore >= 60 ? 'bg-blue-100 text-blue-700' :
-                                    'bg-orange-100 text-orange-700'
+                                    proposal.aiScore.overallScore >= 80 ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' :
+                                    proposal.aiScore.overallScore >= 60 ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' :
+                                    'bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
                                   }`}>
                                     {proposal.aiScore.overallScore}%
                                   </div>
                                 ) : (
-                                  <span className="text-xs text-gray-400">Not scored</span>
+                                  <span className="text-xs text-secondary">Not scored</span>
                                 )}
                               </div>
                             ))}
@@ -432,12 +432,12 @@ const AiApproval = () => {
                   )}
                 </div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center p-12 border-2 border-dashed border-gray-200 rounded-[2.5rem] bg-gray-50/50">
-                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
+                <div className="h-full flex flex-col items-center justify-center text-center p-12 border-2 border-dashed border-gray-200 dark:border-border-color rounded-[2.5rem] bg-gray-50/50 dark:bg-secondary/30">
+                  <div className="w-24 h-24 bg-white dark:bg-card rounded-full flex items-center justify-center shadow-sm mb-6">
                     <Trophy className="text-gray-300" size={48} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-400 mb-2">Select a Curriculum Group</h3>
-                  <p className="text-gray-400 max-w-xs">
+                  <h3 className="text-xl font-bold text-secondary mb-2">Select a Curriculum Group</h3>
+                  <p className="text-secondary max-w-xs">
                     Choose a curriculum from the list to compare competing proposals and let AI rank them by accuracy.
                   </p>
                 </div>
@@ -455,7 +455,7 @@ const AiApproval = () => {
               </h2>
 
               {requests.length === 0 ? (
-                <div className="bg-white p-8 rounded-[2rem] text-center border border-gray-100 shadow-sm">
+                <div className="bg-white dark:bg-card p-8 rounded-[2rem] text-center border border-gray-100 dark:border-border-color shadow-sm">
                   <CheckCircle size={48} className="text-green-400 mx-auto mb-4" />
                   <p className="text-primary font-bold">All Caught Up!</p>
                   <p className="text-secondary text-sm">No pending requests.</p>
@@ -474,17 +474,17 @@ const AiApproval = () => {
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                          req.requestType === 'Bulk Update' ? 'bg-blue-50 text-blue-600' :
-                          req.requestType === 'Add Unit' ? 'bg-green-50 text-green-600' :
-                          'bg-purple-50 text-purple-600'
+                          req.requestType === 'Bulk Update' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' :
+                          req.requestType === 'Add Unit' ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' :
+                          'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
                         }`}>
                           {req.requestType}
                         </span>
                         {req.aiScore?.overallScore && (
                           <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${
-                            req.aiScore.overallScore >= 80 ? 'bg-green-100 text-green-700' :
-                            req.aiScore.overallScore >= 60 ? 'bg-blue-100 text-blue-700' :
-                            'bg-orange-100 text-orange-700'
+                            req.aiScore.overallScore >= 80 ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' :
+                            req.aiScore.overallScore >= 60 ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' :
+                            'bg-orange-100 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400'
                           }`}>
                             AI: {req.aiScore.overallScore}%
                           </span>
@@ -518,7 +518,7 @@ const AiApproval = () => {
             {/* Single Proposal Detail Panel */}
             <div className="lg:col-span-2">
               {selectedRequest ? (
-                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100 min-h-[600px]">
+                <div className="bg-white dark:bg-card rounded-[2.5rem] p-8 shadow-sm border border-gray-100 dark:border-border-color min-h-[600px]">
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <h2 className="text-2xl font-extrabold text-primary mb-2">
@@ -531,13 +531,13 @@ const AiApproval = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleReject(selectedRequest._id)}
-                        className="p-3 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                        className="p-3 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors"
                       >
                         <XCircle size={24} />
                       </button>
                       <button
                         onClick={() => handleApprove(selectedRequest._id)}
-                        className="p-3 rounded-full bg-green-50 text-green-500 hover:bg-green-100 transition-colors"
+                        className="p-3 rounded-full bg-green-50 dark:bg-green-900/20 text-green-500 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors"
                       >
                         <CheckCircle size={24} />
                       </button>
@@ -546,7 +546,7 @@ const AiApproval = () => {
 
                   {/* AI Score Display */}
                   {selectedRequest.aiScore?.overallScore && (
-                    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 mb-6 border border-purple-100">
+                    <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mb-6 border border-purple-100 dark:border-border-color">
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-bold text-primary flex items-center gap-2">
                           <Brain className="text-purple-500" size={20} />
@@ -563,32 +563,32 @@ const AiApproval = () => {
                       
                       <div className="grid grid-cols-3 gap-4 mb-4">
                         <div className="text-center">
-                          <div className="text-lg font-bold text-blue-600">{selectedRequest.aiScore.industryRelevance || 0}%</div>
-                          <div className="text-xs text-gray-500">Industry Relevance</div>
+                          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{selectedRequest.aiScore.industryRelevance || 0}%</div>
+                          <div className="text-xs text-secondary">Industry Relevance</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-bold text-green-600">{selectedRequest.aiScore.contentQuality || 0}%</div>
-                          <div className="text-xs text-gray-500">Content Quality</div>
+                          <div className="text-lg font-bold text-green-600 dark:text-green-400">{selectedRequest.aiScore.contentQuality || 0}%</div>
+                          <div className="text-xs text-secondary">Content Quality</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-bold text-purple-600">{selectedRequest.aiScore.modernCoverage || 0}%</div>
-                          <div className="text-xs text-gray-500">Modern Coverage</div>
+                          <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{selectedRequest.aiScore.modernCoverage || 0}%</div>
+                          <div className="text-xs text-secondary">Modern Coverage</div>
                         </div>
                       </div>
                       
-                      <p className="text-sm text-gray-700">{selectedRequest.aiScore.aiExplanation}</p>
+                      <p className="text-sm text-secondary">{selectedRequest.aiScore.aiExplanation}</p>
                       
                       <div className="mt-4 flex items-center justify-between">
                         <span className={`px-3 py-1 rounded-full text-sm font-bold ${
                           selectedRequest.aiScore.aiRecommendation === 'Highly Recommend' || selectedRequest.aiScore.aiRecommendation === 'Recommend' 
-                            ? 'bg-green-100 text-green-700' 
+                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                             : selectedRequest.aiScore.aiRecommendation === 'Needs Revision'
-                            ? 'bg-yellow-100 text-yellow-700'
-                            : 'bg-gray-100 text-gray-700'
+                            ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400'
+                            : 'bg-gray-100 dark:bg-secondary/30 text-secondary'
                         }`}>
                           {selectedRequest.aiScore.aiRecommendation}
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-secondary">
                           Confidence: <span className="font-bold">{selectedRequest.aiScore.confidence}</span>
                         </span>
                       </div>
@@ -596,7 +596,7 @@ const AiApproval = () => {
                   )}
 
                   {/* Justification */}
-                  <div className="bg-gray-50 rounded-2xl p-6 mb-6 border border-gray-100">
+                  <div className="bg-gray-50 dark:bg-secondary/30 rounded-2xl p-6 mb-6 border border-gray-100 dark:border-border-color">
                     <h4 className="text-xs font-bold text-secondary uppercase tracking-wider mb-2">Justification</h4>
                     <p className="text-primary leading-relaxed">{selectedRequest.justification}</p>
                   </div>
@@ -609,14 +609,14 @@ const AiApproval = () => {
                       </h4>
                       <div className="max-h-[300px] overflow-y-auto space-y-3">
                         {selectedRequest.proposedChanges.units.map((unit, idx) => (
-                          <div key={idx} className="bg-white p-4 rounded-xl border border-gray-200">
+                          <div key={idx} className="bg-white dark:bg-card p-4 rounded-xl border border-gray-200 dark:border-border-color">
                             <div className="flex justify-between items-center mb-2">
                               <span className="font-bold text-primary">Unit {unit.unitNumber || idx + 1}: {unit.title}</span>
                               <span className="text-xs text-secondary">{unit.hours} hrs</span>
                             </div>
                             <div className="flex flex-wrap gap-1">
                               {unit.topics?.map((t, i) => (
-                                <span key={i} className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded">
+                                <span key={i} className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded">
                                   {t}
                                 </span>
                               ))}
@@ -628,12 +628,12 @@ const AiApproval = () => {
                   )}
                 </div>
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center p-12 border-2 border-dashed border-gray-200 rounded-[2.5rem] bg-gray-50/50">
-                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
+                <div className="h-full flex flex-col items-center justify-center text-center p-12 border-2 border-dashed border-gray-200 dark:border-border-color rounded-[2.5rem] bg-gray-50/50 dark:bg-secondary/30">
+                  <div className="w-20 h-20 bg-white dark:bg-card rounded-full flex items-center justify-center shadow-sm mb-6">
                     <BarChart2 className="text-gray-300" size={40} />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-400 mb-2">Select a Proposal</h3>
-                  <p className="text-gray-400 max-w-xs">Choose a pending request from the list to view details.</p>
+                  <h3 className="text-xl font-bold text-secondary mb-2">Select a Proposal</h3>
+                  <p className="text-secondary max-w-xs">Choose a pending request from the list to view details.</p>
                 </div>
               )}
             </div>

@@ -48,13 +48,12 @@ const CommunityScreen = () => {
         return () => clearInterval(interval);
     }, [activeChannel]); // Re-fetch when channel changes
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    // Removed autoscroll for whole page. If you want to keep message autoscroll, uncomment below:
+    // useEffect(() => {
+    //     if (messagesEndRef.current) {
+    //         messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    //     }
+    // }, [messages]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -76,12 +75,12 @@ const CommunityScreen = () => {
     };
 
     return (
-        <div className="h-[calc(100vh-2rem)] flex flex-col max-w-6xl mx-auto">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a2233]">
             {/* Header Section */}
             <CommunityHeader role={role} activeChannel={activeChannel} setActiveChannel={setActiveChannel} />
 
             {/* Chat Container */}
-            <div className="flex-1 bg-white rounded-[3rem] border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden flex flex-col relative text-sm md:text-base">
+            <div className="w-full max-w-4xl h-[80vh] bg-white dark:bg-card rounded-[2.5rem] border border-gray-100 dark:border-border-color shadow-xl shadow-gray-200/50 dark:shadow-secondary/30 overflow-hidden flex flex-col relative text-base md:text-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <ChatHeader activeChannel={activeChannel} />
 
                 <MessageList

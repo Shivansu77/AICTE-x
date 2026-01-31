@@ -14,32 +14,33 @@ const AdminUsers = () => {
     const [filterRole, setFilterRole] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
+    
+    // Get current user ID
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUserId = currentUser._id || currentUser.id;
+
+    const fetchUsers = async () => {
+        try {
+            const response = await api.get('/user/all');
+            setUsers(response.data);
+            setFilteredUsers(response.data);
+        } catch (error) {
+            console.error("Failed to fetch users", error);
+            try {
+                const [students, teachers] = await Promise.all([
+                    api.get('/user/students'),
+                    api.get('/user/teachers')
+                ]);
+                const combined = [...teachers.data, ...students.data];
+                setUsers(combined);
+                setFilteredUsers(combined);
+            } catch (e) { console.error('Fallback failed', e); }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                // Using the specific endpoints or the new generic one based on needs.
-                // Since we added /user/all, let's try to use that if possible, or combine.
-                // Assuming /user/all was added as per plan.
-                const response = await api.get('/user/all');
-                setUsers(response.data);
-                setFilteredUsers(response.data);
-            } catch (error) {
-                console.error("Failed to fetch users", error);
-                // Fallback if /all fails during dev hot reload or if not ready
-                try {
-                    const [students, teachers] = await Promise.all([
-                        api.get('/user/students'),
-                        api.get('/user/teachers')
-                    ]);
-                    const combined = [...teachers.data, ...students.data];
-                    setUsers(combined);
-                    setFilteredUsers(combined);
-                } catch (e) { console.error('Fallback failed', e); }
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchUsers();
     }, []);
 
@@ -70,6 +71,49 @@ const AdminUsers = () => {
         setSelectedUser(null);
     };
 
+    const handleBlockUser = async (user) => {
+        const action = user.isActive ? 'block' : 'unblock';
+        if (!window.confirm(`Are you sure you want to ${action} ${user.firstName} ${user.lastName}?`)) {
+            return;
+        }
+
+        try {
+            const response = await api.put(`/user/${user._id}/toggle-block`);
+            // Update the user in the list
+            setUsers(prev => prev.map(u => 
+                u._id === user._id ? { ...u, isActive: response.data.user.isActive } : u
+            ));
+            // Also update selected user if it's the same
+            if (selectedUser && selectedUser._id === user._id) {
+                setSelectedUser({ ...selectedUser, isActive: response.data.user.isActive });
+            }
+            alert(response.data.message);
+        } catch (error) {
+            console.error('Failed to toggle user block:', error);
+            alert(error.response?.data?.message || 'Failed to update user status');
+        }
+    };
+
+    const handleDeleteUser = async (user) => {
+        if (!window.confirm(`Are you sure you want to permanently delete ${user.firstName} ${user.lastName}? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            await api.delete(`/user/${user._id}`);
+            // Remove from list
+            setUsers(prev => prev.filter(u => u._id !== user._id));
+            // Close modal if viewing this user
+            if (selectedUser && selectedUser._id === user._id) {
+                setSelectedUser(null);
+            }
+            alert('User deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete user:', error);
+            alert(error.response?.data?.message || 'Failed to delete user');
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto pb-10">
             <PageHeader onBack={() => navigate('/admin')} />
@@ -85,12 +129,25 @@ const AdminUsers = () => {
             {loading ? (
                 <div className="text-center py-20 text-gray-400 font-medium">Loading users...</div>
             ) : (
-                <UsersTable users={filteredUsers} onUserClick={handleUserClick} />
+                <UsersTable 
+                    users={filteredUsers} 
+                    onUserClick={handleUserClick}
+                    onBlockUser={handleBlockUser}
+                    onDeleteUser={handleDeleteUser}
+                    currentUserId={currentUserId}
+                />
             )}
 
             {/* User Profile Modal */}
             {selectedUser && (
-                <UserProfileModal user={selectedUser} onClose={handleCloseModal} />
+                <UserProfileModal 
+                    user={selectedUser} 
+                    onClose={handleCloseModal}
+                    onBlockUser={handleBlockUser}
+                    onDeleteUser={handleDeleteUser}
+                    isAdmin={true}
+                    currentUserId={currentUserId}
+                />
             )}
         </div>
     );

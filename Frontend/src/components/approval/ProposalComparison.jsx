@@ -35,27 +35,27 @@ const ProposalComparison = ({
 
   const getRankBg = (rank) => {
     switch (rank) {
-      case 1: return 'bg-gradient-to-r from-yellow-50 via-amber-50 to-yellow-50 border-yellow-200 shadow-yellow-100';
-      case 2: return 'bg-gradient-to-r from-gray-50 via-slate-50 to-gray-50 border-gray-200';
-      case 3: return 'bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border-orange-200';
-      default: return 'bg-white border-gray-100';
+      case 1: return 'bg-gradient-to-r from-yellow-50 via-amber-50 to-yellow-50 dark:from-yellow-900/20 dark:via-amber-900/20 dark:to-yellow-900/20 border-yellow-200 dark:border-yellow-700 shadow-yellow-100 dark:shadow-yellow-900';
+      case 2: return 'bg-gradient-to-r from-gray-50 via-slate-50 to-gray-50 dark:from-gray-900/20 dark:via-slate-900/20 dark:to-gray-900/20 border-gray-200 dark:border-gray-700';
+      case 3: return 'bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 dark:from-orange-900/20 dark:via-amber-900/20 dark:to-orange-900/20 border-orange-200 dark:border-orange-700';
+      default: return 'bg-white dark:bg-card border-gray-100 dark:border-border-color';
     }
   };
 
   const getScoreColor = (score) => {
-    if (score >= 85) return 'text-green-600 bg-green-50';
-    if (score >= 70) return 'text-blue-600 bg-blue-50';
-    if (score >= 50) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
+    if (score >= 85) return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
+    if (score >= 70) return 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20';
+    if (score >= 50) return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+    return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
   };
 
   const getRecommendationStyle = (rec) => {
     const styles = {
-      'Highly Recommend': 'bg-green-100 text-green-700 border-green-200',
-      'Recommend': 'bg-blue-100 text-blue-700 border-blue-200',
-      'Neutral': 'bg-gray-100 text-gray-700 border-gray-200',
-      'Needs Revision': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-      'Reject': 'bg-red-100 text-red-700 border-red-200'
+      'Highly Recommend': 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-700',
+      'Recommend': 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-700',
+      'Neutral': 'bg-gray-100 dark:bg-secondary/30 text-gray-700 dark:text-secondary border-gray-200 dark:border-border-color',
+      'Needs Revision': 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700',
+      'Reject': 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-700'
     };
     return styles[rec] || styles['Neutral'];
   };
@@ -63,12 +63,12 @@ const ProposalComparison = ({
   const ScoreBar = ({ label, score, color }) => (
     <div className="mb-2">
       <div className="flex justify-between text-xs mb-1">
-        <span className="text-gray-600">{label}</span>
-        <span className={`font-bold ${score >= 70 ? 'text-green-600' : score >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
+        <span className="text-gray-600 dark:text-secondary">{label}</span>
+        <span className={`font-bold ${score >= 70 ? 'text-green-600 dark:text-green-400' : score >= 50 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'}`}> 
           {score}%
         </span>
       </div>
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-100 dark:bg-secondary/30 rounded-full overflow-hidden">
         <div 
           className={`h-full rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${score}%` }}
@@ -81,7 +81,7 @@ const ProposalComparison = ({
     <div className="space-y-6">
       {/* Header with AI Comparison Summary */}
       {comparison && (
-        <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 rounded-2xl p-6 border border-purple-100">
+        <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 dark:from-purple-900/20 dark:via-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-purple-100 dark:border-border-color">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
               <BrainCircuit className="text-white" size={20} />
@@ -93,7 +93,7 @@ const ProposalComparison = ({
           </div>
           
           <div className="space-y-3">
-            <div className="bg-white/60 rounded-xl p-4">
+            <div className="bg-white/60 dark:bg-card rounded-xl p-4">
               <h4 className="text-sm font-bold text-green-700 mb-2 flex items-center gap-2">
                 <Sparkles size={16} /> Why #{1} is Recommended
               </h4>
@@ -101,7 +101,7 @@ const ProposalComparison = ({
             </div>
             
             {comparison.keyDifferences && comparison.keyDifferences.length > 0 && (
-              <div className="bg-white/60 rounded-xl p-4">
+              <div className="bg-white/60 dark:bg-card rounded-xl p-4">
                 <h4 className="text-sm font-bold text-blue-700 mb-2">Key Differences</h4>
                 <ul className="space-y-1">
                   {comparison.keyDifferences.map((diff, i) => (
@@ -115,7 +115,7 @@ const ProposalComparison = ({
             )}
             
             {comparison.concerns && comparison.concerns.length > 0 && (
-              <div className="bg-white/60 rounded-xl p-4">
+              <div className="bg-white/60 dark:bg-card rounded-xl p-4">
                 <h4 className="text-sm font-bold text-orange-700 mb-2 flex items-center gap-2">
                   <AlertTriangle size={14} /> Concerns
                 </h4>
@@ -130,8 +130,8 @@ const ProposalComparison = ({
               </div>
             )}
             
-            <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl p-4">
-              <p className="text-sm font-medium text-indigo-800">
+            <div className="bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-4">
+              <p className="text-sm font-medium text-indigo-800 dark:text-indigo-200">
                 💡 {comparison.adminGuidance}
               </p>
             </div>
@@ -156,8 +156,8 @@ const ProposalComparison = ({
             <div 
               key={proposal._id}
               className={`rounded-2xl border-2 overflow-hidden transition-all duration-300 ${getRankBg(rank)} ${
-                isSelected ? 'ring-2 ring-accent-blue ring-offset-2' : ''
-              } ${rank === 1 ? 'shadow-lg' : 'shadow-sm'}`}
+                isSelected ? 'ring-2 ring-accent-blue dark:ring-accent-blue ring-offset-2' : ''
+              } ${rank === 1 ? 'shadow-lg dark:shadow-indigo-900' : 'shadow-sm dark:shadow-secondary'}`}
             >
               {/* Main Card Header */}
               <div 
@@ -181,8 +181,8 @@ const ProposalComparison = ({
                           {proposal.faculty?.firstName || proposal.facultyId?.firstName || 'Faculty'} {proposal.faculty?.lastName || proposal.facultyId?.lastName || ''}
                         </span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                          proposal.requestType === 'Bulk Update' ? 'bg-blue-100 text-blue-600' :
-                          'bg-purple-100 text-purple-600'
+                          proposal.requestType === 'Bulk Update' ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' :
+                          'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400'
                         }`}>
                           {proposal.requestType}
                         </span>
@@ -219,16 +219,16 @@ const ProposalComparison = ({
                 {/* Quick Score Bars */}
                 <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-100/50">
                   <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">{aiScore.industryRelevance || 0}%</div>
-                    <div className="text-[10px] text-gray-500 uppercase font-medium">Industry Relevance</div>
+                    <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{aiScore.industryRelevance || 0}%</div>
+                    <div className="text-[10px] text-gray-500 dark:text-secondary uppercase font-medium">Industry Relevance</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-green-600">{aiScore.contentQuality || 0}%</div>
-                    <div className="text-[10px] text-gray-500 uppercase font-medium">Content Quality</div>
+                    <div className="text-lg font-bold text-green-600 dark:text-green-400">{aiScore.contentQuality || 0}%</div>
+                    <div className="text-[10px] text-gray-500 dark:text-secondary uppercase font-medium">Content Quality</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-bold text-purple-600">{aiScore.modernCoverage || 0}%</div>
-                    <div className="text-[10px] text-gray-500 uppercase font-medium">Modern Coverage</div>
+                    <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{aiScore.modernCoverage || 0}%</div>
+                    <div className="text-[10px] text-gray-500 dark:text-secondary uppercase font-medium">Modern Coverage</div>
                   </div>
                 </div>
               </div>
@@ -236,7 +236,7 @@ const ProposalComparison = ({
               {/* Expand Toggle */}
               <button
                 onClick={() => setExpandedId(isExpanded ? null : proposal._id)}
-                className="w-full py-2 bg-gray-50/50 hover:bg-gray-100/50 transition-colors flex items-center justify-center gap-2 text-sm font-medium text-gray-600"
+                className="w-full py-2 bg-gray-50/50 dark:bg-secondary/30 hover:bg-gray-100/50 dark:hover:bg-secondary/50 transition-colors flex items-center justify-center gap-2 text-sm font-medium text-gray-600 dark:text-secondary"
               >
                 {isExpanded ? (
                   <>Hide Details <ChevronUp size={16} /></>
@@ -247,7 +247,7 @@ const ProposalComparison = ({
               
               {/* Expanded Details */}
               {isExpanded && (
-                <div className="p-5 bg-white/80 border-t border-gray-100 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                <div className="p-5 bg-white/80 dark:bg-card border-t border-gray-100 dark:border-border-color space-y-4 animate-in slide-in-from-top-2 duration-200">
                   {/* Detailed Scores */}
                   <div className="grid grid-cols-2 gap-6">
                     <div>
@@ -265,29 +265,29 @@ const ProposalComparison = ({
                       <div className="space-y-3">
                         <div className="bg-green-50 rounded-xl p-3">
                           <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs text-green-700 font-medium">Employability</span>
-                            <span className="text-lg font-bold text-green-700">{aiScore.predictedEmployability || 0}%</span>
+                            <span className="text-xs text-green-700 dark:text-green-400 font-medium">Employability</span>
+                            <span className="text-lg font-bold text-green-700 dark:text-green-400">{aiScore.predictedEmployability || 0}%</span>
                           </div>
-                          <div className="h-2 bg-green-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-green-500 rounded-full" style={{ width: `${aiScore.predictedEmployability || 0}%` }} />
+                          <div className="h-2 bg-green-100 dark:bg-green-900/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-green-500 dark:bg-green-400 rounded-full" style={{ width: `${aiScore.predictedEmployability || 0}%` }} />
                           </div>
                         </div>
                         
                         <div className="bg-blue-50 rounded-xl p-3">
                           <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs text-blue-700 font-medium">Skill Gap Reduction</span>
-                            <span className="text-lg font-bold text-blue-700">{aiScore.skillGapReduction || 0}%</span>
+                            <span className="text-xs text-blue-700 dark:text-blue-400 font-medium">Skill Gap Reduction</span>
+                            <span className="text-lg font-bold text-blue-700 dark:text-blue-400">{aiScore.skillGapReduction || 0}%</span>
                           </div>
-                          <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${aiScore.skillGapReduction || 0}%` }} />
+                          <div className="h-2 bg-blue-100 dark:bg-blue-900/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500 dark:bg-blue-400 rounded-full" style={{ width: `${aiScore.skillGapReduction || 0}%` }} />
                           </div>
                         </div>
                         
                         <div className="text-xs text-gray-500 mt-2">
                           <span className="font-medium">Confidence:</span>{' '}
                           <span className={`font-bold ${
-                            aiScore.confidence === 'High' ? 'text-green-600' :
-                            aiScore.confidence === 'Medium' ? 'text-yellow-600' : 'text-red-600'
+                            aiScore.confidence === 'High' ? 'text-green-600 dark:text-green-400' :
+                            aiScore.confidence === 'Medium' ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'
                           }`}>{aiScore.confidence || 'N/A'}</span>
                         </div>
                       </div>
@@ -299,20 +299,20 @@ const ProposalComparison = ({
                     <h4 className="text-sm font-bold text-primary mb-2 flex items-center gap-2">
                       <Zap size={14} className="text-yellow-500" /> AI Analysis
                     </h4>
-                    <p className="text-sm text-gray-700">{aiScore.aiExplanation || 'No explanation available'}</p>
+                    <p className="text-sm text-gray-700 dark:text-secondary">{aiScore.aiExplanation || 'No explanation available'}</p>
                   </div>
                   
                   {/* Strengths & Weaknesses */}
                   <div className="grid grid-cols-2 gap-4">
                     {aiScore.strengths && aiScore.strengths.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-bold text-green-700 mb-2 flex items-center gap-1">
+                        <h4 className="text-sm font-bold text-green-700 dark:text-green-400 mb-2 flex items-center gap-1">
                           <CheckCircle size={14} /> Strengths
                         </h4>
                         <ul className="space-y-1">
                           {aiScore.strengths.map((s, i) => (
-                            <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                              <div className="w-1 h-1 rounded-full bg-green-400 mt-1.5" />
+                            <li key={i} className="text-xs text-gray-600 dark:text-secondary flex items-start gap-2">
+                              <div className="w-1 h-1 rounded-full bg-green-400 dark:bg-green-700 mt-1.5" />
                               {s}
                             </li>
                           ))}
@@ -322,13 +322,13 @@ const ProposalComparison = ({
                     
                     {aiScore.weaknesses && aiScore.weaknesses.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-bold text-red-700 mb-2 flex items-center gap-1">
+                        <h4 className="text-sm font-bold text-red-700 dark:text-red-400 mb-2 flex items-center gap-1">
                           <XCircle size={14} /> Weaknesses
                         </h4>
                         <ul className="space-y-1">
                           {aiScore.weaknesses.map((w, i) => (
-                            <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                              <div className="w-1 h-1 rounded-full bg-red-400 mt-1.5" />
+                            <li key={i} className="text-xs text-gray-600 dark:text-secondary flex items-start gap-2">
+                              <div className="w-1 h-1 rounded-full bg-red-400 dark:bg-red-700 mt-1.5" />
                               {w}
                             </li>
                           ))}
@@ -340,12 +340,12 @@ const ProposalComparison = ({
                   {/* Missing Topics */}
                   {aiScore.missingTopics && aiScore.missingTopics.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-bold text-orange-700 mb-2 flex items-center gap-1">
+                      <h4 className="text-sm font-bold text-orange-700 dark:text-orange-400 mb-2 flex items-center gap-1">
                         <AlertTriangle size={14} /> Missing Topics
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {aiScore.missingTopics.map((topic, i) => (
-                          <span key={i} className="px-2 py-1 bg-orange-50 text-orange-700 rounded-lg text-xs font-medium">
+                          <span key={i} className="px-2 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 rounded-lg text-xs font-medium">
                             {topic}
                           </span>
                         ))}
@@ -364,7 +364,7 @@ const ProposalComparison = ({
                     </button>
                     <button
                       onClick={() => onReject && onReject(proposal._id)}
-                      className="px-6 py-3 bg-gray-100 text-gray-600 font-bold rounded-xl hover:bg-gray-200 transition-all"
+                      className="px-6 py-3 bg-gray-100 dark:bg-secondary/30 text-gray-600 dark:text-secondary font-bold rounded-xl hover:bg-gray-200 dark:hover:bg-secondary/50 transition-all"
                     >
                       Reject
                     </button>

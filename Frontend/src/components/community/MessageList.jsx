@@ -3,7 +3,7 @@ import { MessageCircle } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 
 const MessageList = ({ loading, messages, activeChannel, currentUserId, role, onDelete, onUserClick, messagesEndRef }) => (
-  <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 bg-gray-50/50">
+  <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-gray-50/50 dark:bg-secondary/30 custom-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3b82f6 #23293a', maxHeight: '65vh' }}>
     {loading ? (
       <div className="flex items-center justify-center h-full">
         <div className="animate-pulse flex flex-col items-center gap-3 opacity-50">
@@ -34,6 +34,7 @@ const MessageList = ({ loading, messages, activeChannel, currentUserId, role, on
             currentUserId={currentUserId}
             onDelete={onDelete}
             onUserClick={onUserClick}
+            animationDirection="up"
           />
         );
       })
@@ -41,5 +42,11 @@ const MessageList = ({ loading, messages, activeChannel, currentUserId, role, on
     <div ref={messagesEndRef} />
   </div>
 );
+
+// Custom scrollbar styles for iMessage look
+// Add this to your global CSS if not already present:
+// .custom-scrollbar::-webkit-scrollbar { width: 8px; background: transparent; }
+// .custom-scrollbar::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 8px; }
+// .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #3b82f6 #23293a; }
 
 export default MessageList;

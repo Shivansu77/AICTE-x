@@ -1,0 +1,17 @@
+{
+  "settings": "Paramètres",
+  "profile": "Profil",
+  "security": "Sécurité",
+  "notifications": "Notifications",
+  "appearance": "Apparence",
+  "privacy": "Confidentialité et Données",
+  "language": "Langue",
+  "english": "Anglais",
+  "hindi": "Hindi",
+  "spanish": "Espagnol",
+  "french": "Français",
+  "german": "Allemand",
+  "save": "Enregistrer",
+  "logout": "Déconnexion",
+  "dashboard": "Tableau de bord"
+}

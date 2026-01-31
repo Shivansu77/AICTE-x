@@ -1,0 +1,17 @@
+{
+  "settings": "Einstellungen",
+  "profile": "Profil",
+  "security": "Sicherheit",
+  "notifications": "Benachrichtigungen",
+  "appearance": "Aussehen",
+  "privacy": "Datenschutz & Daten",
+  "language": "Sprache",
+  "english": "Englisch",
+  "hindi": "Hindi",
+  "spanish": "Spanisch",
+  "french": "Französisch",
+  "german": "Deutsch",
+  "save": "Speichern",
+  "logout": "Abmelden",
+  "dashboard": "Dashboard"
+}

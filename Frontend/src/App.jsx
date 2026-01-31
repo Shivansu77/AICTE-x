@@ -14,6 +14,8 @@ import CommunityScreen from './screens/CommunityScreen';
 import ManageCourses from './screens/ManageCourses';
 import CourseDetail from './screens/CourseDetail';
 import FacultyCourseView from './screens/FacultyCourseView';
+
+import AdminDashboard from './screens/AdminDashboard';
 import AdminUsers from './screens/AdminUsers'; // Import corrected
 
 import FacultyScreen from './screens/FacultyScreen';
@@ -24,6 +26,10 @@ import AdminQueries from './screens/AdminQueries';
 import AboutUs from './screens/AboutUs';
 import ApprovalDashboard from './screens/ApprovalDashboard';
 import ApprovalWorkspace from './screens/ApprovalWorkspace';
+
+import './i18n';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 // Layout Wrapper
 const AppLayout = () => (
@@ -64,46 +70,44 @@ const ThemeInitializer = ({ children }) => {
 
 function AppContent() {
   return (
-    <ThemeInitializer>
-      <UserProvider>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<LoginScreen />} />
-            <Route path="/register" element={<RegisterScreen />} />
-
-          {/* Student Routes (No Layout) */}
-          <Route path="/student" element={<StudentScreen />} />
-          {/* Student Program View (Reusing Faculty View in Read-Only Mode) */}
-          <Route path="/student/course/:id" element={<FacultyCourseView />} />
-
-          {/* Protected Routes with Layout */}
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<DashboardRouter />} />
-            <Route path="/curriculum" element={<CurriculumRouter />} />
-            <Route path="/curriculum/:id" element={<CurriculumDetail />} />
-            <Route path="/announcements" element={<AnnouncementsScreen />} />
-            <Route path="/community" element={<CommunityScreen />} />
-            <Route path="/contact" element={<ContactAdministration />} />
-            <Route path="/about" element={<AboutUs />} />
-
-
-            {/* Admin Routes */}
-            <Route path="/admin/courses" element={<ManageCourses />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/course/:id" element={<CourseDetail />} />
-            <Route path="/admin/queries" element={<AdminQueries />} />
-            <Route path="/admin/approvals" element={<ApprovalDashboard />} />
-            <Route path="/admin/approvals/:id" element={<ApprovalWorkspace />} />
-
-            {/* Faculty Routes */}
-            <Route path="/faculty/course/:id" element={<FacultyCourseView />} />
-
-            <Route path="/settings" element={<SettingsScreen />} />
-          </Route>
-        </Routes>
-      </Router>
-    </UserProvider>
-    </ThemeInitializer>
+    <>
+      <ThemeInitializer>
+        <UserProvider>
+          <Router>
+            <Routes>
+              <Route path="/login" element={<LoginScreen />} />
+              <Route path="/register" element={<RegisterScreen />} />
+              {/* Student Routes (No Layout) */}
+              <Route path="/student" element={<StudentScreen />} />
+              {/* Student Program View (Reusing Faculty View in Read-Only Mode) */}
+              <Route path="/student/course/:id" element={<FacultyCourseView />} />
+              {/* Protected Routes with Layout */}
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<DashboardRouter />} />
+                <Route path="/curriculum" element={<CurriculumRouter />} />
+                <Route path="/curriculum/:id" element={<CurriculumDetail />} />
+                <Route path="/announcements" element={<AnnouncementsScreen />} />
+                <Route path="/community" element={<CommunityScreen />} />
+                <Route path="/contact" element={<ContactAdministration />} />
+                <Route path="/about" element={<AboutUs />} />
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/courses" element={<ManageCourses />} />
+                <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="/admin/course/:id" element={<CourseDetail />} />
+                <Route path="/admin/queries" element={<AdminQueries />} />
+                <Route path="/admin/approvals" element={<ApprovalDashboard />} />
+                <Route path="/admin/approvals/:id" element={<ApprovalWorkspace />} />
+                {/* Faculty Routes */}
+                <Route path="/faculty/course/:id" element={<FacultyCourseView />} />
+                <Route path="/settings" element={<SettingsScreen />} />
+              </Route>
+            </Routes>
+          </Router>
+        </UserProvider>
+      </ThemeInitializer>
+      <LanguageSync />
+    </>
   );
 }
 
@@ -116,3 +120,14 @@ function App() {
 }
 
 export default App;
+
+function LanguageSync() {
+  const language = useSelector(state => state.theme.language);
+  const { i18n } = useTranslation();
+  useEffect(() => {
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language);
+    }
+  }, [language, i18n]);
+  return null;
+}

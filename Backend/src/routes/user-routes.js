@@ -19,7 +19,9 @@ const {
     updatePrivacyPreferences,
     getAllPreferences,
     deleteAccount,
-    exportUserData
+    exportUserData,
+    toggleUserBlock,
+    deleteUser
 } = require('../controllers/user-controller');
 const authMiddleware = require('../middleware/AuthMiddleware');
 
@@ -46,5 +48,9 @@ router.put('/preferences/appearance', authMiddleware, updateAppearancePreference
 router.put('/preferences/privacy', authMiddleware, updatePrivacyPreferences);
 router.delete('/account', authMiddleware, deleteAccount);
 router.get('/export-data', authMiddleware, exportUserData);
+
+// Admin user management routes
+router.put('/:userId/toggle-block', authMiddleware, toggleUserBlock);
+router.delete('/:userId', authMiddleware, deleteUser);
 
 module.exports = router;

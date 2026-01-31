@@ -9,7 +9,7 @@ const getRoleBadgeColor = (role) => {
   }
 };
 
-const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, onUserClick }) => {
+const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, onUserClick, animationDirection }) => {
   const roleColor = msg.role === 'Admin'
     ? 'text-accent-yellow'
     : (msg.role === 'Faculty' || msg.role === 'Teacher' ? 'text-accent-blue' : 'text-emerald-500');
@@ -21,7 +21,7 @@ const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, o
   };
 
   return (
-    <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2 duration-300`}>
+    <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-in ${animationDirection === 'up' ? 'slide-in-from-top-2' : isMe ? 'slide-in-from-right-2' : 'slide-in-from-left-2'} duration-300`}>
       <div className={`flex items-end gap-3 max-w-[85%] md:max-w-[70%] ${isMe ? 'flex-row-reverse' : 'flex-row'} group`}>
         <div 
           className={`w-10 h-10 rounded-[1rem] flex items-center justify-center text-sm font-black shrink-0 shadow-sm transition-transform hover:scale-110 ${showAvatar ? getRoleBadgeColor(msg.role) : 'opacity-0'} ${showAvatar && !isMe ? 'cursor-pointer' : 'cursor-default'}`}
@@ -41,9 +41,9 @@ const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, o
             </span>
           )}
 
-          <div className={`px-6 py-4 rounded-[1.5rem] text-sm md:text-base font-medium shadow-sm relative transition-all duration-200 hover:shadow-md leading-relaxed ${isMe
-            ? 'bg-gradient-to-br from-accent-blue to-cyan-500 text-white rounded-tr-sm'
-            : 'bg-white text-primary border border-gray-100 rounded-tl-sm'
+          <div className={`px-6 py-3 rounded-[2rem] text-base font-medium shadow-lg relative transition-all duration-200 leading-relaxed max-w-full ${isMe
+            ? 'bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-br-2xl rounded-tl-2xl rounded-tr-lg ml-8 mr-2'
+            : 'bg-gray-100 dark:bg-card text-gray-900 dark:text-secondary border border-gray-200 dark:border-border-color rounded-bl-2xl rounded-tr-2xl rounded-tl-lg mr-8 ml-2'
             }`}>
             {msg.content}
 
@@ -58,7 +58,7 @@ const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, o
             )}
           </div>
 
-          <span className="text-[10px] font-bold text-gray-300 mt-1 px-2">
+          <span className="text-[10px] font-bold text-gray-400 dark:text-secondary mt-1 px-2">
             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>

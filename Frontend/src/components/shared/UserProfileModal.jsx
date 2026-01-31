@@ -1,8 +1,10 @@
 import React from 'react';
-import { X, Mail, MapPin, Building, BookOpen, Calendar, Shield, GraduationCap, User } from 'lucide-react';
+import { X, Mail, MapPin, Building, BookOpen, Calendar, Shield, GraduationCap, User, Ban, Trash2, ShieldCheck } from 'lucide-react';
 
-const UserProfileModal = ({ user, onClose }) => {
+const UserProfileModal = ({ user, onClose, onBlockUser, onDeleteUser, isAdmin, currentUserId }) => {
   if (!user) return null;
+
+  const isCurrentUser = user._id === currentUserId;
 
   const getRoleIcon = (role) => {
     switch (role?.toLowerCase()) {
@@ -59,6 +61,7 @@ const UserProfileModal = ({ user, onClose }) => {
           <div className="text-center mb-6">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">
               {user.firstName} {user.lastName}
+              {isCurrentUser && <span className="ml-2 text-sm text-gray-400">(You)</span>}
             </h2>
             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase ${getRoleColor(user.role)}`}>
               {getRoleIcon(user.role)}
@@ -166,8 +169,35 @@ const UserProfileModal = ({ user, onClose }) => {
                   ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' 
                   : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
               }`}>
-                {user.isActive ? '● Active User' : '● Inactive User'}
+                {user.isActive ? '● Active User' : '● Blocked User'}
               </span>
+            </div>
+          )}
+
+          {/* Admin Actions */}
+          {isAdmin && !isCurrentUser && (
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 text-center">Admin Actions</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => onBlockUser && onBlockUser(user)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-bold text-sm transition-all ${
+                    user.isActive 
+                      ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900/40 dark:text-orange-300 dark:hover:bg-orange-900/60' 
+                      : 'bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60'
+                  }`}
+                >
+                  {user.isActive ? <Ban size={18} /> : <ShieldCheck size={18} />}
+                  {user.isActive ? 'Block User' : 'Unblock User'}
+                </button>
+                <button
+                  onClick={() => onDeleteUser && onDeleteUser(user)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-bold text-sm bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/60 transition-all"
+                >
+                  <Trash2 size={18} />
+                  Delete User
+                </button>
+              </div>
             </div>
           )}
         </div>

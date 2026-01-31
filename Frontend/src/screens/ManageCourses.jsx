@@ -101,7 +101,7 @@ const ManageCourses = () => {
         <div className="h-[calc(100vh-2rem)] flex flex-col max-w-7xl mx-auto px-4 md:px-8">
             {/* Header Section */}
             <ManageHeader
-                onBack={() => navigate('/')}
+                onBack={() => navigate('/admin')}
                 onNew={openNewModal}
             />
 

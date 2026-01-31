@@ -255,6 +255,77 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// Block/Unblock a user (admin only)
+const toggleUserBlock = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const adminId = req.user.userId;
+
+        // Check if the requesting user is an admin
+        const admin = await User.findById(adminId);
+        if (!admin || admin.role !== 'admin') {
+            return res.status(403).json({ message: 'Only admins can block/unblock users' });
+        }
+
+        // Prevent admin from blocking themselves
+        if (userId === adminId) {
+            return res.status(400).json({ message: 'You cannot block yourself' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Toggle the isActive status
+        user.isActive = !user.isActive;
+        await user.save();
+
+        res.json({ 
+            message: user.isActive ? 'User unblocked successfully' : 'User blocked successfully',
+            user: user.toJSON()
+        });
+    } catch (error) {
+        console.error('Toggle user block error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Delete a user (admin only)
+const deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const adminId = req.user.userId;
+
+        // Check if the requesting user is an admin
+        const admin = await User.findById(adminId);
+        if (!admin || admin.role !== 'admin') {
+            return res.status(403).json({ message: 'Only admins can delete users' });
+        }
+
+        // Prevent admin from deleting themselves
+        if (userId === adminId) {
+            return res.status(400).json({ message: 'You cannot delete yourself' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Delete the user
+        await User.findByIdAndDelete(userId);
+
+        // Also delete related data (queries, etc.)
+        await StudentQuery.deleteMany({ studentId: userId });
+
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 // Change password
 const changePassword = async (req, res) => {
     try {
@@ -460,5 +531,8 @@ module.exports = {
     updatePrivacyPreferences,
     getAllPreferences,
     deleteAccount,
-    exportUserData
+    exportUserData,
+    // Admin user management
+    toggleUserBlock,
+    deleteUser
 };

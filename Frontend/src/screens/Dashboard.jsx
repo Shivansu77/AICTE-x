@@ -6,10 +6,6 @@ import AdminDashboard from './AdminDashboard';
 import FacultyDashboard from './FacultyDashboard';
 import CourseCard from '../components/dashboard/CourseCard';
 
-// ...
-// --- ADMIN PORTAL VIEW ---
-// ...
-
 const Dashboard = () => {
     const [curricula, setCurricula] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,7 +20,7 @@ const Dashboard = () => {
     const [submitMessage, setSubmitMessage] = useState('');
 
     const { user } = useUser();
-    const role = user.role || 'student'; // Default to student
+    const role = user.role || 'student';
 
     const fetchCurricula = async () => {
         try {
@@ -65,8 +61,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchCurricula();
-
-        // Refetch when the tab gains focus
         const handleFocus = () => fetchCurricula();
         window.addEventListener('focus', handleFocus);
         return () => window.removeEventListener('focus', handleFocus);
@@ -79,61 +73,89 @@ const Dashboard = () => {
     }, [role]);
 
     if (loading) {
-        return <div className="flex items-center justify-center h-full text-secondary font-bold">Loading Portal...</div>;
+        return (
+            <div className="flex items-center justify-center h-full text-secondary dark:text-gray-300 font-bold">
+                Loading Portal...
+            </div>
+        );
     }
 
-    // Unified Dashboard View
     return (
         <div className="space-y-8">
-            {/* Header / Role Specific Views */}
+            {/* Role Views */}
             {role === 'admin' ? (
                 <AdminDashboard />
             ) : (role === 'teacher' || role === 'faculty') ? (
                 <FacultyDashboard />
             ) : (
                 <>
-                    {/* Header Info (Optional) */}
+                    {/* Role Badge */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm">
-                            <User size={16} className="text-secondary" />
-                            <span className="text-xs font-bold text-secondary uppercase tracking-wider">{role} View</span>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-sm">
+                            <User size={16} className="text-secondary dark:text-gray-300" />
+                            <span className="text-xs font-bold text-secondary dark:text-gray-300 uppercase tracking-wider">
+                                {role} View
+                            </span>
                         </div>
                     </div>
 
-                    {/* MISSION BANNER */}
-                    <div className="bg-gradient-to-r from-accent-blue via-accent-blue to-cyan-500 rounded-[2.5rem] p-8 shadow-lg text-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full transalte-x-1/2 -translate-y-1/2 blur-3xl"></div>
+                    {/* Mission Banner */}
+                    <div className="bg-gradient-to-r from-accent-blue via-accent-blue to-cyan-500 
+                                    dark:from-slate-900 dark:via-slate-800 dark:to-slate-900
+                                    rounded-[2.5rem] p-8 shadow-lg text-white relative overflow-hidden">
+
+                        <div className="absolute top-0 right-0 w-64 h-64 
+                                        bg-white/20 dark:bg-accent-blue/20 
+                                        rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+
+                        <div className="absolute inset-0 bg-black/10 dark:bg-black/40"></div>
+
                         <div className="relative z-10 max-w-2xl">
-                            <span className="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-bold mb-3 backdrop-blur-md border border-white/20">Aicte-X</span>
-                            <h1 className="text-3xl font-extrabold mb-4 leading-tight">One Nation, One Curriculum</h1>
-                            <p className="text-white/90 font-medium leading-relaxed">
-                                A unified platform for developing, sharing, and standardizing model curricula across all AICTE-approved institutes. Ensuring consistency and quality education for the future of India.
+                            <span className="inline-block px-3 py-1 
+                                             bg-white/30 dark:bg-white/10 
+                                             text-white rounded-full text-base font-extrabold mb-3 
+                                             backdrop-blur-md border border-white/20 dark:border-white/10">
+                                AICTE-X
+                            </span>
+
+                            <h1 className="text-4xl font-extrabold mb-4 leading-tight text-white">
+                                One Nation, One Curriculum
+                            </h1>
+
+                            <p className="text-white/90 dark:text-gray-200 font-bold text-lg leading-relaxed">
+                                A unified platform for developing, sharing, and standardizing model curricula 
+                                across all AICTE-approved institutes. Ensuring consistency and quality education 
+                                for the future of India.
                             </p>
                         </div>
                     </div>
-
                 </>
             )}
 
-            {/* CURRICULUM BROWSER (Visible to ALL) */}
+            {/* Curriculum Browser */}
             <div className="pt-4">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h2 className="text-3xl font-black text-gray-900 mb-1">Browse Curriculum</h2>
-                        <p className="text-gray-600 font-medium">Explore model curricula across different programs and semesters</p>
+                        <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-1">
+                            Browse Curriculum
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400 font-medium">
+                            Explore model curricula across different programs and semesters
+                        </p>
                     </div>
                 </div>
 
-                {/* Filtering Pills */}
+                {/* Filters */}
                 <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide mb-6">
-                    {["All Semesters", "Semester 3", "Semester 4", "Semester 5"].map((label, idx) => (
+                    {["All Semesters", "Semester 3", "Semester 4", "Semester 5"].map((label) => (
                         <button
                             key={label}
                             onClick={() => setActiveFilter(label)}
-                            className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${activeFilter === label
-                                ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
-                                : "bg-white text-secondary hover:bg-white/80 border border-gray-100"
-                                }`}
+                            className={`px-6 py-3 rounded-full font-bold text-sm whitespace-nowrap transition-all ${
+                                activeFilter === label
+                                    ? "bg-accent-peach text-white shadow-md shadow-accent-peach/30"
+                                    : "bg-white dark:bg-gray-800 text-secondary dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700 border border-gray-100 dark:border-gray-700"
+                            }`}
                         >
                             {label}
                         </button>
@@ -151,8 +173,12 @@ const Dashboard = () => {
                     </div>
                 ) : (
                     <div className="text-center py-20">
-                        <h3 className="text-xl font-bold text-secondary">No subjects found.</h3>
-                        <p className="text-secondary/70">Add courses and subjects through the admin panel.</p>
+                        <h3 className="text-xl font-bold text-secondary dark:text-gray-300">
+                            No subjects found.
+                        </h3>
+                        <p className="text-secondary/70 dark:text-gray-400">
+                            Add courses and subjects through the admin panel.
+                        </p>
                     </div>
                 )}
             </div>

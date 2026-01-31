@@ -1,0 +1,17 @@
+{
+  "settings": "Configuración",
+  "profile": "Perfil",
+  "security": "Seguridad",
+  "notifications": "Notificaciones",
+  "appearance": "Apariencia",
+  "privacy": "Privacidad y Datos",
+  "language": "Idioma",
+  "english": "Inglés",
+  "hindi": "Hindi",
+  "spanish": "Español",
+  "french": "Francés",
+  "german": "Alemán",
+  "save": "Guardar",
+  "logout": "Cerrar sesión",
+  "dashboard": "Panel"
+}

@@ -7,8 +7,10 @@ import SecuritySection from '../components/settings/SecuritySection';
 import NotificationSection from '../components/settings/NotificationSection';
 import AppearanceSection from '../components/settings/AppearanceSection';
 import PrivacySection from '../components/settings/PrivacySection';
+import { useTranslation } from 'react-i18next';
 
 const SettingsScreen = () => {
+    const { t } = useTranslation();
     const { user, setUser } = useUser();
     const [loading, setLoading] = useState(false);
     const [preferencesLoading, setPreferencesLoading] = useState(true);
@@ -115,11 +117,11 @@ const SettingsScreen = () => {
     };
 
     const tabs = [
-        { id: 'profile', label: 'Profile', icon: User },
-        { id: 'security', label: 'Security', icon: Shield },
-        { id: 'notifications', label: 'Notifications', icon: Bell },
-        { id: 'appearance', label: 'Appearance', icon: Palette },
-        { id: 'privacy', label: 'Privacy & Data', icon: Lock }
+        { id: 'profile', label: t('profile'), icon: User },
+        { id: 'security', label: t('security'), icon: Shield },
+        { id: 'notifications', label: t('notifications'), icon: Bell },
+        { id: 'appearance', label: t('appearance'), icon: Palette },
+        { id: 'privacy', label: t('privacy'), icon: Lock }
     ];
 
     return (
@@ -130,7 +132,7 @@ const SettingsScreen = () => {
                     <Settings className="text-white" size={28} />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-extrabold text-primary">Settings</h1>
+                    <h1 className="text-3xl font-extrabold text-primary">{t('settings')}</h1>
                     <p className="text-secondary font-medium">Manage your account preferences</p>
                 </div>
             </div>
