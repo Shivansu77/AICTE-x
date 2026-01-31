@@ -255,6 +255,191 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// Change password
+const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const userId = req.user.userId;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: 'Current and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ message: 'New password must be at least 6 characters' });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify current password
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Current password is incorrect' });
+        }
+
+        // Hash and update new password
+        user.password = newPassword; // Will be hashed by pre-save hook
+        user.lastPasswordChange = new Date();
+        await user.save();
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Change password error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Update notification preferences
+const updateNotificationPreferences = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const preferences = req.body;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: { notificationPreferences: preferences } },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'Notification preferences updated', preferences: user.notificationPreferences });
+    } catch (error) {
+        console.error('Update notification preferences error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Update appearance preferences
+const updateAppearancePreferences = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const preferences = req.body;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: { appearancePreferences: preferences } },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'Appearance preferences updated', preferences: user.appearancePreferences });
+    } catch (error) {
+        console.error('Update appearance preferences error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Update privacy preferences
+const updatePrivacyPreferences = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const preferences = req.body;
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $set: { privacyPreferences: preferences } },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({ message: 'Privacy preferences updated', preferences: user.privacyPreferences });
+    } catch (error) {
+        console.error('Update privacy preferences error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Get all preferences
+const getAllPreferences = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        
+        const user = await User.findById(userId).select('notificationPreferences appearancePreferences privacyPreferences lastPasswordChange twoFactorEnabled');
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.json({
+            notificationPreferences: user.notificationPreferences,
+            appearancePreferences: user.appearancePreferences,
+            privacyPreferences: user.privacyPreferences,
+            lastPasswordChange: user.lastPasswordChange,
+            twoFactorEnabled: user.twoFactorEnabled
+        });
+    } catch (error) {
+        console.error('Get preferences error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Delete account
+const deleteAccount = async (req, res) => {
+    try {
+        const { password } = req.body;
+        const userId = req.user.userId;
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Password is incorrect' });
+        }
+
+        // Soft delete - mark as inactive
+        user.isActive = false;
+        user.email = `deleted_${Date.now()}_${user.email}`; // Prevent email conflicts
+        await user.save();
+
+        res.json({ message: 'Account deleted successfully' });
+    } catch (error) {
+        console.error('Delete account error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+// Export user data (GDPR compliance)
+const exportUserData = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        
+        const user = await User.findById(userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Get user's related data
+        const queries = await StudentQuery.find({ studentId: userId });
+
+        const exportData = {
+            profile: user.toJSON(),
+            queries: queries,
+            exportDate: new Date().toISOString()
+        };
+
+        res.json(exportData);
+    } catch (error) {
+        console.error('Export data error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
 module.exports = {
     registerUser,
     loginUser,
@@ -262,10 +447,18 @@ module.exports = {
     getAllStudents,
     getAllTeachers,
     getUsersByRole,
-    getAllUsers, // New export
+    getAllUsers,
     updateProfile,
     submitStudentQuery,
     getStudentQueries,
     respondToStudentQuery,
-    getMyQueries
+    getMyQueries,
+    // New exports
+    changePassword,
+    updateNotificationPreferences,
+    updateAppearancePreferences,
+    updatePrivacyPreferences,
+    getAllPreferences,
+    deleteAccount,
+    exportUserData
 };

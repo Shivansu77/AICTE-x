@@ -10,10 +10,10 @@ const SidebarItem = ({ icon: Icon, label, path, active }) => {
     <Link
       to={path}
       className={clsx(
-        "flex items-center gap-3 px-6 py-4 rounded-full transition-all duration-300 font-bold text-lg mb-2",
+        "flex items-center gap-3 px-6 py-4 rounded-full transition-all duration-300 font-bold text-lg mb-2 theme-transition",
         active
-          ? "bg-white text-primary shadow-sm"
-          : "text-secondary hover:bg-white/50 hover:text-primary"
+          ? "bg-white dark:bg-gray-800 text-primary shadow-sm"
+          : "text-secondary hover:bg-white/50 dark:hover:bg-gray-800/50 hover:text-primary"
       )}
     >
       <Icon size={24} className={active ? "text-accent-blue" : "text-secondary"} />
@@ -78,9 +78,9 @@ const Layout = ({ children }) => {
       : baseNavItems;
 
   return (
-    <div className="min-h-screen bg-cream flex p-6 gap-6 font-sans text-primary">
+    <div className="min-h-screen bg-cream flex p-6 gap-6 font-sans text-primary theme-transition">
       {/* Sidebar */}
-      <aside className="w-72 flex flex-col">
+      <aside className="w-72 flex flex-col theme-transition">
         <div className="pl-10 pr-8 py-6 mb-8">
           <h1 className="text-3xl font-extrabold flex items-center gap-2">
             <span className="text-accent-peach">AICTE</span>
@@ -124,7 +124,7 @@ const Layout = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col bg-white/50 rounded-[3rem] p-8 shadow-sm border-2 border-white overflow-hidden relative">
+      <main className="flex-1 flex flex-col bg-white/50 dark:bg-card/50 rounded-[3rem] p-8 shadow-sm border-2 border-white dark:border-gray-700 overflow-hidden relative theme-transition">
         {/* Decorative Background Elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-accent-blue/5 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-peach/5 rounded-full blur-3xl -z-10 -translate-x-1/3 translate-y-1/3"></div>

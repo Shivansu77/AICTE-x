@@ -2,6 +2,29 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const notificationPreferencesSchema = new mongoose.Schema({
+  emailNotifications: { type: Boolean, default: true },
+  courseAnnouncements: { type: Boolean, default: true },
+  curriculumUpdates: { type: Boolean, default: true },
+  requestUpdates: { type: Boolean, default: true },
+  weeklyDigest: { type: Boolean, default: false },
+  marketingEmails: { type: Boolean, default: false }
+}, { _id: false });
+
+const appearancePreferencesSchema = new mongoose.Schema({
+  theme: { type: String, enum: ['light', 'dark', 'system'], default: 'light' },
+  language: { type: String, default: 'en' },
+  fontSize: { type: String, enum: ['small', 'medium', 'large'], default: 'medium' },
+  compactMode: { type: Boolean, default: false }
+}, { _id: false });
+
+const privacyPreferencesSchema = new mongoose.Schema({
+  profileVisibility: { type: String, enum: ['public', 'institution', 'private'], default: 'institution' },
+  showEmail: { type: Boolean, default: false },
+  showActivity: { type: Boolean, default: true },
+  allowDataCollection: { type: Boolean, default: true }
+}, { _id: false });
+
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
@@ -57,7 +80,36 @@ const userSchema = new mongoose.Schema({
   bio: {
     type: String,
     default: ''
-  }
+  },
+  // Settings preferences
+  notificationPreferences: {
+    type: notificationPreferencesSchema,
+    default: () => ({})
+  },
+  appearancePreferences: {
+    type: appearancePreferencesSchema,
+    default: () => ({})
+  },
+  privacyPreferences: {
+    type: privacyPreferencesSchema,
+    default: () => ({})
+  },
+  // Security
+  lastPasswordChange: {
+    type: Date,
+    default: Date.now
+  },
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false
+  },
+  activeSessions: [{
+    device: String,
+    browser: String,
+    ip: String,
+    lastActive: Date,
+    createdAt: { type: Date, default: Date.now }
+  }]
 }, {
   timestamps: true
 });

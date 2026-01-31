@@ -4,6 +4,7 @@ import api from '../utils/api';
 import PageHeader from '../components/adminUsers/PageHeader';
 import FilterBar from '../components/adminUsers/FilterBar';
 import UsersTable from '../components/adminUsers/UsersTable';
+import UserProfileModal from '../components/shared/UserProfileModal';
 
 const AdminUsers = () => {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ const AdminUsers = () => {
     const [loading, setLoading] = useState(true);
     const [filterRole, setFilterRole] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -60,6 +62,14 @@ const AdminUsers = () => {
         setFilteredUsers(result);
     }, [filterRole, searchTerm, users]);
 
+    const handleUserClick = (user) => {
+        setSelectedUser(user);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedUser(null);
+    };
+
     return (
         <div className="max-w-7xl mx-auto pb-10">
             <PageHeader onBack={() => navigate('/admin')} />
@@ -75,7 +85,12 @@ const AdminUsers = () => {
             {loading ? (
                 <div className="text-center py-20 text-gray-400 font-medium">Loading users...</div>
             ) : (
-                <UsersTable users={filteredUsers} />
+                <UsersTable users={filteredUsers} onUserClick={handleUserClick} />
+            )}
+
+            {/* User Profile Modal */}
+            {selectedUser && (
+                <UserProfileModal user={selectedUser} onClose={handleCloseModal} />
             )}
         </div>
     );

@@ -1,7 +1,7 @@
 import React from 'react';
 import RoleBadge from './RoleBadge';
 
-const UsersTable = ({ users }) => (
+const UsersTable = ({ users, onUserClick }) => (
   <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left">
@@ -15,7 +15,11 @@ const UsersTable = ({ users }) => (
         </thead>
         <tbody className="divide-y divide-gray-50">
           {users.map(user => (
-            <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
+            <tr 
+              key={user._id} 
+              className="hover:bg-gray-50/50 transition-colors cursor-pointer"
+              onClick={() => onUserClick && onUserClick(user)}
+            >
               <td className="p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center font-bold text-gray-500 text-sm">

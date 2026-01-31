@@ -2,7 +2,7 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 
-const MessageList = ({ loading, messages, activeChannel, currentUserId, role, onDelete, messagesEndRef }) => (
+const MessageList = ({ loading, messages, activeChannel, currentUserId, role, onDelete, onUserClick, messagesEndRef }) => (
   <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 bg-gray-50/50">
     {loading ? (
       <div className="flex items-center justify-center h-full">
@@ -33,6 +33,7 @@ const MessageList = ({ loading, messages, activeChannel, currentUserId, role, on
             role={role}
             currentUserId={currentUserId}
             onDelete={onDelete}
+            onUserClick={onUserClick}
           />
         );
       })

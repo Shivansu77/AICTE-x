@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { Provider, useDispatch } from 'react-redux';
+import { store } from './store';
+import { initializeTheme, loadThemeFromBackend } from './store/themeSlice';
 import { UserProvider, useUser } from './utils/UserContext';
 import Layout from './components/Layout';
 import Dashboard from './screens/Dashboard';
@@ -42,13 +45,31 @@ const CurriculumRouter = () => {
   return <FacultyScreen />;
 };
 
-function App() {
+// Theme initializer component
+const ThemeInitializer = ({ children }) => {
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(initializeTheme());
+    // Only load from backend if we have both token and user data
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      dispatch(loadThemeFromBackend());
+    }
+  }, [dispatch]);
+  
+  return children;
+};
+
+function AppContent() {
   return (
-    <UserProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="/register" element={<RegisterScreen />} />
+    <ThemeInitializer>
+      <UserProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<LoginScreen />} />
+            <Route path="/register" element={<RegisterScreen />} />
 
           {/* Student Routes (No Layout) */}
           <Route path="/student" element={<StudentScreen />} />
@@ -82,6 +103,15 @@ function App() {
         </Routes>
       </Router>
     </UserProvider>
+    </ThemeInitializer>
+  );
+}
+
+function App() {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
   );
 }
 

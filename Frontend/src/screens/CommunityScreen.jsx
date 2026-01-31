@@ -4,11 +4,13 @@ import CommunityHeader from '../components/community/CommunityHeader';
 import ChatHeader from '../components/community/ChatHeader';
 import MessageList from '../components/community/MessageList';
 import MessageInput from '../components/community/MessageInput';
+import UserProfileModal from '../components/shared/UserProfileModal';
 
 const CommunityScreen = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
+    const [selectedUser, setSelectedUser] = useState(null);
     const messagesEndRef = useRef(null);
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -89,6 +91,7 @@ const CommunityScreen = () => {
                     currentUserId={currentUserId}
                     role={role}
                     messagesEndRef={messagesEndRef}
+                    onUserClick={(user) => setSelectedUser(user)}
                     onDelete={async (msg) => {
                         if (window.confirm('Delete this message?')) {
                             try {
@@ -109,6 +112,14 @@ const CommunityScreen = () => {
                     handleSendMessage={handleSendMessage}
                 />
             </div>
+
+            {/* User Profile Modal */}
+            {selectedUser && (
+                <UserProfileModal 
+                    user={selectedUser} 
+                    onClose={() => setSelectedUser(null)} 
+                />
+            )}
         </div>
     );
 };

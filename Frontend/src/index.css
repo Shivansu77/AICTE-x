@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-cream: #FDFBF7; 
   --color-card: #FFFFFF;
@@ -18,13 +20,1084 @@
   --radius-pill: 9999px;
 }
 
+/* ==================== THEME SYSTEM ==================== */
+
+/* Light Theme (Default) */
+:root,
+:root.light {
+  --bg-primary: #FDFBF7;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #F5F5F5;
+  --text-primary: #2D2D2D;
+  --text-secondary: #5E5E5E;
+  --text-muted: #9CA3AF;
+  --border-color: #E5E7EB;
+  --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Theme */
+:root.dark {
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --border-color: #334155;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  
+  --color-cream: #0F172A;
+  --color-card: #1E293B;
+  --color-primary: #F1F5F9;
+  --color-secondary: #94A3B8;
+}
+
+/* ==================== FONT SIZE SYSTEM ==================== */
+
+:root.font-small {
+  font-size: 14px;
+}
+
+:root.font-medium {
+  font-size: 16px;
+}
+
+:root.font-large {
+  font-size: 18px;
+}
+
+/* ==================== COMPACT MODE ==================== */
+
+:root.compact {
+  --spacing-multiplier: 0.75;
+}
+
+:root.compact .p-4 { padding: 0.75rem; }
+:root.compact .p-5 { padding: 1rem; }
+:root.compact .p-6 { padding: 1.25rem; }
+:root.compact .p-8 { padding: 1.5rem; }
+:root.compact .py-3 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+:root.compact .py-4 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+:root.compact .px-4 { padding-left: 0.75rem; padding-right: 0.75rem; }
+:root.compact .px-6 { padding-left: 1rem; padding-right: 1rem; }
+:root.compact .gap-4 { gap: 0.75rem; }
+:root.compact .gap-6 { gap: 1rem; }
+:root.compact .gap-8 { gap: 1.25rem; }
+:root.compact .space-y-4 > * + * { margin-top: 0.75rem; }
+:root.compact .space-y-6 > * + * { margin-top: 1rem; }
+:root.compact .space-y-8 > * + * { margin-top: 1.25rem; }
+:root.compact .mb-4 { margin-bottom: 0.75rem; }
+:root.compact .mb-6 { margin-bottom: 1rem; }
+:root.compact .mb-8 { margin-bottom: 1.25rem; }
+:root.compact .text-3xl { font-size: 1.5rem; }
+:root.compact .text-2xl { font-size: 1.25rem; }
+:root.compact .text-xl { font-size: 1.125rem; }
+:root.compact .rounded-3xl { border-radius: 1.25rem; }
+:root.compact .rounded-2xl { border-radius: 1rem; }
+
 @layer base {
   body {
-    background-color: var(--color-cream);
-    color: var(--color-primary);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+}
+
+/* Dark mode specific overrides */
+:root.dark body {
+  background-color: var(--bg-primary);
+}
+
+:root.dark .bg-cream {
+  background-color: var(--bg-primary);
+}
+
+:root.dark .bg-white {
+  background-color: var(--bg-secondary);
+}
+
+:root.dark .bg-white\/50 {
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+:root.dark .bg-gray-50,
+:root.dark .bg-gray-100 {
+  background-color: var(--bg-tertiary);
+}
+
+:root.dark .bg-gray-200 {
+  background-color: #475569;
+}
+
+/* Text color overrides for dark mode */
+:root.dark .text-primary {
+  color: var(--text-primary);
+}
+
+:root.dark .text-secondary {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-gray-600,
+:root.dark .text-gray-700,
+:root.dark .text-gray-800,
+:root.dark .text-gray-900 {
+  color: var(--text-primary);
+}
+
+:root.dark .text-gray-400,
+:root.dark .text-gray-500 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-gray-300 {
+  color: var(--text-muted);
+}
+
+/* Ensure all black text is visible in dark mode */
+:root.dark .text-black {
+  color: var(--text-primary);
+}
+
+:root.dark h1, :root.dark h2, :root.dark h3, :root.dark h4, :root.dark h5, :root.dark h6 {
+  color: var(--text-primary);
+}
+
+:root.dark p {
+  color: var(--text-secondary);
+}
+
+:root.dark label {
+  color: var(--text-primary);
+}
+
+:root.dark span:not([class*="text-"]) {
+  color: inherit;
+}
+
+/* Border overrides */
+:root.dark .border-gray-100,
+:root.dark .border-gray-200,
+:root.dark .border-gray-300 {
+  border-color: var(--border-color);
+}
+
+:root.dark .border-white {
+  border-color: #334155;
+}
+
+/* Shadow overrides */
+:root.dark .shadow-sm,
+:root.dark .shadow-md,
+:root.dark .shadow-lg,
+:root.dark .shadow-xl,
+:root.dark .shadow-2xl {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Form elements */
+:root.dark input,
+:root.dark textarea,
+:root.dark select {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+:root.dark input::placeholder,
+:root.dark textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Buttons */
+:root.dark button:not([class*="bg-accent"]):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]) {
+  color: var(--text-primary);
+}
+
+/* Cards and containers */
+:root.dark .bg-accent-yellow\/20 {
+  background-color: rgba(244, 211, 94, 0.15);
+}
+
+:root.dark .bg-accent-blue\/5 {
+  background-color: rgba(107, 147, 214, 0.15);
+}
+
+:root.dark .bg-accent-peach\/5 {
+  background-color: rgba(255, 159, 118, 0.1);
+}
+
+:root.dark .bg-accent-green\/5 {
+  background-color: rgba(144, 200, 172, 0.1);
+}
+
+/* Colored backgrounds */
+:root.dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15); }
+:root.dark .bg-green-50 { background-color: rgba(34, 197, 94, 0.15); }
+:root.dark .bg-purple-50 { background-color: rgba(168, 85, 247, 0.15); }
+:root.dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.15); }
+:root.dark .bg-red-50 { background-color: rgba(239, 68, 68, 0.15); }
+:root.dark .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.15); }
+:root.dark .bg-teal-50 { background-color: rgba(20, 184, 166, 0.15); }
+:root.dark .bg-pink-50 { background-color: rgba(236, 72, 153, 0.15); }
+:root.dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.15); }
+:root.dark .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.15); }
+
+/* Colored 100 backgrounds for badges/tags */
+:root.dark .bg-blue-100 { background-color: rgba(59, 130, 246, 0.25); }
+:root.dark .bg-green-100 { background-color: rgba(34, 197, 94, 0.25); }
+:root.dark .bg-purple-100 { background-color: rgba(168, 85, 247, 0.25); }
+:root.dark .bg-orange-100 { background-color: rgba(249, 115, 22, 0.25); }
+:root.dark .bg-red-100 { background-color: rgba(239, 68, 68, 0.25); }
+:root.dark .bg-yellow-100 { background-color: rgba(234, 179, 8, 0.25); }
+:root.dark .bg-teal-100 { background-color: rgba(20, 184, 166, 0.25); }
+:root.dark .bg-pink-100 { background-color: rgba(236, 72, 153, 0.25); }
+:root.dark .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.25); }
+:root.dark .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.25); }
+
+/* Colored text in dark mode - keep them visible but slightly lighter */
+:root.dark .text-blue-600 { color: #60A5FA; }
+:root.dark .text-blue-700 { color: #60A5FA; }
+:root.dark .text-blue-800 { color: #93C5FD; }
+:root.dark .text-blue-900 { color: #BFDBFE; }
+:root.dark .text-green-600 { color: #4ADE80; }
+:root.dark .text-green-700 { color: #4ADE80; }
+:root.dark .text-green-800 { color: #86EFAC; }
+:root.dark .text-green-900 { color: #BBF7D0; }
+:root.dark .text-red-600 { color: #F87171; }
+:root.dark .text-red-700 { color: #F87171; }
+:root.dark .text-red-800 { color: #FCA5A5; }
+:root.dark .text-red-900 { color: #FECACA; }
+:root.dark .text-purple-600 { color: #C084FC; }
+:root.dark .text-purple-700 { color: #C084FC; }
+:root.dark .text-purple-800 { color: #D8B4FE; }
+:root.dark .text-purple-900 { color: #E9D5FF; }
+:root.dark .text-orange-600 { color: #FB923C; }
+:root.dark .text-orange-700 { color: #FB923C; }
+:root.dark .text-orange-800 { color: #FDBA74; }
+:root.dark .text-orange-900 { color: #FED7AA; }
+:root.dark .text-yellow-600 { color: #FBBF24; }
+:root.dark .text-yellow-700 { color: #FBBF24; }
+:root.dark .text-yellow-800 { color: #FCD34D; }
+:root.dark .text-yellow-900 { color: #FDE68A; }
+:root.dark .text-teal-600 { color: #2DD4BF; }
+:root.dark .text-teal-700 { color: #2DD4BF; }
+:root.dark .text-teal-800 { color: #5EEAD4; }
+:root.dark .text-pink-600 { color: #F472B6; }
+:root.dark .text-pink-700 { color: #F472B6; }
+:root.dark .text-pink-800 { color: #F9A8D4; }
+:root.dark .text-indigo-600 { color: #818CF8; }
+:root.dark .text-indigo-700 { color: #818CF8; }
+:root.dark .text-indigo-800 { color: #A5B4FC; }
+:root.dark .text-emerald-600 { color: #34D399; }
+:root.dark .text-emerald-700 { color: #34D399; }
+:root.dark .text-emerald-800 { color: #6EE7B7; }
+
+/* 500-level text colors for badges/tags */
+:root.dark .text-blue-500 { color: #60A5FA; }
+:root.dark .text-green-500 { color: #4ADE80; }
+:root.dark .text-purple-500 { color: #A855F7; }
+:root.dark .text-orange-500 { color: #FB923C; }
+:root.dark .text-red-500 { color: #F87171; }
+:root.dark .text-yellow-500 { color: #FBBF24; }
+:root.dark .text-teal-500 { color: #14B8A6; }
+:root.dark .text-pink-500 { color: #EC4899; }
+:root.dark .text-indigo-500 { color: #6366F1; }
+:root.dark .text-emerald-500 { color: #10B981; }
+
+/* Additional text classes that may be dark in light mode */
+:root.dark .text-slate-600,
+:root.dark .text-slate-700,
+:root.dark .text-slate-800,
+:root.dark .text-slate-900 {
+  color: var(--text-primary);
+}
+
+:root.dark .text-zinc-600,
+:root.dark .text-zinc-700,
+:root.dark .text-zinc-800,
+:root.dark .text-zinc-900 {
+  color: var(--text-primary);
+}
+
+:root.dark .text-neutral-600,
+:root.dark .text-neutral-700,
+:root.dark .text-neutral-800,
+:root.dark .text-neutral-900 {
+  color: var(--text-primary);
+}
+
+/* Links in dark mode */
+:root.dark a:not([class*="text-"]) {
+  color: #60A5FA;
+}
+
+:root.dark a:not([class*="text-"]):hover {
+  color: #93C5FD;
+}
+
+/* Table text */
+:root.dark th {
+  color: var(--text-primary);
+}
+
+:root.dark td {
+  color: var(--text-secondary);
+}
+
+/* List items */
+:root.dark li {
+  color: var(--text-secondary);
+}
+
+/* Strong/bold text */
+:root.dark strong,
+:root.dark b {
+  color: var(--text-primary);
+}
+
+/* Small text */
+:root.dark small {
+  color: var(--text-muted);
+}
+
+/* ==================== COMPREHENSIVE DARK MODE FIXES ==================== */
+
+/* Gray 200/300 text - lighter shades visible in dark */
+:root.dark .text-gray-200 { color: #E2E8F0; }
+:root.dark .text-gray-100 { color: #F1F5F9; }
+
+/* Slate text colors */
+:root.dark .text-slate-400,
+:root.dark .text-slate-500 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-slate-300 {
+  color: var(--text-muted);
+}
+
+/* Zinc text colors */
+:root.dark .text-zinc-400,
+:root.dark .text-zinc-500 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-zinc-300 {
+  color: var(--text-muted);
+}
+
+/* Neutral text colors */
+:root.dark .text-neutral-400,
+:root.dark .text-neutral-500 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-neutral-300 {
+  color: var(--text-muted);
+}
+
+/* Stone text colors */
+:root.dark .text-stone-400,
+:root.dark .text-stone-500 {
+  color: var(--text-secondary);
+}
+
+:root.dark .text-stone-600,
+:root.dark .text-stone-700,
+:root.dark .text-stone-800,
+:root.dark .text-stone-900 {
+  color: var(--text-primary);
+}
+
+/* Slate backgrounds */
+:root.dark .bg-slate-50 { background-color: var(--bg-tertiary); }
+:root.dark .bg-slate-100 { background-color: #475569; }
+
+/* Additional gray backgrounds */
+:root.dark .bg-gray-300 { background-color: #4B5563; }
+:root.dark .bg-gray-400 { background-color: #6B7280; }
+
+/* Gradient backgrounds */
+:root.dark .from-gray-100 { --tw-gradient-from: var(--bg-tertiary); }
+:root.dark .to-gray-200 { --tw-gradient-to: #475569; }
+:root.dark .from-gray-200 { --tw-gradient-from: #475569; }
+:root.dark .to-gray-300 { --tw-gradient-to: #4B5563; }
+
+/* White text backgrounds - ensure text stays visible */
+:root.dark .bg-white\/80 { background-color: rgba(30, 41, 59, 0.8); }
+:root.dark .bg-white\/90 { background-color: rgba(30, 41, 59, 0.9); }
+:root.dark .bg-white\/70 { background-color: rgba(30, 41, 59, 0.7); }
+:root.dark .bg-white\/60 { background-color: rgba(30, 41, 59, 0.6); }
+
+/* Gray semi-transparent backgrounds */
+:root.dark .bg-gray-50\/50 { background-color: rgba(51, 65, 85, 0.5); }
+:root.dark .bg-gray-100\/50 { background-color: rgba(51, 65, 85, 0.6); }
+:root.dark .bg-gray-200\/50 { background-color: rgba(71, 85, 105, 0.5); }
+
+/* Accent backgrounds with opacity */
+:root.dark .bg-accent-blue\/10 { background-color: rgba(107, 147, 214, 0.15); }
+:root.dark .bg-accent-peach\/10 { background-color: rgba(255, 159, 118, 0.15); }
+:root.dark .bg-accent-green\/10 { background-color: rgba(144, 200, 172, 0.15); }
+:root.dark .bg-accent-yellow\/10 { background-color: rgba(244, 211, 94, 0.15); }
+:root.dark .bg-accent-yellow\/5 { background-color: rgba(244, 211, 94, 0.1); }
+
+/* Border colors */
+:root.dark .border-gray-50 { border-color: #1E293B; }
+:root.dark .border-slate-100 { border-color: var(--border-color); }
+:root.dark .border-slate-200 { border-color: #475569; }
+
+/* Divide colors */
+:root.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: var(--border-color); }
+:root.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: #475569; }
+
+/* Ring colors */
+:root.dark .ring-gray-100 { --tw-ring-color: var(--border-color); }
+:root.dark .ring-gray-200 { --tw-ring-color: #475569; }
+
+/* Focus ring colors */
+:root.dark .focus\:ring-accent-blue\/20:focus { --tw-ring-color: rgba(107, 147, 214, 0.3); }
+:root.dark .focus\:border-accent-blue:focus { border-color: #6B93D6; }
+
+/* Placeholder colors */
+:root.dark .placeholder-gray-400::placeholder { color: var(--text-muted); }
+:root.dark .placeholder-gray-500::placeholder { color: var(--text-secondary); }
+
+/* SVG and icon colors - inherit text color */
+:root.dark svg:not([class*="text-"]) {
+  color: inherit;
+}
+
+/* Lucide icons specific */
+:root.dark [class*="lucide-"]:not([class*="text-"]) {
+  color: inherit;
+}
+
+/* Card shadows */
+:root.dark .shadow,
+:root.dark .shadow-inner {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover states for gray backgrounds */
+:root.dark .hover\:bg-gray-200:hover { background-color: #475569; }
+:root.dark .hover\:bg-gray-300:hover { background-color: #4B5563; }
+:root.dark .hover\:bg-white:hover { background-color: var(--bg-secondary); }
+
+/* Hover states for text */
+:root.dark .hover\:text-gray-700:hover { color: var(--text-primary); }
+:root.dark .hover\:text-gray-900:hover { color: var(--text-primary); }
+:root.dark .hover\:text-gray-600:hover { color: var(--text-primary); }
+
+/* Group hover states */
+:root.dark .group:hover .group-hover\:text-white { color: #FFFFFF; }
+:root.dark .group:hover .group-hover\:text-blue-600 { color: #60A5FA; }
+:root.dark .group:hover .group-hover\:text-accent-blue { color: #6B93D6; }
+:root.dark .group:hover .group-hover\:text-orange-600 { color: #FB923C; }
+:root.dark .group:hover .group-hover\:bg-gray-50 { background-color: var(--bg-tertiary); }
+
+/* Line clamp text inherits color */
+:root.dark .line-clamp-1,
+:root.dark .line-clamp-2,
+:root.dark .line-clamp-3 {
+  color: inherit;
+}
+
+/* Truncate text inherits color */
+:root.dark .truncate {
+  color: inherit;
+}
+
+/* Badge/pill styling */
+:root.dark .rounded-full[class*="bg-gray"] {
+  background-color: var(--bg-tertiary);
+}
+
+/* Code blocks and pre elements */
+:root.dark code,
+:root.dark pre {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Blockquote */
+:root.dark blockquote {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+/* HR/dividers */
+:root.dark hr {
+  border-color: var(--border-color);
+}
+
+/* Disabled states */
+:root.dark .disabled\:bg-gray-100:disabled,
+:root.dark .cursor-not-allowed[class*="bg-gray"] {
+  background-color: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
+/* Active/selected states */
+:root.dark .active\:bg-gray-200:active { background-color: #475569; }
+:root.dark .active\:bg-gray-100:active { background-color: var(--bg-tertiary); }
+
+/* Odd/even table rows */
+:root.dark tbody tr:nth-child(odd) {
+  background-color: transparent;
+}
+:root.dark tbody tr:nth-child(even) {
+  background-color: rgba(51, 65, 85, 0.3);
+}
+
+:root.dark tr:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Modal/overlay backgrounds */
+:root.dark .bg-black\/50,
+:root.dark .bg-black\/40,
+:root.dark .bg-black\/30 {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Tooltip backgrounds */
+:root.dark [role="tooltip"] {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Selection */
+:root.dark ::selection {
+  background-color: rgba(107, 147, 214, 0.4);
+  color: var(--text-primary);
+}
+
+/* Accent backgrounds at different opacities */
+:root.dark .bg-blue-500\/10 { background-color: rgba(59, 130, 246, 0.15); }
+:root.dark .bg-green-500\/10 { background-color: rgba(34, 197, 94, 0.15); }
+:root.dark .bg-red-500\/10 { background-color: rgba(239, 68, 68, 0.15); }
+:root.dark .bg-yellow-500\/10 { background-color: rgba(234, 179, 8, 0.15); }
+:root.dark .bg-purple-500\/10 { background-color: rgba(168, 85, 247, 0.15); }
+:root.dark .bg-orange-500\/10 { background-color: rgba(249, 115, 22, 0.15); }
+
+/* Status colors - ensure good contrast */
+:root.dark .bg-green-500 { background-color: #22C55E; }
+:root.dark .bg-red-500 { background-color: #EF4444; }
+:root.dark .bg-yellow-500 { background-color: #EAB308; }
+:root.dark .bg-blue-500 { background-color: #3B82F6; }
+
+/* ==================== DASHBOARD & SETTINGS SPECIFIC FIXES ==================== */
+
+/* Main headings in dashboard */
+:root.dark .text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+/* Secondary text */
+:root.dark .text-gray-500,
+:root.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+:root.dark .text-gray-400 {
+  color: var(--text-muted) !important;
+}
+
+:root.dark .text-gray-700,
+:root.dark .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+/* Cards and containers */
+:root.dark .bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+:root.dark .border-gray-100,
+:root.dark .border-gray-200 {
+  border-color: var(--border-color) !important;
+}
+
+/* Stat cards backgrounds with opacity */
+:root.dark .bg-blue-50\/50 { background-color: rgba(59, 130, 246, 0.12) !important; }
+:root.dark .bg-orange-50\/50 { background-color: rgba(249, 115, 22, 0.12) !important; }
+:root.dark .bg-yellow-50\/50 { background-color: rgba(234, 179, 8, 0.12) !important; }
+:root.dark .bg-green-50\/50 { background-color: rgba(34, 197, 94, 0.12) !important; }
+:root.dark .bg-purple-50\/50 { background-color: rgba(168, 85, 247, 0.12) !important; }
+:root.dark .bg-red-50\/50 { background-color: rgba(239, 68, 68, 0.12) !important; }
+
+/* Settings section backgrounds */
+:root.dark section.bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Tab navigation */
+:root.dark .bg-primary {
+  background-color: #3B82F6;
+}
+
+:root.dark .text-primary {
+  color: var(--text-primary) !important;
+}
+
+:root.dark .text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Form inputs in settings */
+:root.dark input[type="text"],
+:root.dark input[type="email"],
+:root.dark input[type="password"],
+:root.dark input[type="number"],
+:root.dark textarea,
+:root.dark select {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Placeholder text */
+:root.dark input::placeholder,
+:root.dark textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Icons in stat cards */
+:root.dark .text-blue-600 { color: #60A5FA !important; }
+:root.dark .text-orange-600 { color: #FB923C !important; }
+:root.dark .text-yellow-600 { color: #FBBF24 !important; }
+:root.dark .text-green-600 { color: #4ADE80 !important; }
+:root.dark .text-purple-600 { color: #C084FC !important; }
+:root.dark .text-red-600 { color: #F87171 !important; }
+
+/* Accent color backgrounds with opacity for icons */
+:root.dark .bg-accent-blue\/10 { background-color: rgba(107, 147, 214, 0.2) !important; }
+:root.dark .bg-purple-100 { background-color: rgba(168, 85, 247, 0.25) !important; }
+
+/* Buttons */
+:root.dark button.bg-gray-100 {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+:root.dark button:hover.hover\:bg-gray-100:hover {
+  background-color: #475569 !important;
+}
+
+/* Toggle switches and controls */
+:root.dark .bg-gray-300 {
+  background-color: #4B5563 !important;
+}
+
+/* Theme selector cards */
+:root.dark .bg-gray-200 {
+  background-color: #475569 !important;
+}
+
+:root.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+/* Notification section toggles */
+:root.dark .bg-gray-100.text-gray-600 {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Course card styling */
+:root.dark .rounded-\[2rem\].bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Badge/pill in course cards */
+:root.dark .bg-accent-blue\/10,
+:root.dark .bg-accent-peach\/10,
+:root.dark .bg-accent-green\/10,
+:root.dark .bg-accent-yellow\/10 {
+  background-color: rgba(107, 147, 214, 0.15) !important;
+}
+
+/* View Details button */
+:root.dark .border-gray-200.text-gray-700 {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+:root.dark .border-gray-200.text-gray-700:hover {
+  border-color: #475569 !important;
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Mission banner maintains its gradient */
+:root.dark .bg-gradient-to-r.from-accent-blue {
+  /* Keep gradient colors for accent elements */
+}
+
+/* Filter pills */
+:root.dark button.bg-white.text-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+:root.dark button.bg-white.text-secondary:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Shadow refinements */
+:root.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+:root.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Border top/bottom for sections */
+:root.dark .border-t.border-gray-100,
+:root.dark .border-b.border-gray-100 {
+  border-color: var(--border-color) !important;
+}
+
+/* Modal backgrounds */
+:root.dark .rounded-3xl.bg-white {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Admin dashboard header gradient */
+:root.dark .from-gray-700.to-gray-900 {
+  --tw-gradient-from: #1E293B !important;
+  --tw-gradient-to: #0F172A !important;
+}
+
+/* Role indicator badge */
+:root.dark .bg-white.rounded-full.shadow-sm {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Hover effects on cards */
+:root.dark .hover\:shadow-lg:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4) !important;
+}
+
+:root.dark .hover\:border-gray-200:hover {
+  border-color: #475569 !important;
+}
+
+/* Loading state text */
+:root.dark .text-secondary.font-bold,
+:root.dark .text-secondary.font-medium {
+  color: var(--text-secondary) !important;
+}
+
+/* ==================== ALL DASHBOARDS DARK MODE FIXES ==================== */
+
+/* BentoCard component */
+:root.dark .rounded-\[1\.5rem\].bg-white {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Admin Dashboard - Pending Approvals section */
+:root.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+:root.dark .bg-green-50 {
+  background-color: rgba(34, 197, 94, 0.15) !important;
+}
+
+:root.dark .text-blue-600 {
+  color: #60A5FA !important;
+}
+
+:root.dark .text-green-600 {
+  color: #4ADE80 !important;
+}
+
+:root.dark .bg-blue-100 {
+  background-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+:root.dark .text-blue-700 {
+  color: #60A5FA !important;
+}
+
+/* Empty state box */
+:root.dark .bg-gray-50.rounded-\[2rem\] {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+:root.dark .border-dashed {
+  border-color: var(--border-color) !important;
+}
+
+/* Student Queries Card */
+:root.dark .bg-gradient-to-br.from-white.to-gray-50 {
+  background: linear-gradient(to bottom right, var(--bg-secondary), var(--bg-tertiary)) !important;
+}
+
+/* Query cards inside */
+:root.dark .bg-white.border.border-gray-100.rounded-xl {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+:root.dark .bg-white.border.border-gray-200 {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Avatar initials */
+:root.dark .bg-gray-100.text-gray-500 {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Green check circles */
+:root.dark .bg-green-100 {
+  background-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+/* System Report card maintains blue */
+:root.dark .bg-accent-blue {
+  background-color: #6B93D6 !important;
+}
+
+/* Faculty Dashboard */
+/* Stats cards */
+:root.dark .bg-white.p-6.rounded-\[2rem\] {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Stat card colored icons maintain their colors */
+:root.dark .bg-blue-500 { background-color: #3B82F6 !important; }
+:root.dark .bg-purple-500 { background-color: #8B5CF6 !important; }
+:root.dark .bg-orange-500 { background-color: #F97316 !important; }
+:root.dark .bg-green-500 { background-color: #22C55E !important; }
+
+/* Quick Action Banner - dark gradient */
+:root.dark .bg-gradient-to-r.from-gray-900.to-gray-800 {
+  background: linear-gradient(to right, #0F172A, #1E293B) !important;
+}
+
+:root.dark .text-gray-300 {
+  color: #CBD5E1 !important;
+}
+
+/* Notifications Panel */
+:root.dark .bg-white\/60 {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+:root.dark .backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+:root.dark .border-white {
+  border-color: var(--border-color) !important;
+}
+
+:root.dark .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+/* Bell icon button */
+:root.dark .bg-white.shadow-sm {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Notification items */
+:root.dark .border-gray-50 {
+  border-color: var(--border-color) !important;
+}
+
+:root.dark .hover\:bg-gray-50:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+:root.dark .hover\:bg-blue-50:hover {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Expanded notification content */
+:root.dark .bg-gray-50.p-3.rounded-xl {
+  background-color: var(--bg-tertiary) !important;
+  border-color: var(--border-color) !important;
+}
+
+:root.dark .text-gray-200 {
+  color: var(--text-muted) !important;
+}
+
+/* Course Card component */
+:root.dark .bg-white.rounded-\[2rem\].p-6 {
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+:root.dark .border-t.border-gray-100 {
+  border-color: var(--border-color) !important;
+}
+
+/* Icon containers with opacity backgrounds */
+:root.dark [class*="\/10"].rounded-2xl {
+  opacity: 0.8;
+}
+
+/* Dashboard header gradient */
+:root.dark .bg-gradient-to-br.from-gray-700.to-gray-900 {
+  background: linear-gradient(to bottom right, #1E293B, #0F172A) !important;
+}
+
+/* Mission banner keeps its accent color gradient */
+:root.dark .bg-gradient-to-r.from-accent-blue.via-accent-blue.to-cyan-500 {
+  /* Keep original gradient */
+}
+
+/* Loading spinner */
+:root.dark .border-accent-blue {
+  border-color: #6B93D6 !important;
+}
+
+/* Text colors used across all dashboards */
+:root.dark h1.text-gray-900,
+:root.dark h2.text-gray-900,
+:root.dark h3.text-gray-900,
+:root.dark h4.text-gray-900 {
+  color: var(--text-primary) !important;
+}
+
+:root.dark p.text-gray-500,
+:root.dark p.text-gray-600,
+:root.dark span.text-gray-500,
+:root.dark span.text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+/* Arrow/navigation buttons */
+:root.dark .text-gray-400.hover\:text-accent-blue:hover {
+  color: #6B93D6 !important;
+}
+
+:root.dark .hover\:border-accent-blue:hover {
+  border-color: #6B93D6 !important;
+}
+
+/* Admin RequestItem component */
+:root.dark .bg-gray-100.px-2 {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Modal overlays */
+:root.dark .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+}
+
+/* Modal content */
+:root.dark .bg-white.rounded-2xl,
+:root.dark .bg-white.rounded-3xl {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Form labels in modals */
+:root.dark .text-gray-700.mb-1,
+:root.dark .text-gray-700.mb-2 {
+  color: var(--text-primary) !important;
+}
+
+/* Cancel/secondary buttons */
+:root.dark .bg-gray-100.text-gray-600 {
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+}
+
+:root.dark .hover\:bg-gray-200:hover {
+  background-color: #475569 !important;
+}
+
+/* Select dropdowns */
+:root.dark select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+/* Query Response Modal specific */
+:root.dark .bg-accent-peach\/10 {
+  background-color: rgba(255, 159, 118, 0.15) !important;
+}
+
+/* Student dashboard filter pills */
+:root.dark .bg-white.text-secondary.hover\:bg-white\/80 {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-secondary) !important;
+}
+
+:root.dark .bg-white.text-secondary.hover\:bg-white\/80:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+/* Active filter pill keeps its accent color */
+:root.dark .bg-accent-peach {
+  background-color: #FF9F76 !important;
+}
+
+/* Role view badge */
+:root.dark .bg-white.rounded-full.shadow-sm.px-4 {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Loading/empty states */
+:root.dark .text-center.text-gray-400 {
+  color: var(--text-muted) !important;
+}
+
+:root.dark .flex.items-center.justify-center.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Animated elements */
+:root.dark .animate-spin {
+  border-color: var(--text-muted);
+  border-top-color: #6B93D6;
+}
+
+/* Hover states */
+:root.dark .hover\:bg-gray-50:hover {
+  background-color: var(--bg-tertiary);
+}
+
+:root.dark .hover\:bg-gray-100:hover {
+  background-color: #475569;
+}
+
+:root.dark .hover\:border-gray-300:hover {
+  border-color: #475569;
+}
+
+/* Scrollbar styling for dark mode */
+:root.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+:root.dark ::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+
+:root.dark ::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 4px;
+}
+
+:root.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }
 
 @layer utilities {
@@ -43,5 +1116,10 @@
 
   .animate-scroll:hover {
     animation-play-state: paused;
+  }
+  
+  /* Theme transition */
+  .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 }

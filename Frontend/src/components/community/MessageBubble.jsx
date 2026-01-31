@@ -9,21 +9,34 @@ const getRoleBadgeColor = (role) => {
   }
 };
 
-const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete }) => {
+const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, onUserClick }) => {
   const roleColor = msg.role === 'Admin'
     ? 'text-accent-yellow'
     : (msg.role === 'Faculty' || msg.role === 'Teacher' ? 'text-accent-blue' : 'text-emerald-500');
 
+  const handleUserClick = () => {
+    if (onUserClick && msg.sender) {
+      onUserClick(msg.sender);
+    }
+  };
+
   return (
     <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2 duration-300`}>
       <div className={`flex items-end gap-3 max-w-[85%] md:max-w-[70%] ${isMe ? 'flex-row-reverse' : 'flex-row'} group`}>
-        <div className={`w-10 h-10 rounded-[1rem] flex items-center justify-center text-sm font-black shrink-0 shadow-sm transition-transform hover:scale-110 cursor-default ${showAvatar ? getRoleBadgeColor(msg.role) : 'opacity-0'}`}>
+        <div 
+          className={`w-10 h-10 rounded-[1rem] flex items-center justify-center text-sm font-black shrink-0 shadow-sm transition-transform hover:scale-110 ${showAvatar ? getRoleBadgeColor(msg.role) : 'opacity-0'} ${showAvatar && !isMe ? 'cursor-pointer' : 'cursor-default'}`}
+          onClick={showAvatar && !isMe ? handleUserClick : undefined}
+          title={showAvatar && !isMe ? `View ${msg.sender?.firstName}'s profile` : undefined}
+        >
           {msg.sender?.firstName?.[0] || 'U'}
         </div>
 
         <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
           {showAvatar && !isMe && (
-            <span className={`text-[10px] font-black uppercase tracking-wider mb-1 ml-1 ${roleColor}`}>
+            <span 
+              className={`text-[10px] font-black uppercase tracking-wider mb-1 ml-1 ${roleColor} cursor-pointer hover:underline`}
+              onClick={handleUserClick}
+            >
               {msg.sender?.firstName} {msg.sender?.lastName} <span className="opacity-50">• {msg.role}</span>
             </span>
           )}
