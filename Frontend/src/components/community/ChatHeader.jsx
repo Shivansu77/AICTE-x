@@ -2,16 +2,16 @@ import React from 'react';
 import { MessageCircle } from 'lucide-react';
 
 const ChatHeader = ({ activeChannel }) => (
-  <div className="bg-white/80 backdrop-blur-md p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 z-10">
+  <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center sticky top-0 z-10 transition-colors">
     <div className="flex items-center gap-3">
       <div className={`p-2 rounded-xl text-white ${activeChannel === 'governance' ? 'bg-accent-yellow' : 'bg-accent-blue'}`}>
         <MessageCircle size={20} />
       </div>
       <div>
-        <h3 className="font-extrabold text-primary text-lg">
+        <h3 className="font-extrabold text-primary dark:text-gray-100 text-lg">
           {activeChannel === 'governance' ? 'Governance Group' : 'Academic Group'}
         </h3>
-        <p className="text-xs font-bold text-secondary opacity-60 uppercase tracking-wider">
+        <p className="text-xs font-bold text-secondary dark:text-gray-400 opacity-60 uppercase tracking-wider">
           {activeChannel === 'governance' ? 'Admin & Faculty Only' : 'Faculty & Students'}
         </p>
       </div>

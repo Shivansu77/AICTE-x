@@ -126,10 +126,6 @@ const getUsersByRole = async (req, res) => {
 // Update user profile
 const updateProfile = async (req, res) => {
     try {
-        console.log('=== UPDATE PROFILE REQUEST ===');
-        console.log('User ID:', req.user.userId);
-        console.log('Request Body:', req.body);
-
         const { firstName, lastName, avatar, college, department, designation, location, bio } = req.body;
 
         // Build update object
@@ -143,7 +139,7 @@ const updateProfile = async (req, res) => {
         if (location !== undefined) updateFields.location = location;
         if (bio !== undefined) updateFields.bio = bio;
 
-        console.log('Update Fields:', updateFields);
+
 
         const user = await User.findByIdAndUpdate(
             req.user.userId,
@@ -152,12 +148,11 @@ const updateProfile = async (req, res) => {
         ).select('-password');
 
         if (!user) {
-            console.log('ERROR: User not found');
+
             return res.status(404).json({ message: 'User not found' });
         }
 
-        console.log('Updated User:', user.toJSON());
-        console.log('=== PROFILE UPDATE SUCCESS ===');
+
 
         res.json({
             message: 'Profile updated successfully',
@@ -281,7 +276,7 @@ const toggleUserBlock = async (req, res) => {
         user.isActive = !user.isActive;
         await user.save();
 
-        res.json({ 
+        res.json({
             message: user.isActive ? 'User unblocked successfully' : 'User blocked successfully',
             user: user.toJSON()
         });
@@ -436,9 +431,9 @@ const updatePrivacyPreferences = async (req, res) => {
 const getAllPreferences = async (req, res) => {
     try {
         const userId = req.user.userId;
-        
+
         const user = await User.findById(userId).select('notificationPreferences appearancePreferences privacyPreferences lastPasswordChange twoFactorEnabled');
-        
+
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -489,7 +484,7 @@ const deleteAccount = async (req, res) => {
 const exportUserData = async (req, res) => {
     try {
         const userId = req.user.userId;
-        
+
         const user = await User.findById(userId).select('-password');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

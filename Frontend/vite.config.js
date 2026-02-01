@@ -21,8 +21,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/user': 'http://localhost:8000',
-      '/api': 'http://localhost:8000',
+      '/user': 'http://localhost:5001',
+      '/api': 'http://localhost:5001',
     },
   },
 })

@@ -2,12 +2,12 @@ import React from 'react';
 import { Send } from 'lucide-react';
 
 const MessageInput = ({ activeChannel, newMessage, setNewMessage, handleSendMessage }) => (
-  <div className="p-6 bg-white/80 backdrop-blur-md border-t border-gray-100">
-    <form onSubmit={handleSendMessage} className="flex gap-4 items-center bg-gray-50 p-2 pr-3 rounded-[2rem] border border-gray-200 focus-within:border-accent-peach focus-within:ring-4 focus-within:ring-accent-peach/10 transition-all shadow-inner">
+  <div className="p-6 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-100 dark:border-gray-700 transition-colors">
+    <form onSubmit={handleSendMessage} className="flex gap-4 items-center bg-gray-50 dark:bg-gray-800 p-2 pr-3 rounded-[2rem] border border-gray-200 dark:border-gray-700 focus-within:border-accent-peach focus-within:ring-4 focus-within:ring-accent-peach/10 transition-all shadow-inner">
       <input
         type="text"
         placeholder={`Message #${activeChannel}...`}
-        className="flex-1 bg-transparent border-none focus:ring-0 py-3 px-6 font-medium text-primary placeholder-gray-400"
+        className="flex-1 bg-transparent border-none focus:ring-0 py-3 px-6 font-medium text-primary dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
         value={newMessage}
         onChange={(e) => setNewMessage(e.target.value)}
       />

@@ -23,7 +23,7 @@ const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, o
   return (
     <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-in ${animationDirection === 'up' ? 'slide-in-from-top-2' : isMe ? 'slide-in-from-right-2' : 'slide-in-from-left-2'} duration-300`}>
       <div className={`flex items-end gap-3 max-w-[85%] md:max-w-[70%] ${isMe ? 'flex-row-reverse' : 'flex-row'} group`}>
-        <div 
+        <div
           className={`w-10 h-10 rounded-[1rem] flex items-center justify-center text-sm font-black shrink-0 shadow-sm transition-transform hover:scale-110 ${showAvatar ? getRoleBadgeColor(msg.role) : 'opacity-0'} ${showAvatar && !isMe ? 'cursor-pointer' : 'cursor-default'}`}
           onClick={showAvatar && !isMe ? handleUserClick : undefined}
           title={showAvatar && !isMe ? `View ${msg.sender?.firstName}'s profile` : undefined}
@@ -33,7 +33,7 @@ const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, o
 
         <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
           {showAvatar && !isMe && (
-            <span 
+            <span
               className={`text-[10px] font-black uppercase tracking-wider mb-1 ml-1 ${roleColor} cursor-pointer hover:underline`}
               onClick={handleUserClick}
             >
@@ -47,7 +47,7 @@ const MessageBubble = ({ msg, isMe, showAvatar, role, currentUserId, onDelete, o
             }`}>
             {msg.content}
 
-            {role === 'admin' && (
+            {(role === 'admin' || isMe) && (
               <button
                 onClick={() => onDelete(msg)}
                 className={`absolute -top-3 ${isMe ? '-left-3' : '-right-3'} opacity-0 group-hover:opacity-100 p-1.5 bg-red-500 text-white rounded-full shadow-lg transition-all scale-75 hover:scale-100 z-10`}

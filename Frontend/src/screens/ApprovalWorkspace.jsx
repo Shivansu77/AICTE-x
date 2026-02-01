@@ -89,7 +89,7 @@ const ApprovalWorkspace = () => {
   };
 
   const title = useMemo(
-    () => request?.curriculumId?.title || request?.courseId?.title || 'Curriculum Update',
+    () => (request?.curriculumId?.title || request?.courseId?.title || 'Curriculum Update').replace('Deisgn', 'Design'),
     [request]
   );
 
@@ -111,7 +111,7 @@ const ApprovalWorkspace = () => {
           onClick={() => navigate('/admin/approvals')}
           className="flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary"
         >
-          <ArrowLeft size={16} /> Back to approvals
+          <ArrowLeft size={16} /> Back to Approvals List
         </button>
         <div className="mt-8 flex flex-col items-center justify-center text-secondary">
           <Check size={48} />
@@ -128,7 +128,7 @@ const ApprovalWorkspace = () => {
           onClick={() => navigate('/admin/approvals')}
           className="flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary"
         >
-          <ArrowLeft size={16} /> Back to approvals
+          <ArrowLeft size={16} /> Back to Approvals List
         </button>
       </div>
 
@@ -143,7 +143,7 @@ const ApprovalWorkspace = () => {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
               <div className="text-xs font-black uppercase tracking-wider text-secondary">Request Summary</div>
-              <div className="mt-2 text-lg font-black text-primary">{request.requestType || 'Update'}</div>
+              <div className="mt-2 text-lg font-black text-primary font-serif">{request.requestType || 'Curriculum Update Proposal'}</div>
               <div className="mt-2 text-sm text-secondary line-clamp-3">
                 {request.justification || 'No justification provided.'}
               </div>

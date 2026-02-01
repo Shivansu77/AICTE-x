@@ -1,12 +1,22 @@
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyDIPvHGJhfaoqaMtj6j6oFdxFPABreYHqE';
-const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
+let genAI;
+const getAiClient = () => {
+    if (!genAI) {
+        if (!GEMINI_API_KEY) {
+            throw new Error('GEMINI_API_KEY is not set in environment variables.');
+        }
+        genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    }
+    return genAI;
+};
 
 exports.analyzeSyllabus = async (justification, proposedChanges, baselineCurriculum) => {
-        try {
-                const prompt = `
+    try {
+        const prompt = `
                 You are an academic curriculum reviewer. Compare the baseline syllabus with the proposed changes.
 
                 Baseline Curriculum: ${JSON.stringify(baselineCurriculum)}
@@ -44,17 +54,13 @@ exports.analyzeSyllabus = async (justification, proposedChanges, baselineCurricu
                 }
                 `;
 
-        const response = await ai.models.generateContent({
-            model: DEFAULT_GEMINI_MODEL,
-            contents: [{
-                parts: [{ text: prompt }]
-            }]
-        });
-
-        const textResponse = response.text;
+        const model = getAiClient().getGenerativeModel({ model: DEFAULT_GEMINI_MODEL });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const textResponse = response.text();
 
         // Clean up markdown code blocks if present
-        const jsonStr = textResponse.replace(/^```json\n|\n```$/g, '').trim();
+        const jsonStr = textResponse.replace(/^```json\n|\n```$/g, '').replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(jsonStr);
 
     } catch (error) {
@@ -70,7 +76,7 @@ exports.analyzeSyllabus = async (justification, proposedChanges, baselineCurricu
 exports.scoreSyllabusProposal = async (proposal, baselineCurriculum = null) => {
     try {
         const { justification, proposedChanges, requestType, industryReference } = proposal;
-        
+
         const prompt = `
 You are an expert academic curriculum evaluator and industry analyst. Your job is to score a syllabus change proposal with extreme precision.
 
@@ -144,23 +150,19 @@ Return ONLY valid JSON (no markdown, no explanation outside JSON):
 
 Be precise, fair, and consistent. Higher scores should reflect genuinely better proposals.`;
 
-        const response = await ai.models.generateContent({
-            model: DEFAULT_GEMINI_MODEL,
-            contents: [{
-                parts: [{ text: prompt }]
-            }]
-        });
+        const model = getAiClient().getGenerativeModel({ model: DEFAULT_GEMINI_MODEL });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const textResponse = response.text();
 
-        const textResponse = response.text;
-        
         // Clean up markdown code blocks if present
         let jsonStr = textResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        
-        const result = JSON.parse(jsonStr);
-        result.analyzedAt = new Date();
-        result.modelUsed = DEFAULT_GEMINI_MODEL;
-        
-        return result;
+
+        const parsedResult = JSON.parse(jsonStr);
+        parsedResult.analyzedAt = new Date();
+        parsedResult.modelUsed = DEFAULT_GEMINI_MODEL;
+
+        return parsedResult;
 
     } catch (error) {
         console.error("AI Scoring Error:", error.message);
@@ -200,14 +202,14 @@ exports.analyzeCompetingProposals = async (proposals, baselineCurriculum = null)
                     return { ...proposal, aiScore: score };
                 } catch (err) {
                     console.error(`Failed to score proposal ${proposal._id}:`, err.message);
-                    return { 
-                        ...proposal, 
-                        aiScore: { 
-                            overallScore: 0, 
+                    return {
+                        ...proposal,
+                        aiScore: {
+                            overallScore: 0,
                             aiExplanation: 'Analysis failed',
                             aiRecommendation: 'Neutral',
                             confidence: 'Low'
-                        } 
+                        }
                     };
                 }
             })
@@ -251,11 +253,10 @@ Return ONLY valid JSON:
 
         let comparison = null;
         try {
-            const compResponse = await ai.models.generateContent({
-                model: DEFAULT_GEMINI_MODEL,
-                contents: [{ parts: [{ text: comparisonPrompt }] }]
-            });
-            let compJson = compResponse.text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            const model = getAiClient().getGenerativeModel({ model: DEFAULT_GEMINI_MODEL });
+            const result = await model.generateContent(comparisonPrompt);
+            const compResponse = await result.response;
+            let compJson = compResponse.text().replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
             comparison = JSON.parse(compJson);
         } catch (compErr) {
             console.error("Comparison analysis failed:", compErr.message);

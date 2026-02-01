@@ -3,7 +3,7 @@ import { MessageCircle } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 
 const MessageList = ({ loading, messages, activeChannel, currentUserId, role, onDelete, onUserClick, messagesEndRef }) => (
-  <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-gray-50/50 dark:bg-secondary/30 custom-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3b82f6 #23293a', maxHeight: '65vh' }}>
+  <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-gray-50/50 dark:bg-gray-900/50 custom-scrollbar" style={{ scrollbarWidth: 'thin', scrollbarColor: '#3b82f6 #23293a', maxHeight: '65vh' }}>
     {loading ? (
       <div className="flex items-center justify-center h-full">
         <div className="animate-pulse flex flex-col items-center gap-3 opacity-50">

@@ -75,12 +75,12 @@ const CommunityScreen = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a2233]">
+        <div className="h-full flex flex-col space-y-6">
             {/* Header Section */}
             <CommunityHeader role={role} activeChannel={activeChannel} setActiveChannel={setActiveChannel} />
 
             {/* Chat Container */}
-            <div className="w-full max-w-4xl h-[80vh] bg-white dark:bg-card rounded-[2.5rem] border border-gray-100 dark:border-border-color shadow-xl shadow-gray-200/50 dark:shadow-secondary/30 overflow-hidden flex flex-col relative text-base md:text-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex-1 bg-white dark:bg-gray-800 rounded-[2rem] border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex flex-col relative animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <ChatHeader activeChannel={activeChannel} />
 
                 <MessageList
@@ -114,9 +114,9 @@ const CommunityScreen = () => {
 
             {/* User Profile Modal */}
             {selectedUser && (
-                <UserProfileModal 
-                    user={selectedUser} 
-                    onClose={() => setSelectedUser(null)} 
+                <UserProfileModal
+                    user={selectedUser}
+                    onClose={() => setSelectedUser(null)}
                 />
             )}
         </div>
