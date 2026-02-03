@@ -1,4 +1,5 @@
 import React from 'react';
+import { FileText, GitCompare, Bot, Sparkles } from 'lucide-react';
 
 const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
   const proposedUnits = selectedReq?.proposedChanges?.units || [];
@@ -62,30 +63,41 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
     }, []);
   };
 
-  const renderTopics = (topics = []) => (
-    <div className="flex flex-wrap gap-2 mt-2">
-      {topics.map((t) => (
-        <span key={t} className="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700">
-          {t}
-        </span>
-      ))}
-    </div>
-  );
+  const renderTopics = (topics = [], variant = 'default') => {
+    const variants = {
+      default: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
+      blue: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300',
+      green: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300'
+    };
+    return (
+      <div className="flex flex-wrap gap-2 mt-2">
+        {topics.map((t) => (
+          <span key={t} className={`px-2.5 py-1 rounded-full text-xs font-bold ${variants[variant]}`}>
+            {t}
+          </span>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className={`p-6 lg:p-8 grid grid-cols-1 ${aiSyllabus?.units?.length ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-6`}>
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+      {/* Current Curriculum Panel */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h5 className="font-black text-gray-900">Current Curriculum</h5>
-          <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">Baseline</span>
+          <div className="flex items-center gap-2">
+            <FileText size={16} className="text-gray-500 dark:text-gray-400" />
+            <h5 className="font-black text-gray-900 dark:text-gray-100">Current Curriculum</h5>
+          </div>
+          <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">Baseline</span>
         </div>
-        <div className="space-y-3 text-sm text-gray-700">
+        <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
           {currentUnits.length === 0 ? (
-            <div className="text-xs text-gray-400">Baseline not available.</div>
+            <div className="text-xs text-gray-400 dark:text-gray-500 italic">Baseline not available.</div>
           ) : (
             currentUnits.map((unit) => (
-              <div key={unit._id || unit.title} className="p-3 rounded-xl border border-gray-100 bg-gray-50">
-                <div className="font-bold text-gray-900">Unit {unit.unitNumber || '-'}: {unit.title}</div>
+              <div key={unit._id || unit.title} className="p-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                <div className="font-bold text-gray-900 dark:text-gray-100">Unit {unit.unitNumber || '-'}: {unit.title}</div>
                 {renderTopics(unit.topics)}
               </div>
             ))
@@ -93,24 +105,30 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+      {/* Proposed Changes Panel */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h5 className="font-black text-gray-900">Proposed Changes</h5>
-          <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600">Diff</span>
+          <div className="flex items-center gap-2">
+            <GitCompare size={16} className="text-emerald-500" />
+            <h5 className="font-black text-gray-900 dark:text-gray-100">Proposed Changes</h5>
+          </div>
+          <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">Diff</span>
         </div>
 
         <div className="space-y-5">
           {newUnits.length > 0 && (
             <div>
-              <div className="text-xs font-black uppercase tracking-wider text-emerald-700 mb-2">New Units</div>
+              <div className="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-2 flex items-center gap-2">
+                <Sparkles size={12} /> New Units
+              </div>
               <div className="space-y-3">
                 {newUnits.map((unit) => (
-                  <div key={unit._id || unit.title} className="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                  <div key={unit._id || unit.title} className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800/50">
                     <div className="flex items-center justify-between">
-                      <div className="font-bold text-emerald-900">Unit {unit.unitNumber || '-'}: {unit.title}</div>
-                      <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600">New</span>
+                      <div className="font-bold text-emerald-900 dark:text-emerald-300">Unit {unit.unitNumber || '-'}: {unit.title}</div>
+                      <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400">New</span>
                     </div>
-                    {renderTopics(unit.topics)}
+                    {renderTopics(unit.topics, 'green')}
                   </div>
                 ))}
               </div>
@@ -119,7 +137,7 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
 
           {updatedUnits.length > 0 && (
             <div>
-              <div className="text-xs font-black uppercase tracking-wider text-blue-700 mb-2">Updated Units</div>
+              <div className="text-xs font-black uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Updated Units</div>
               <div className="space-y-3">
                 {updatedUnits.map(({ unit, current }) => {
                   const { addedTopics, removedTopics } = getTopicDelta(unit, current);
@@ -134,15 +152,15 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
                   }
 
                   return (
-                    <div key={unit._id || unit.title} className="p-4 bg-blue-50 rounded-xl border border-blue-100">
-                      <div className="font-bold text-blue-900">Unit {unit.unitNumber || '-'}: {unit.title}</div>
+                    <div key={unit._id || unit.title} className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800/50">
+                      <div className="font-bold text-blue-900 dark:text-blue-300">Unit {unit.unitNumber || '-'}: {unit.title}</div>
                       {titleChanged && (
-                        <div className="text-xs text-blue-700 mt-2">
+                        <div className="text-xs text-blue-700 dark:text-blue-400 mt-2">
                           Title changed from <span className="font-bold">{current?.title}</span>
                         </div>
                       )}
                       {hoursChanged && (
-                        <div className="text-xs text-blue-700 mt-1">
+                        <div className="text-xs text-blue-700 dark:text-blue-400 mt-1">
                           Hours changed from <span className="font-bold">{current?.hours || 0}</span> to <span className="font-bold">{unit.hours}</span>
                         </div>
                       )}
@@ -150,10 +168,10 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
                         <div className="mt-2 space-y-3">
                           {addedTopics.length > 0 && (
                             <div>
-                              <div className="text-xs font-bold text-blue-700 uppercase">Added Topics</div>
+                              <div className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase">Added Topics</div>
                               <div className="flex flex-wrap gap-2 mt-2">
                                 {addedTopics.map((t) => (
-                                  <span key={t} className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+                                  <span key={t} className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300">
                                     + {t}
                                   </span>
                                 ))}
@@ -162,10 +180,10 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
                           )}
                           {removedTopics.length > 0 && (
                             <div>
-                              <div className="text-xs font-bold text-red-600 uppercase">Removed Topics</div>
+                              <div className="text-xs font-bold text-red-600 dark:text-red-400 uppercase">Removed Topics</div>
                               <div className="flex flex-wrap gap-2 mt-2">
                                 {removedTopics.map((t) => (
-                                  <span key={t} className="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
+                                  <span key={t} className="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">
                                     - {t}
                                   </span>
                                 ))}
@@ -174,12 +192,12 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
                           )}
                           {addedDetails.length > 0 && (
                             <div>
-                              <div className="text-xs font-bold text-emerald-700 uppercase">Added Topic Details</div>
+                              <div className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase">Added Topic Details</div>
                               <div className="mt-2 space-y-2">
                                 {addedDetails.map((detail) => (
-                                  <div key={detail.topic} className="rounded-lg bg-emerald-50 border border-emerald-100 p-2">
-                                    <div className="text-xs font-bold text-emerald-800">{detail.topic}</div>
-                                    <ul className="mt-1 text-xs text-emerald-800 list-disc list-inside space-y-1">
+                                  <div key={detail.topic} className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-2">
+                                    <div className="text-xs font-bold text-emerald-800 dark:text-emerald-300">{detail.topic}</div>
+                                    <ul className="mt-1 text-xs text-emerald-800 dark:text-emerald-300 list-disc list-inside space-y-1">
                                       {detail.items.map((item) => (
                                         <li key={item}>{item}</li>
                                       ))}
@@ -191,7 +209,7 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
                           )}
                         </div>
                       ) : (
-                        <div className="text-xs text-blue-700 mt-2">No topic-level changes detected.</div>
+                        <div className="text-xs text-blue-700 dark:text-blue-400 mt-2">No topic-level changes detected.</div>
                       )}
                     </div>
                   );
@@ -207,22 +225,28 @@ const DiffPanel = ({ selectedReq, baseline, aiSyllabus }) => {
             const titleChanged = unit.title && current?.title && unit.title !== current.title;
             return addedTopics.length > 0 || removedTopics.length > 0 || addedDetails.length > 0 || hoursChanged || titleChanged;
           }).length === 0 && (
-            <div className="text-sm text-gray-500">No meaningful changes detected.</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 italic">No meaningful changes detected.</div>
           )}
         </div>
       </div>
 
+      {/* AI Recommended Syllabus Panel */}
       {aiSyllabus?.units?.length > 0 && (
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-800/50 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h5 className="font-black text-gray-900">AI Recommended Syllabus</h5>
-            <span className="text-[10px] uppercase font-black tracking-widest text-blue-600">AI</span>
+            <div className="flex items-center gap-2">
+              <Bot size={16} className="text-indigo-500" />
+              <h5 className="font-black text-gray-900 dark:text-gray-100">AI Recommended Syllabus</h5>
+            </div>
+            <span className="text-[10px] uppercase font-black tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/40 px-2 py-1 rounded-full flex items-center gap-1">
+              <Sparkles size={10} /> AI
+            </span>
           </div>
-          <div className="space-y-3 text-sm text-gray-700">
+          <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
             {aiSyllabus.units.map((unit) => (
-              <div key={`${unit.unitNumber}-${unit.title}`} className="p-3 rounded-xl border border-blue-100 bg-blue-50/60">
-                <div className="font-bold text-blue-900">Unit {unit.unitNumber || '-'}: {unit.title}</div>
-                {renderTopics(unit.topics)}
+              <div key={`${unit.unitNumber}-${unit.title}`} className="p-3 rounded-xl border border-indigo-100 dark:border-indigo-800/50 bg-white/60 dark:bg-indigo-900/30">
+                <div className="font-bold text-indigo-900 dark:text-indigo-300">Unit {unit.unitNumber || '-'}: {unit.title}</div>
+                {renderTopics(unit.topics, 'blue')}
               </div>
             ))}
           </div>

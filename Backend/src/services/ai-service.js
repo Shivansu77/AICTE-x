@@ -2,8 +2,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Default API key from environment (fallback)
 let GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-// Use gemini-2.0-flash as default (latest stable and available)
-let DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+// Use gemini-2.5-flash as default
+let DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
 let genAI;
 

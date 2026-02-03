@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { motion } from 'framer-motion';
+import { MessageSquare } from 'lucide-react';
 import QueryFormCard from '../components/contact/QueryFormCard';
 import QueryHistoryCard from '../components/contact/QueryHistoryCard';
 
@@ -51,8 +52,26 @@ const ContactAdministration = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="text-3xl font-black text-gray-900 mb-2">Student Support</h1>
-        <p className="text-gray-600">Have a question? We're here to help. Track your queries and get responses directly from the administration.</p>
+        <div className="flex items-center gap-5 mb-4">
+          <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg shadow-blue-500/20 border-2 border-blue-400/30">
+            <img 
+              src="/contactAdministration.jpg" 
+              alt="Contact Administration" 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextElementSibling.style.display = 'flex';
+              }}
+            />
+            <div className="hidden w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 items-center justify-center">
+              <MessageSquare size={28} className="text-white" />
+            </div>
+          </div>
+          <div>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-gray-100">Student Support</h1>
+            <p className="text-gray-600 dark:text-gray-400">Have a question? We're here to help. Track your queries and get responses directly from the administration.</p>
+          </div>
+        </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">

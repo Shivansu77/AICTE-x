@@ -12,7 +12,7 @@ exports.getAiConfig = async (req, res) => {
             apiKeyMasked: apiKey ? `${apiKey.slice(0, 8)}...${apiKey.slice(-4)}` : '',
             model,
             availableModels: [
-                'gemini-1.5-flash',
+                'gemini-2.5-flash',
                 'gemini-1.5-pro',
                 'gemini-pro',
                 'gemini-1.0-pro'

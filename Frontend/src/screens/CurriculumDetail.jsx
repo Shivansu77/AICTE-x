@@ -21,6 +21,33 @@ const CurriculumDetail = () => {
     const [myRequests, setMyRequests] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
 
+    // Delete version handler
+    const handleDeleteVersion = async (versionId, isLatestVersion) => {
+        if (isLatestVersion) {
+            alert('Cannot delete the latest version. Please create a new version first.');
+            return;
+        }
+        
+        if (!window.confirm('Are you sure you want to delete this version? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await api.delete(`/curriculum/${versionId}`);
+            
+            // Refresh history
+            if (course && course.code) {
+                const histRes = await api.get(`/curriculum/history/code/${course.code}`);
+                setHistory(histRes.data);
+            }
+            
+            alert('Version deleted successfully');
+        } catch (error) {
+            console.error('Failed to delete version:', error);
+            alert(error.response?.data?.message || 'Failed to delete version');
+        }
+    };
+
     // Edit Mode State
     const [isEditing, setIsEditing] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -404,21 +431,38 @@ const CurriculumDetail = () => {
                                     <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-gray-100 dark:bg-gray-700"></div>
 
                                     {history.map((ver) => (
-                                        <div key={ver._id} className="relative z-10 pl-10">
+                                        <div key={ver._id} className="relative z-10 pl-10 group">
                                             <div className={`absolute left-2 top-2 w-3.5 h-3.5 rounded-full border-2 ${ver._id === course._id ? 'bg-blue-500 border-white dark:border-gray-800 shadow-md ring-2 ring-blue-500/20' : 'bg-gray-200 dark:bg-gray-600 border-white dark:border-gray-800'}`}></div>
 
-                                            <Link to={`/curriculum/${ver._id}`} className={`block p-3 rounded-xl transition-all ${ver._id === course._id ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
-                                                <div className="flex justify-between items-center mb-1">
-                                                    <span className={`text-sm font-bold ${ver._id === course._id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-800 dark:text-gray-100'}`}>
-                                                        Version {ver.version}.0
-                                                    </span>
-                                                    {ver.isLatest && <span className="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wide">Latest</span>}
-                                                </div>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">
-                                                    {ver.publishedAt ? new Date(ver.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Draft'}
-                                                </p>
-                                                {ver.updateLog && <p className="text-xs text-gray-400 dark:text-gray-500 italic line-clamp-1">"{ver.updateLog}"</p>}
-                                            </Link>
+                                            <div className={`relative p-3 rounded-xl transition-all ${ver._id === course._id ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+                                                <Link to={`/curriculum/${ver._id}`} className="block">
+                                                    <div className="flex justify-between items-center mb-1">
+                                                        <span className={`text-sm font-bold ${ver._id === course._id ? 'text-blue-600 dark:text-blue-400' : 'text-gray-800 dark:text-gray-100'}`}>
+                                                            Version {ver.version}.0
+                                                        </span>
+                                                        {ver.isLatest && <span className="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wide">Latest</span>}
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-1">
+                                                        {ver.publishedAt ? new Date(ver.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Draft'}
+                                                    </p>
+                                                    {ver.updateLog && <p className="text-xs text-gray-400 dark:text-gray-500 italic line-clamp-1">"{ver.updateLog}"</p>}
+                                                </Link>
+                                                
+                                                {/* Delete button for admin - only show for non-latest versions */}
+                                                {role === 'admin' && !ver.isLatest && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handleDeleteVersion(ver._id, ver.isLatest);
+                                                        }}
+                                                        className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+                                                        title="Delete this version"
+                                                    >
+                                                        <Trash2 size={12} />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

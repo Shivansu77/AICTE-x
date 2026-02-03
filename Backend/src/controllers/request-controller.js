@@ -199,6 +199,44 @@ exports.updateRequestStatus = async (req, res) => {
                     }
                 }
 
+                // Handle Bulk Update - Apply all changes from the form
+                if (request.requestType === 'Bulk Update') {
+                    log('Processing Bulk Update...');
+                    
+                    // Update basic info if provided
+                    if (changes.title) {
+                        newSubjectData.title = changes.title;
+                    }
+                    if (changes.description) {
+                        newSubjectData.description = changes.description;
+                    }
+                    if (changes.credits !== undefined) {
+                        newSubjectData.credits = changes.credits;
+                    }
+                    
+                    // Update course outcomes if provided
+                    if (changes.courseOutcomes && Array.isArray(changes.courseOutcomes)) {
+                        newSubjectData.courseOutcomes = changes.courseOutcomes.filter(co => co && co.trim() !== '');
+                    }
+                    
+                    // Update units if provided
+                    if (changes.units && Array.isArray(changes.units)) {
+                        newSubjectData.units = changes.units.map((unit, idx) => ({
+                            unitNumber: unit.unitNumber || idx + 1,
+                            title: unit.title || '',
+                            hours: parseInt(unit.hours) || 0,
+                            topics: (unit.topics || []).filter(t => t && t.trim() !== ''),
+                            topicDetails: unit.topicDetails || {}
+                        }));
+                    }
+                    
+                    log('Bulk Update applied: ' + JSON.stringify({
+                        title: newSubjectData.title,
+                        unitsCount: newSubjectData.units?.length,
+                        outcomesCount: newSubjectData.courseOutcomes?.length
+                    }));
+                }
+
                 // Create and Save New Version
                 const newSubject = new Curriculum(newSubjectData);
                 await newSubject.save();
