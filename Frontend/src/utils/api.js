@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5001/api',
+    baseURL: import.meta.env.PROD 
+        ? 'https://aicte-x.onrender.com/api' 
+        : 'http://localhost:5001/api',
     headers: {
         'Content-Type': 'application/json',
     },
