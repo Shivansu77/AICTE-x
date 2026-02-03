@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../utils/api';
+import i18n from '../i18n.js';
 
 // Async thunk to sync with backend
 export const syncThemeWithBackend = createAsyncThunk(
@@ -46,12 +47,12 @@ const initialState = {
 const applyThemeToDOM = (theme) => {
   const root = document.documentElement;
   root.classList.remove('light', 'dark');
-  
+
   let effectiveTheme = theme;
   if (theme === 'system') {
     effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
-  
+
   root.classList.add(effectiveTheme);
   root.setAttribute('data-theme', effectiveTheme);
 };
@@ -149,6 +150,11 @@ const themeSlice = createSlice({
       });
   },
 });
+
+export const changeLanguage = (language) => (dispatch) => {
+  i18n.changeLanguage(language);
+  dispatch(setLanguage(language));
+};
 
 export const { setTheme, setFontSize, setLanguage, setCompactMode, initializeTheme } = themeSlice.actions;
 export default themeSlice.reducer;

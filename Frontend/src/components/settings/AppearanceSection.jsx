@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Palette, Sun, Moon, Monitor, Type, Minimize2, CheckCircle, Loader, Globe } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setTheme, setFontSize, setLanguage, setCompactMode, syncThemeWithBackend } from '../../store/themeSlice';
+import { setTheme, setFontSize, changeLanguage, setCompactMode, syncThemeWithBackend } from '../../store/themeSlice';
 
 const AppearanceSection = ({ onUpdate }) => {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const AppearanceSection = ({ onUpdate }) => {
           dispatch(setFontSize(value));
           break;
         case 'language':
-          dispatch(setLanguage(value));
+          dispatch(changeLanguage(value));
           break;
         case 'compactMode':
           dispatch(setCompactMode(value));

@@ -261,7 +261,7 @@ const AboutUs = () => {
           delay={0.4}
         />
 
-        <BentoCard className="md:col-span-2 flex items-center gap-4 bg-gray-900 dark:bg-card text-white dark:text-primary" delay={0.6}>
+        <BentoCard className="md:col-span-3 flex items-center gap-4 bg-gray-900 dark:bg-card text-white dark:text-primary" delay={0.6}>
           <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
             <Globe size={20} className="text-accent-yellow" />
           </div>

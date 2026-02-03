@@ -27,8 +27,10 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const { user } = useUser();
   const role = user.role || "Faculty";
-  const title = role === 'teacher' || role === 'faculty' ? 'Dr.' : '';
-  const name = user.firstName ? (role === 'admin' ? `${user.firstName} ${user.lastName}` : `${title} ${user.lastName}`).trim() : (role === 'admin' ? 'Admin' : role === 'teacher' || role === 'faculty' ? 'Faculty' : 'Student');
+  const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+  const name = fullName
+    ? (role === 'teacher' || role === 'faculty' ? `Dr. ${fullName}` : fullName)
+    : (role === 'admin' ? 'Admin' : role === 'teacher' || role === 'faculty' ? 'Faculty' : 'Student');
 
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);

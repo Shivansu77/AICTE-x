@@ -732,11 +732,6 @@
   background-color: var(--bg-tertiary) !important;
 }
 
-/* Mission banner maintains its gradient */
-:root.dark .bg-gradient-to-r.from-accent-blue {
-  /* Keep gradient colors for accent elements */
-}
-
 /* Filter pills */
 :root.dark button.bg-white.text-secondary {
   background-color: var(--bg-secondary) !important;
@@ -953,11 +948,6 @@
 /* Dashboard header gradient */
 :root.dark .bg-gradient-to-br.from-gray-700.to-gray-900 {
   background: linear-gradient(to bottom right, #1E293B, #0F172A) !important;
-}
-
-/* Mission banner keeps its accent color gradient */
-:root.dark .bg-gradient-to-r.from-accent-blue.via-accent-blue.to-cyan-500 {
-  /* Keep original gradient */
 }
 
 /* Loading spinner */
