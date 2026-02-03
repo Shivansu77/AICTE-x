@@ -76,25 +76,15 @@ const Dashboard = () => {
         return (
             <div className="flex items-center justify-center h-full min-h-[60vh]">
                 <div className="flex flex-col items-center gap-4">
-                    {/* Animated Logo/Spinner */}
+                    {/* Circular Spinner */}
                     <div className="relative">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30 animate-pulse">
-                            <Book size={36} className="text-white" />
-                        </div>
-                        <div className="absolute -inset-2 rounded-3xl border-4 border-blue-500/30 border-t-blue-500 animate-spin"></div>
+                        <div className="w-16 h-16 border-4 border-blue-200 dark:border-gray-700 rounded-full"></div>
+                        <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
                     </div>
                     
                     {/* Loading Text */}
-                    <div className="text-center mt-4">
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Loading Dashboard</h3>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Please wait while we fetch your data...</p>
-                    </div>
-                    
-                    {/* Progress Dots */}
-                    <div className="flex items-center gap-2 mt-2">
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                        <div className="w-2 h-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div className="text-center mt-2">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Loading...</p>
                     </div>
                 </div>
             </div>
