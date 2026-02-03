@@ -12,6 +12,8 @@ const announcementRoutes = require('./src/routes/announcement-routes');
 const messageRoutes = require('./src/routes/message-routes');
 const requestRoutes = require('./src/routes/request-routes');
 const aiRoutes = require('./src/routes/ai-routes'); // Import AI routes
+const settingsRoutes = require('./src/routes/settings-routes'); // Import Settings routes
+const { initializeAiSettings } = require('./src/controllers/settings-controller');
 
 const app = express();
 
@@ -27,6 +29,10 @@ app.use('/api/announcement', announcementRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/ai', aiRoutes); // Use AI routes
+app.use('/api/settings', settingsRoutes); // Use Settings routes
+
+// Initialize AI settings from database
+initializeAiSettings();
 
 const PORT = 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

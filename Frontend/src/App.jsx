@@ -21,6 +21,7 @@ import AdminUsers from './screens/AdminUsers'; // Import corrected
 import FacultyScreen from './screens/FacultyScreen';
 import StudentScreen from './screens/StudentScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import StudentsList from './screens/StudentsList';
 import ContactAdministration from './screens/ContactAdministration';
 import AdminQueries from './screens/AdminQueries';
 import AboutUs from './screens/AboutUs';
@@ -90,6 +91,7 @@ function AppContent() {
                 <Route path="/community" element={<CommunityScreen />} />
                 <Route path="/contact" element={<ContactAdministration />} />
                 <Route path="/about" element={<AboutUs />} />
+                <Route path="/students" element={<StudentsList />} />
                 {/* Admin Routes */}
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/courses" element={<ManageCourses />} />

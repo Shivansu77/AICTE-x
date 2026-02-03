@@ -1,22 +1,41 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// Default API key from environment (fallback)
+let GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const DEPRECATED_GEMINI_MODELS = new Set(['gemini-2.5-flash', 'gemini-2.5-flash-lite']);
-// TODO: gemini-2.5-flash family is planned for EOL; migrate any pinned deployments before deprecation date.
-const DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash';
+// Use gemini-1.5-flash as default (stable and available)
+let DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
 
 if (process.env.GEMINI_MODEL && DEPRECATED_GEMINI_MODELS.has(process.env.GEMINI_MODEL)) {
     console.warn(
         `[AI Service] GEMINI_MODEL is set to deprecated value "${process.env.GEMINI_MODEL}". ` +
-        'Please migrate to a supported model (e.g., gemini-3-flash) before the planned EOL.'
+        'Please migrate to a supported model (e.g., gemini-1.5-flash) before the planned EOL.'
     );
 }
 
 let genAI;
+
+// Function to update API key dynamically
+exports.setApiKey = (apiKey) => {
+    GEMINI_API_KEY = apiKey;
+    genAI = null; // Reset client to use new key
+};
+
+// Function to update model dynamically
+exports.setModel = (model) => {
+    DEFAULT_GEMINI_MODEL = model;
+};
+
+// Get current configuration
+exports.getConfig = () => ({
+    hasApiKey: !!GEMINI_API_KEY,
+    model: DEFAULT_GEMINI_MODEL
+});
+
 const getAiClient = () => {
     if (!genAI) {
         if (!GEMINI_API_KEY) {
-            throw new Error('GEMINI_API_KEY is not set in environment variables.');
+            throw new Error('GEMINI_API_KEY is not set. Please configure it in Admin Settings.');
         }
         genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     }

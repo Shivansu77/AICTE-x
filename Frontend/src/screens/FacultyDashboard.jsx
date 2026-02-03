@@ -40,7 +40,7 @@ const FacultyDashboard = () => {
                 // Fetch student count (optional - handle auth gracefully)
                 let studentCount = 0;
                 try {
-                    const studentsRes = await api.get('/users/students');
+                    const studentsRes = await api.get('/user/students');
                     studentCount = studentsRes.data?.length || 0;
                 } catch (studErr) {
                     if (studErr.response?.status === 401) {
@@ -90,6 +90,7 @@ const FacultyDashboard = () => {
                     label="Total Students"
                     value={loading ? "..." : stats.totalStudents}
                     color="bg-purple-500"
+                    onClick={() => navigate('/students')}
                 />
                 <StatCard
                     icon={Clock}

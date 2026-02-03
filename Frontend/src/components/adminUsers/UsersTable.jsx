@@ -2,7 +2,7 @@ import React from 'react';
 import { Ban, Trash2, ShieldCheck } from 'lucide-react';
 import RoleBadge from './RoleBadge';
 
-const UsersTable = ({ users, onUserClick, onBlockUser, onDeleteUser, currentUserId }) => (
+const UsersTable = ({ users, onUserClick, onBlockUser, onDeleteUser, currentUserId, showActions = true }) => (
   <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
     <div className="overflow-x-auto">
       <table className="w-full text-left">
@@ -12,7 +12,9 @@ const UsersTable = ({ users, onUserClick, onBlockUser, onDeleteUser, currentUser
             <th className="p-6 text-xs font-black text-gray-400 uppercase tracking-wider">Role</th>
             <th className="p-6 text-xs font-black text-gray-400 uppercase tracking-wider">Status</th>
             <th className="p-6 text-xs font-black text-gray-400 uppercase tracking-wider">Joined</th>
-            <th className="p-6 text-xs font-black text-gray-400 uppercase tracking-wider">Actions</th>
+            {showActions && (
+              <th className="p-6 text-xs font-black text-gray-400 uppercase tracking-wider">Actions</th>
+            )}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-50">
@@ -51,36 +53,38 @@ const UsersTable = ({ users, onUserClick, onBlockUser, onDeleteUser, currentUser
                 <td className="p-6 text-sm text-gray-500 font-medium">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
-                <td className="p-6">
-                  {!isCurrentUser && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onBlockUser && onBlockUser(user);
-                        }}
-                        className={`p-2 rounded-xl transition-all ${
-                          user.isActive 
-                            ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' 
-                            : 'bg-green-50 text-green-600 hover:bg-green-100'
-                        }`}
-                        title={user.isActive ? 'Block User' : 'Unblock User'}
-                      >
-                        {user.isActive ? <Ban size={16} /> : <ShieldCheck size={16} />}
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteUser && onDeleteUser(user);
-                        }}
-                        className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-all"
-                        title="Delete User"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  )}
-                </td>
+                {showActions && (
+                  <td className="p-6">
+                    {!isCurrentUser && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onBlockUser && onBlockUser(user);
+                          }}
+                          className={`p-2 rounded-xl transition-all ${
+                            user.isActive 
+                              ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' 
+                              : 'bg-green-50 text-green-600 hover:bg-green-100'
+                          }`}
+                          title={user.isActive ? 'Block User' : 'Unblock User'}
+                        >
+                          {user.isActive ? <Ban size={16} /> : <ShieldCheck size={16} />}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteUser && onDeleteUser(user);
+                          }}
+                          className="p-2 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-all"
+                          title="Delete User"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                )}
               </tr>
             );
           })}

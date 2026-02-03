@@ -248,7 +248,7 @@ const CurriculumDetail = () => {
             </Link>
 
             {/* Header */}
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 mb-8 relative">
+            <div className="bg-white dark:bg-card rounded-[2.5rem] p-8 shadow-sm border border-black/5 dark:border-border-color mb-8 relative">
                 {/* Decorative Background - Clipped */}
                 <div className="absolute inset-0 overflow-hidden rounded-[2.5rem]">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-accent-blue/10 rounded-full blur-3xl translate-x-1/3 -translate-y-1/2"></div>
@@ -294,7 +294,7 @@ const CurriculumDetail = () => {
                             !isEditing ? (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="bg-white text-secondary border-2 border-secondary/10 font-bold py-3 px-6 rounded-full hover:bg-gray-50 hover:border-secondary/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
+                                    className="bg-white dark:bg-secondary/30 text-secondary dark:text-primary border-2 border-secondary/10 dark:border-border-color font-bold py-3 px-6 rounded-full hover:bg-gray-50 dark:hover:bg-secondary/50 hover:border-secondary/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
                                 >
                                     <Edit2 size={20} /> Edit Curriculum
                                 </button>
@@ -325,20 +325,20 @@ const CurriculumDetail = () => {
                         {/* Notification Bell */}
                         {(role === 'teacher' || role === 'faculty') && (
                             <div className="relative">
-                                <button
-                                    onClick={() => setShowNotifications(!showNotifications)}
-                                    className="bg-white text-secondary border-2 border-secondary/10 font-bold p-3 rounded-full hover:bg-gray-50 hover:border-secondary/30 transition-all active:scale-95 relative"
-                                >
+                                    <button
+                                        onClick={() => setShowNotifications(!showNotifications)}
+                                        className="bg-white dark:bg-secondary/30 text-secondary dark:text-primary border-2 border-secondary/10 dark:border-border-color font-bold p-3 rounded-full hover:bg-gray-50 dark:hover:bg-secondary/50 hover:border-secondary/30 transition-all active:scale-95 relative"
+                                    >
                                     <Bell size={20} />
                                     {myRequests.some(r => r.status !== 'pending') && <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>}
                                 </button>
 
                                 {showNotifications && (
-                                    <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 z-50 animate-in slide-in-from-top-2">
+                                    <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-card rounded-2xl shadow-xl border border-gray-100 dark:border-border-color p-4 z-50 animate-in slide-in-from-top-2">
                                         <h4 className="font-bold text-primary mb-3">Notifications</h4>
                                         <div className="space-y-2 max-h-64 overflow-y-auto">
                                             {myRequests.filter(r => r.status !== 'pending').map(req => (
-                                                <div key={req._id} className="p-3 bg-gray-50 rounded-xl border-l-4 border-l-accent-blue">
+                                                <div key={req._id} className="p-3 bg-gray-50 dark:bg-secondary/30 rounded-xl border-l-4 border-l-accent-blue">
                                                     <p className="text-xs font-bold text-primary mb-1">Request {req.status === 'approved' ? 'Approved' : 'Rejected'}</p>
                                                     <p className="text-xs text-secondary">Your request for <b>{req.requestType}</b> was {req.status}.</p>
                                                 </div>
@@ -359,7 +359,7 @@ const CurriculumDetail = () => {
                 <div className="flex-1 space-y-8">
                     {/* Course Outcomes Section */}
                     {course.courseOutcomes && course.courseOutcomes.length > 0 && (
-                        <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-black/5">
+                        <div className="bg-white dark:bg-card rounded-[2rem] p-8 shadow-sm border border-black/5 dark:border-border-color">
                             <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
                                     <CheckCircle size={20} />
@@ -368,8 +368,8 @@ const CurriculumDetail = () => {
                             </h2>
                             <div className="grid grid-cols-1 gap-4">
                                 {course.courseOutcomes.map((co, idx) => (
-                                    <div key={idx} className="flex gap-4 p-5 rounded-2xl bg-emerald-50/30 border border-emerald-100/50 hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
-                                        <span className="font-black text-emerald-900/10 text-2xl group-hover:text-emerald-500/20 transition-colors">0{idx + 1}</span>
+                                    <div key={idx} className="flex gap-4 p-5 rounded-2xl bg-emerald-50/30 dark:bg-emerald-900/20 border border-emerald-100/50 dark:border-emerald-900/40 hover:bg-emerald-50 hover:border-emerald-200 transition-all group">
+                                        <span className="font-black text-emerald-900/10 dark:text-emerald-400/20 text-2xl group-hover:text-emerald-500/20 transition-colors">0{idx + 1}</span>
                                         <p className="text-primary/80 font-medium leading-relaxed pt-1">{co}</p>
                                     </div>
                                 ))}
@@ -481,7 +481,7 @@ const CurriculumDetail = () => {
                                     />
                                 ))
                             ) : (
-                                <div className="p-12 text-center bg-gray-50 rounded-[2.5rem] border-2 border-dashed border-gray-200">
+                                <div className="p-12 text-center bg-gray-50 dark:bg-secondary/30 rounded-[2.5rem] border-2 border-dashed border-gray-200 dark:border-border-color">
                                     <p className="text-secondary font-bold text-lg">No units defined yet.</p>
                                 </div>
                             )}
@@ -500,9 +500,9 @@ const CurriculumDetail = () => {
                                         });
                                         setShowRequestModal(true);
                                     }}
-                                    className="w-full py-5 mt-6 rounded-[2rem] border-2 border-dashed border-gray-200 text-secondary font-bold hover:border-accent-blue hover:text-accent-blue hover:bg-accent-blue/5 transition-all flex items-center justify-center gap-2 group"
+                                    className="w-full py-5 mt-6 rounded-[2rem] border-2 border-dashed border-gray-200 dark:border-border-color text-secondary font-bold hover:border-accent-blue hover:text-accent-blue hover:bg-accent-blue/5 dark:hover:bg-accent-blue/10 transition-all flex items-center justify-center gap-2 group"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gray-100 group-hover:bg-accent-blue group-hover:text-white flex items-center justify-center transition-colors">
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-secondary/40 group-hover:bg-accent-blue group-hover:text-white flex items-center justify-center transition-colors">
                                         <Plus size={16} />
                                     </div>
                                     Add New Unit
@@ -515,7 +515,7 @@ const CurriculumDetail = () => {
                 {/* Sidebar - Sticky Container */}
                 <div className="w-full md:w-80 shrink-0">
                     <div className="sticky top-8 space-y-6">
-                        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+                        <div className="bg-white dark:bg-card rounded-[2rem] p-6 shadow-sm border border-black/5 dark:border-border-color">
                             <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                                 <Clock size={20} className="text-accent-blue" />
                                 Version History
@@ -523,18 +523,18 @@ const CurriculumDetail = () => {
                             {history.length > 0 ? (
                                 <div className="space-y-4 relative">
                                     {/* Timeline Line */}
-                                    <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-gray-100"></div>
+                                    <div className="absolute left-3.5 top-2 bottom-2 w-0.5 bg-gray-100 dark:bg-border-color"></div>
 
                                     {history.map((ver) => (
                                         <div key={ver._id} className="relative z-10 pl-10">
-                                            <div className={`absolute left-2 top-2 w-3.5 h-3.5 rounded-full border-2 ${ver._id === course._id ? 'bg-accent-blue border-white shadow-md ring-2 ring-accent-blue/20' : 'bg-gray-200 border-white'}`}></div>
+                                            <div className={`absolute left-2 top-2 w-3.5 h-3.5 rounded-full border-2 ${ver._id === course._id ? 'bg-accent-blue border-white dark:border-border-color shadow-md ring-2 ring-accent-blue/20' : 'bg-gray-200 dark:bg-secondary/50 border-white dark:border-border-color'}`}></div>
 
-                                            <Link to={`/curriculum/${ver._id}`} className={`block p-3 rounded-xl transition-all ${ver._id === course._id ? 'bg-accent-blue/5 border border-accent-blue/20' : 'hover:bg-gray-50'}`}>
+                                            <Link to={`/curriculum/${ver._id}`} className={`block p-3 rounded-xl transition-all ${ver._id === course._id ? 'bg-accent-blue/5 border border-accent-blue/20' : 'hover:bg-gray-50 dark:hover:bg-secondary/30'}`}>
                                                 <div className="flex justify-between items-center mb-1">
                                                     <span className={`text-sm font-bold ${ver._id === course._id ? 'text-accent-blue' : 'text-primary'}`}>
                                                         Version {ver.version}.0
                                                     </span>
-                                                    {ver.isLatest && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase tracking-wide">Latest</span>}
+                                                    {ver.isLatest && <span className="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wide">Latest</span>}
                                                 </div>
                                                 <p className="text-xs text-secondary font-medium mb-1">
                                                     {ver.publishedAt ? new Date(ver.publishedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short' }) : 'Draft'}
@@ -551,7 +551,7 @@ const CurriculumDetail = () => {
 
                         {/* My Requests Section */}
                         {(role === 'teacher' || role === 'faculty') && (
-                            <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+                            <div className="bg-white dark:bg-card rounded-[2rem] p-6 shadow-sm border border-black/5 dark:border-border-color">
                                 <h3 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
                                     <FileText size={20} className="text-accent-peach" />
                                     My Pending Requests
@@ -559,7 +559,7 @@ const CurriculumDetail = () => {
                                 <div className="space-y-3">
                                     {filteredRequests.length > 0 ? (
                                         filteredRequests.map(req => (
-                                            <div key={req._id} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
+                                            <div key={req._id} className="p-4 bg-gray-50 dark:bg-secondary/30 rounded-2xl border border-gray-100 dark:border-border-color hover:bg-white dark:hover:bg-secondary/40 hover:shadow-sm transition-all">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <span className="text-xs font-black text-primary line-clamp-1 uppercase tracking-wide">{req.requestType}</span>
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${req.status === 'approved' ? 'bg-green-100 text-green-700' :
@@ -572,7 +572,7 @@ const CurriculumDetail = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p className="text-secondary text-sm text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">No active requests.</p>
+                                        <p className="text-secondary text-sm text-center py-4 bg-gray-50 dark:bg-secondary/30 rounded-xl border border-dashed border-gray-200 dark:border-border-color">No active requests.</p>
                                     )}
                                 </div>
                             </div>
@@ -584,10 +584,10 @@ const CurriculumDetail = () => {
             {/* Request Modal */}
             {showRequestModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="px-8 py-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                    <div className="bg-white dark:bg-card rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-8 py-6 border-b border-gray-100 dark:border-border-color bg-gray-50 dark:bg-secondary/30 flex justify-between items-center">
                             <h2 className="text-xl font-extrabold text-primary">Raise Concern / Update</h2>
-                            <button onClick={() => setShowRequestModal(false)} className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-100 hover:text-red-500 transition-colors font-bold">
+                            <button onClick={() => setShowRequestModal(false)} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-secondary/40 flex items-center justify-center text-gray-500 dark:text-secondary hover:bg-red-100 dark:hover:bg-red-900/40 hover:text-red-500 dark:hover:text-red-300 transition-colors font-bold">
                                 X
                             </button>
                         </div>
@@ -595,7 +595,7 @@ const CurriculumDetail = () => {
                             <div>
                                 <label className="block text-sm font-bold text-secondary mb-2">Request Type</label>
                                 <select
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white disabled:bg-gray-100 disabled:text-gray-500"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20 disabled:bg-gray-100 disabled:text-gray-500"
                                     value={requestData.type}
                                     onChange={e => setRequestData({ ...requestData, type: e.target.value })}
                                     disabled={requestData.type === 'Bulk Update'}
@@ -616,7 +616,7 @@ const CurriculumDetail = () => {
 
                             {/* Conditional Inputs */}
                             {requestData.type === 'Bulk Update' ? (
-                                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
+                                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/40 mb-4">
                                     <p className="text-sm text-blue-800 font-medium">
                                         You are submitting a full curriculum update based on your edits. Please provide a justification below.
                                     </p>
@@ -629,7 +629,7 @@ const CurriculumDetail = () => {
                                             type="number"
                                             required
                                             placeholder="e.g. 1"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20"
                                             value={requestData.unitNumber}
                                             onChange={e => setRequestData({ ...requestData, unitNumber: e.target.value })}
                                         />
@@ -642,7 +642,7 @@ const CurriculumDetail = () => {
                                             type="text"
                                             required
                                             placeholder={requestData.type === 'Add Topic' ? "e.g. React Hooks" : "Exact topic name"}
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20"
                                             value={requestData.newTopic}
                                             onChange={e => setRequestData({ ...requestData, newTopic: e.target.value })}
                                         />
@@ -657,7 +657,7 @@ const CurriculumDetail = () => {
                                                 type="number"
                                                 required
                                                 readOnly
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 font-bold text-gray-500"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color bg-gray-50 dark:bg-secondary/30 font-bold text-gray-500 dark:text-secondary"
                                                 value={requestData.unitNumber}
                                             />
                                         </div>
@@ -667,7 +667,7 @@ const CurriculumDetail = () => {
                                                 type="text"
                                                 required
                                                 readOnly
-                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 font-bold text-gray-500"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color bg-gray-50 dark:bg-secondary/30 font-bold text-gray-500 dark:text-secondary"
                                                 value={requestData.newTopic}
                                             />
                                         </div>
@@ -680,7 +680,7 @@ const CurriculumDetail = () => {
                                             required
                                             rows="2"
                                             placeholder={requestData.type === 'Add Topic Detail' ? "e.g. In-depth cover of custom hooks" : "Detail text"}
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary resize-none"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20 resize-none"
                                             value={requestData.description || ''}
                                             onChange={e => setRequestData({ ...requestData, description: e.target.value })}
                                         />
@@ -694,7 +694,7 @@ const CurriculumDetail = () => {
                                             type="number"
                                             required
                                             placeholder="#"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20"
                                             value={requestData.unitNumber}
                                             onChange={e => setRequestData({ ...requestData, unitNumber: e.target.value })}
                                         />
@@ -705,7 +705,7 @@ const CurriculumDetail = () => {
                                             type="number"
                                             required
                                             placeholder="Hrs"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20"
                                             value={requestData.unitHours || ''}
                                             onChange={e => setRequestData({ ...requestData, unitHours: e.target.value })}
                                         />
@@ -716,7 +716,7 @@ const CurriculumDetail = () => {
                                             type="text"
                                             required
                                             placeholder="e.g. Advanced Graph Algorithms"
-                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20"
                                             value={requestData.unitTitle || ''}
                                             onChange={e => setRequestData({ ...requestData, unitTitle: e.target.value })}
                                         />
@@ -729,7 +729,7 @@ const CurriculumDetail = () => {
                                         required
                                         rows="4"
                                         placeholder="Enter the updated course description..."
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary resize-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20 resize-none"
                                         value={requestData.proposedChanges}
                                         onChange={e => setRequestData({ ...requestData, proposedChanges: e.target.value })}
                                     />
@@ -741,7 +741,7 @@ const CurriculumDetail = () => {
                                         required
                                         rows="4"
                                         placeholder="Describe the changes..."
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary resize-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20 resize-none"
                                         value={requestData.proposedChanges}
                                         onChange={e => setRequestData({ ...requestData, proposedChanges: e.target.value })}
                                     />
@@ -754,7 +754,7 @@ const CurriculumDetail = () => {
                                     required
                                     rows="3"
                                     placeholder="Why is this change necessary?"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary resize-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-border-color focus:ring-2 focus:ring-accent-blue focus:border-accent-blue outline-none font-medium text-primary bg-white dark:bg-secondary/20 resize-none"
                                     value={requestData.justification}
                                     onChange={e => setRequestData({ ...requestData, justification: e.target.value })}
                                 />

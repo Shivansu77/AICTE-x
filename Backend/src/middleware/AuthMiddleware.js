@@ -26,4 +26,28 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+// Alias for protect
+const protect = authMiddleware;
+
+// Admin only middleware
+const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ msg: 'Access denied. Admin only.' });
+  }
+};
+
+// Teacher only middleware
+const teacherOnly = (req, res, next) => {
+  if (req.user && (req.user.role === 'teacher' || req.user.role === 'admin')) {
+    next();
+  } else {
+    res.status(403).json({ msg: 'Access denied. Teachers only.' });
+  }
+};
+
 module.exports = authMiddleware;
+module.exports.protect = protect;
+module.exports.adminOnly = adminOnly;
+module.exports.teacherOnly = teacherOnly;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Settings, User, Shield, Bell, Palette, Lock, Loader } from 'lucide-react';
+import { Settings, User, Shield, Bell, Palette, Lock, Loader, Bot } from 'lucide-react';
 import api from '../utils/api';
 import { useUser } from '../utils/UserContext';
 import ProfileSection from '../components/settings/ProfileSection';
@@ -7,6 +7,7 @@ import SecuritySection from '../components/settings/SecuritySection';
 import NotificationSection from '../components/settings/NotificationSection';
 import AppearanceSection from '../components/settings/AppearanceSection';
 import PrivacySection from '../components/settings/PrivacySection';
+import AiSettingsSection from '../components/settings/AiSettingsSection';
 import { useTranslation } from 'react-i18next';
 
 const SettingsScreen = () => {
@@ -121,7 +122,9 @@ const SettingsScreen = () => {
         { id: 'security', label: t('security'), icon: Shield },
         { id: 'notifications', label: t('notifications'), icon: Bell },
         { id: 'appearance', label: t('appearance'), icon: Palette },
-        { id: 'privacy', label: t('privacy'), icon: Lock }
+        { id: 'privacy', label: t('privacy'), icon: Lock },
+        // AI Settings - Admin only
+        ...(user.role === 'admin' ? [{ id: 'ai', label: 'AI Config', icon: Bot }] : [])
     ];
 
     return (
@@ -132,13 +135,13 @@ const SettingsScreen = () => {
                     <Settings className="text-white" size={28} />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-extrabold text-primary">{t('settings')}</h1>
-                    <p className="text-secondary font-medium">Manage your account preferences</p>
+                    <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100">{t('settings')}</h1>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">Manage your account preferences</p>
                 </div>
             </div>
 
             {/* Tab Navigation */}
-            <div className="bg-white rounded-2xl p-2 shadow-sm border border-gray-100 flex flex-wrap gap-2">
+            <div className="bg-white dark:bg-[#1f2937] rounded-2xl p-2 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-wrap gap-2">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -149,8 +152,8 @@ const SettingsScreen = () => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all ${
                                 isActive
-                                    ? 'bg-primary text-white shadow-md'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                    ? 'bg-gray-900 dark:bg-blue-600 text-white shadow-md'
+                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                         >
                             <Icon size={18} />
@@ -163,8 +166,8 @@ const SettingsScreen = () => {
             {/* Content */}
             {preferencesLoading ? (
                 <div className="flex items-center justify-center py-20">
-                    <Loader className="animate-spin text-accent-blue" size={32} />
-                    <span className="ml-3 text-secondary font-medium">Loading settings...</span>
+                    <Loader className="animate-spin text-blue-500" size={32} />
+                    <span className="ml-3 text-gray-500 dark:text-gray-400 font-medium">Loading settings...</span>
                 </div>
             ) : (
                 <div className="grid gap-8">
@@ -207,6 +210,10 @@ const SettingsScreen = () => {
                             preferences={preferences.privacyPreferences}
                             onUpdate={fetchPreferences}
                         />
+                    )}
+
+                    {activeTab === 'ai' && user.role === 'admin' && (
+                        <AiSettingsSection />
                     )}
                 </div>
             )}
