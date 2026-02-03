@@ -34,5 +34,5 @@ app.use('/api/settings', settingsRoutes); // Use Settings routes
 // Initialize AI settings from database
 initializeAiSettings();
 
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
