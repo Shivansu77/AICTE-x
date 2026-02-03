@@ -20,6 +20,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health check / Root route
+app.get('/', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        message: 'AICTE Backend API is running!',
+        version: '1.0.0',
+        endpoints: {
+            users: '/api/users',
+            courses: '/api/courses',
+            curriculum: '/api/curriculum',
+            announcements: '/api/announcement',
+            ai: '/api/ai'
+        }
+    });
+});
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/user', userRoutes); // Alias for frontend singular usage
