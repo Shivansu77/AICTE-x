@@ -2,16 +2,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Default API key from environment (fallback)
 let GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const DEPRECATED_GEMINI_MODELS = new Set(['gemini-2.5-flash', 'gemini-2.5-flash-lite']);
-// Use gemini-1.5-flash as default (stable and available)
-let DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-
-if (process.env.GEMINI_MODEL && DEPRECATED_GEMINI_MODELS.has(process.env.GEMINI_MODEL)) {
-    console.warn(
-        `[AI Service] GEMINI_MODEL is set to deprecated value "${process.env.GEMINI_MODEL}". ` +
-        'Please migrate to a supported model (e.g., gemini-1.5-flash) before the planned EOL.'
-    );
-}
+// Use gemini-2.0-flash as default (latest stable and available)
+let DEFAULT_GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
 let genAI;
 

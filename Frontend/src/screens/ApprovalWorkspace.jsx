@@ -95,10 +95,10 @@ const ApprovalWorkspace = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[70vh] bg-cream dark:bg-primary">
+      <div className="flex items-center justify-center h-[70vh] bg-cream dark:bg-gray-900">
         <div className="flex flex-col items-center">
-          <div className="w-12 h-12 border-4 border-accent-blue border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="font-bold text-secondary animate-pulse">Loading AI workspace...</p>
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="font-bold text-gray-500 dark:text-gray-400 animate-pulse">Loading AI workspace...</p>
         </div>
       </div>
     );
@@ -106,14 +106,14 @@ const ApprovalWorkspace = () => {
 
   if (!request) {
     return (
-      <div className="bg-white dark:bg-card rounded-[2rem] border border-gray-100 dark:border-border-color shadow-sm p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-[2rem] border border-gray-100 dark:border-gray-700 shadow-sm p-8">
         <button
           onClick={() => navigate('/admin/approvals')}
-          className="flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary"
+          className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
         >
           <ArrowLeft size={16} /> Back to Approvals List
         </button>
-        <div className="mt-8 flex flex-col items-center justify-center text-secondary">
+        <div className="mt-8 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
           <Check size={48} />
           <p className="mt-3 text-sm font-bold">Request not found or already processed.</p>
         </div>
@@ -122,17 +122,17 @@ const ApprovalWorkspace = () => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-2rem)] bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-primary dark:via-primary dark:to-primary rounded-[2.5rem] border border-white dark:border-border-color shadow-xl overflow-hidden">
+    <div className="min-h-[calc(100vh-2rem)] bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 rounded-[2.5rem] border border-white dark:border-gray-700 shadow-xl overflow-hidden">
       <div className="px-6 lg:px-10 pt-6">
         <button
           onClick={() => navigate('/admin/approvals')}
-          className="flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary"
+          className="flex items-center gap-2 text-sm font-bold text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
         >
           <ArrowLeft size={16} /> Back to Approvals List
         </button>
       </div>
 
-      <div className="mt-6 bg-white/80 dark:bg-card/80 backdrop-blur-md rounded-t-[2.5rem] border-t border-white/70 dark:border-border-color shadow-2xl shadow-blue-900/5">
+      <div className="mt-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-t-[2.5rem] border-t border-white/70 dark:border-gray-700 shadow-2xl shadow-blue-900/5">
         <ReviewHeader
           request={request}
           onReject={() => handleAction('rejected')}
@@ -141,24 +141,24 @@ const ApprovalWorkspace = () => {
 
         <div className="px-6 lg:px-8 pt-6">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
-              <div className="text-xs font-black uppercase tracking-wider text-secondary">Request Summary</div>
-              <div className="mt-2 text-lg font-black text-primary font-serif">{request.requestType || 'Curriculum Update Proposal'}</div>
-              <div className="mt-2 text-sm text-secondary line-clamp-3">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">Request Summary</div>
+              <div className="mt-2 text-lg font-black text-gray-800 dark:text-gray-100 font-serif">{request.requestType || 'Curriculum Update Proposal'}</div>
+              <div className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
                 {request.justification || 'No justification provided.'}
               </div>
-              <div className="mt-4 text-xs text-secondary">
+              <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
                 Industry Reference: {request.industryReference || 'Standard Update'}
               </div>
             </div>
 
-            <div className="bg-white dark:bg-card rounded-2xl p-5 border border-gray-100 dark:border-border-color shadow-sm">
-              <div className="text-xs font-black uppercase tracking-wider text-secondary">Baseline Curriculum</div>
-              <div className="mt-2 text-lg font-black text-primary">{baselineCurriculum?.title || title}</div>
-              <div className="mt-2 text-sm text-secondary">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div className="text-xs font-black uppercase tracking-wider text-gray-500 dark:text-gray-400">Baseline Curriculum</div>
+              <div className="mt-2 text-lg font-black text-gray-800 dark:text-gray-100">{baselineCurriculum?.title || title}</div>
+              <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Units: {baselineCurriculum?.units?.length ?? 0}
               </div>
-              <div className="mt-4 text-xs text-gray-400">Baseline vs proposed comparison.</div>
+              <div className="mt-4 text-xs text-gray-400 dark:text-gray-500">Baseline vs proposed comparison.</div>
             </div>
 
             <AIInsightCard analyzing={analyzing} aiData={aiData} error={aiError} onRetry={runAnalysis} />
