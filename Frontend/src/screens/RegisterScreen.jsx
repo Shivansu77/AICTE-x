@@ -61,7 +61,7 @@ const RegisterScreen = () => {
             <h1 className="text-4xl font-extrabold mb-2">
               Join <span className="text-accent-peach">AICTE</span>
             </h1>
-            <p className="text-secondary font-medium">Create your faculty account</p>
+            <p className="text-secondary font-medium">Create your account</p>
           </div>
 
           {error && (
@@ -103,6 +103,7 @@ const RegisterScreen = () => {
               >
                 <option value="student">Student</option>
                 <option value="teacher">Faculty / Professor</option>
+                <option value="admin">Admin</option>
               </select>
               <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">
                 <ArrowRight className="rotate-90" size={16} />
